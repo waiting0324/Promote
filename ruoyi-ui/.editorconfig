@@ -1,0 +1,22 @@
+# 告訴EditorConfig外掛，這是根檔案，不用繼續往上查詢
+root = true
+
+# 匹配全部檔案
+[*]
+# 設定字符集
+charset = utf-8
+# 縮排風格，可選space、tab
+indent_style = space
+# 縮排的空格數
+indent_size = 2
+# 結尾換行符，可選lf、cr、crlf
+end_of_line = lf
+# 在檔案結尾插入新行
+insert_final_newline = true
+# 刪除一行中的前後空格
+trim_trailing_whitespace = true
+
+# 匹配md結尾的檔案
+[*.md]
+insert_final_newline = false
+trim_trailing_whitespace = false
