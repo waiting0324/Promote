@@ -1,15 +1,15 @@
 # 專案相關配置
-ruoyi:
+promote:
   # 名稱
-  name: RuoYi
+  name: promote
   # 版本
   version: 2.2.0
   # 版權年份
   copyrightYear: 2019
   # 例項演示開關
   demoEnabled: true
-  # 檔案路徑 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: D:/ruoyi/uploadPath
+  # 檔案路徑 示例（ Windows配置D:/promote/uploadPath，Linux配置 /home/promote/uploadPath）
+  profile: D:/promote/uploadPath
   # 獲取ip地址開關
   addressEnabled: true
 
@@ -33,7 +33,7 @@ server:
 # 日誌配置
 logging:
   level:
-    com.ruoyi: debug
+    com.promote: debug
     org.springframework: warn
 
 # Spring配置
@@ -89,7 +89,7 @@ token:
 # MyBatis配置
 mybatis:
     # 搜尋指定包別名
-    typeAliasesPackage: com.ruoyi.project.**.domain
+    typeAliasesPackage: com.promote.project.**.domain
     # 配置mapper的掃描，找到所有的mapper.xml對映檔案
     mapperLocations: classpath*:mybatis/**/*Mapper.xml
     # 載入全域性的配置檔案
@@ -114,9 +114,9 @@ xss:
 # 程式碼生成
 gen: 
   # 作者
-  author: ruoyi
+  author: promote
   # 預設生成包路徑 system 需改成自己的模組名稱 如 system monitor tool
-  packageName: com.ruoyi.project.system
+  packageName: com.promote.project.system
   # 自動去除表字首，預設是true
   autoRemovePre: false
   # 表字首（生成類名不會包含表字首，多個用逗號分隔）

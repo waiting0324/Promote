@@ -72,7 +72,7 @@
     </appender>
 	
 	<!-- 系統模組日誌級別控制  -->
-	<logger name="com.ruoyi" level="info" />
+	<logger name="com.promote" level="info" />
 	<!-- Spring日誌級別控制  -->
 	<logger name="org.springframework" level="warn" />
 

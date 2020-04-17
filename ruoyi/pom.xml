@@ -3,13 +3,13 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.ruoyi</groupId>
-	<artifactId>ruoyi</artifactId>
+	<groupId>com.promote</groupId>
+	<artifactId>promote</artifactId>
 	<version>2.2.0</version>
 	<packaging>war</packaging>
 
-	<name>ruoyi</name>
-	<url>http://www.ruoyi.vip</url>
+	<name>promote</name>
+	<url>http://www.promote.vip</url>
 	<description>若依管理系統</description>
 
 	<parent>
