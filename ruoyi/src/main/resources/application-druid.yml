@@ -1,0 +1,57 @@
+# 資料來源配置
+spring:
+    datasource:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        druid:
+            # 主庫資料來源
+            master:
+                url: jdbc:mysql://localhost:3306/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
+                username: root
+                password: s89236001
+            # 從庫資料來源
+            slave:
+                # 從資料來源開關/預設關閉
+                enabled: false
+                url: 
+                username: 
+                password: 
+            # 初始連線數
+            initialSize: 5
+            # 最小連線池數量
+            minIdle: 10
+            # 最大連線池數量
+            maxActive: 20
+            # 配置獲取連線等待超時的時間
+            maxWait: 60000
+            # 配置間隔多久才進行一次檢測，檢測需要關閉的空閒連線，單位是毫秒
+            timeBetweenEvictionRunsMillis: 60000
+            # 配置一個連線在池中最小生存的時間，單位是毫秒
+            minEvictableIdleTimeMillis: 300000
+            # 配置一個連線在池中最大生存的時間，單位是毫秒
+            maxEvictableIdleTimeMillis: 900000
+            # 配置檢測連線是否有效
+            validationQuery: SELECT 1 FROM DUAL
+            testWhileIdle: true
+            testOnBorrow: false
+            testOnReturn: false
+            webStatFilter: 
+                enabled: true
+            statViewServlet:
+                enabled: true
+                # 設定白名單，不填則允許所有訪問
+                allow:
+                url-pattern: /druid/*
+                # 控制檯管理使用者名稱和密碼
+                login-username: 
+                login-password: 
+            filter:
+                stat:
+                    enabled: true
+                    # 慢SQL記錄
+                    log-slow-sql: true
+                    slow-sql-millis: 1000
+                    merge-sql: true
+                wall:
+                    config:
+                        multi-statement-allow: true

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	
+	<settings>
+		<setting name="cacheEnabled"             value="true" />  <!-- 全域性對映器啟用快取 -->
+		<setting name="useGeneratedKeys"         value="true" />  <!-- 允許 JDBC 支援自動生成主鍵 -->
+		<setting name="defaultExecutorType"      value="REUSE" /> <!-- 配置預設的執行器 -->
+		<setting name="logImpl"                  value="SLF4J" /> <!-- 指定 MyBatis 所用日誌的具體實現 -->
+		<!-- <setting name="mapUnderscoreToCamelCase" value="true"/>  駝峰式命名 -->
+	</settings>
+	
+</configuration>

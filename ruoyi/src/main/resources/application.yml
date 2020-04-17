@@ -1,0 +1,123 @@
+# 專案相關配置
+ruoyi:
+  # 名稱
+  name: RuoYi
+  # 版本
+  version: 2.2.0
+  # 版權年份
+  copyrightYear: 2019
+  # 例項演示開關
+  demoEnabled: true
+  # 檔案路徑 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
+  profile: D:/ruoyi/uploadPath
+  # 獲取ip地址開關
+  addressEnabled: true
+
+  jndiName: java:/MySqlDS
+
+# 開發環境配置
+server:
+  # 伺服器的HTTP埠，預設為8080
+  port: 8080
+  servlet:
+    # 應用的訪問路徑
+    context-path: /
+  tomcat:
+    # tomcat的URI編碼
+    uri-encoding: UTF-8
+    # tomcat最大執行緒數，預設為200
+    max-threads: 800
+    # Tomcat啟動初始化的執行緒數，預設值25
+    min-spare-threads: 30
+
+# 日誌配置
+logging:
+  level:
+    com.ruoyi: debug
+    org.springframework: warn
+
+# Spring配置
+spring:
+  # 資源資訊
+  messages:
+    # 國際化資原始檔路徑
+    basename: i18n/messages
+  profiles: 
+    active: druid
+  # 檔案上傳
+  servlet:
+     multipart:
+       # 單個檔案大小
+       max-file-size:  10MB
+       # 設定總上傳的檔案大小
+       max-request-size:  20MB
+  # 服務模組
+  devtools:
+    restart:
+      # 熱部署開關
+      enabled: true
+  # redis 配置
+  redis:
+    # 地址
+    host: localhost
+    # 埠，預設為6379
+    port: 6379
+    # 密碼
+    password: 
+    # 連線超時時間
+    timeout: 10s
+    lettuce:
+      pool:
+        # 連線池中的最小空閒連線
+        min-idle: 0
+        # 連線池中的最大空閒連線
+        max-idle: 8
+        # 連線池的最大資料庫連線數
+        max-active: 8
+        # #連線池最大阻塞等待時間（使用負值表示沒有限制）
+        max-wait: -1ms
+
+# token配置
+token:
+    # 令牌自定義標識
+    header: Authorization
+    # 令牌祕鑰
+    secret: abcdefghijklmnopqrstuvwxyz
+    # 令牌有效期（預設30分鐘）
+    expireTime: 30
+  
+# MyBatis配置
+mybatis:
+    # 搜尋指定包別名
+    typeAliasesPackage: com.ruoyi.project.**.domain
+    # 配置mapper的掃描，找到所有的mapper.xml對映檔案
+    mapperLocations: classpath*:mybatis/**/*Mapper.xml
+    # 載入全域性的配置檔案
+    configLocation: classpath:mybatis/mybatis-config.xml
+
+# PageHelper分頁外掛
+pagehelper: 
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql 
+
+# 防止XSS攻擊
+xss: 
+  # 過濾開關
+  enabled: true
+  # 排除連結（多個用逗號分隔）
+  excludes: /system/notice/*
+  # 匹配連結
+  urlPatterns: /system/*,/monitor/*,/tool/*
+  
+# 程式碼生成
+gen: 
+  # 作者
+  author: ruoyi
+  # 預設生成包路徑 system 需改成自己的模組名稱 如 system monitor tool
+  packageName: com.ruoyi.project.system
+  # 自動去除表字首，預設是true
+  autoRemovePre: false
+  # 表字首（生成類名不會包含表字首，多個用逗號分隔）
+  tablePrefix: sys_
