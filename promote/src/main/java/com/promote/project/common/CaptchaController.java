@@ -2,6 +2,7 @@ package com.promote.project.common;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,8 @@ public class CaptchaController
     public AjaxResult getCode(HttpServletResponse response) throws IOException
     {
         // 生成隨機字串
-        String verifyCode = VerifyCodeUtils.generateVerifyCode(4);
+        // String verifyCode = VerifyCodeUtils.generateVerifyCode(4);
+        String verifyCode = String.format("%04d", new Random().nextInt(10000));
         // 唯一標識
         String uuid = IdUtils.simpleUUID();
         String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;

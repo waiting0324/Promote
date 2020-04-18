@@ -6,14 +6,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<resultMap type="SysUser" id="SysUserResult">
 		<id     property="userId"       column="user_id"      />
+		<result property="birthday"    column="birthday"    />
 		<result property="deptId"       column="dept_id"      />
 		<result property="userName"     column="user_name"    />
-		<result property="name"     	column="name"    />
+		<result property="password"     column="password"     />
+		<result property="name"     	column="name"    	  />
+		<result property="couponType"    column="coupon_type"    />
+		<result property="couponPrintCode"    column="coupon_print_code"    />
+		<result property="couponPrintType"    column="coupon_print_type"    />
+		<result property="couponProvideType"    column="coupon_provide_type"    />
+		<result property="couponProvideTime"    column="coupon_provide_time"    />
 		<result property="email"        column="email"        />
 		<result property="phonenumber"  column="phonenumber"  />
 		<result property="sex"          column="sex"          />
 		<result property="avatar"       column="avatar"       />
-		<result property="password"     column="password"     />
+		<result property="latitude"    column="latitude"    />
+		<result property="longitude"    column="longitude"    />
 		<result property="status"       column="status"       />
 		<result property="delFlag"      column="del_flag"     />
 		<result property="loginIp"      column="login_ip"     />
@@ -46,7 +54,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</resultMap>
 	
 	<sql id="selectUserVo">
-        select u.user_id, u.dept_id, u.user_name, u.name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, 
+        select u.user_id, u.birthday, u.dept_id, u.user_name, u.password, u.name, u.coupon_type, u.coupon_print_type, u.coupon_provide_type, u.coupon_provide_time, u.latitude, u.longitude, u.email, u.avatar, u.phonenumber, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,
         d.dept_id, d.parent_id, d.dept_name, d.order_num, d.leader, d.status as dept_status,
         r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
         from sys_user u
@@ -108,7 +116,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			<if test="userId != null and userId != 0">user_id,</if>
  			<if test="deptId != null and deptId != 0">dept_id,</if>
  			<if test="userName != null and userName != ''">user_name,</if>
- 			<if test="nickName != null and nickName != ''">nick_name,</if>
+			<if test="name != null  and name != ''">name,</if>
+			<if test="userType != null  and userType != ''">user_type,</if>
+			<if test="couponType != null  and couponType != ''">coupon_type,</if>
+			<if test="couponPrintCode != null  and couponPrintCode != ''">coupon_print_code,</if>
+			<if test="couponPrintType != null  and couponPrintType != ''">coupon_print_type,</if>
+			<if test="couponProvideType != null  and couponProvideType != ''">coupon_provide_type,</if>
+			<if test="couponProvideTime != null ">coupon_provide_time,</if>
+			<if test="latitude != null ">latitude,</if>
+			<if test="longitude != null ">longitude,</if>
  			<if test="email != null and email != ''">email,</if>
  			<if test="avatar != null and avatar != ''">avatar,</if>
  			<if test="phonenumber != null and phonenumber != ''">phonenumber,</if>
@@ -122,7 +138,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			<if test="userId != null and userId != ''">#{userId},</if>
  			<if test="deptId != null and deptId != ''">#{deptId},</if>
  			<if test="userName != null and userName != ''">#{userName},</if>
- 			<if test="nickName != null and nickName != ''">#{nickName},</if>
+			<if test="name != null  and name != ''">name,</if>
+			<if test="userType != null  and userType != ''">#{user_type},</if>
+			<if test="couponType != null  and couponType != ''">#{couponType},</if>
+			<if test="couponPrintCode != null  and couponPrintCode != ''">#{couponPrintCode},</if>
+			<if test="couponPrintType != null  and couponPrintType != ''">#{couponPrintType},</if>
+			<if test="couponProvideType != null  and couponProvideType != ''">#{couponProvideType},</if>
+			<if test="couponProvideTime != null ">#{couponProvideTime},</if>
+			<if test="latitude != null ">#{latitude},</if>
+			<if test="longitude != null ">#{longitude},</if>
  			<if test="email != null and email != ''">#{email},</if>
  			<if test="avatar != null and avatar != ''">#{avatar},</if>
  			<if test="phonenumber != null and phonenumber != ''">#{phonenumber},</if>
@@ -140,7 +164,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  		<set>
  			<if test="deptId != null and deptId != 0">dept_id = #{deptId},</if>
  			<if test="userName != null and userName != ''">user_name = #{userName},</if>
- 			<if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
+			<if test="name != null  and name != ''">name = #{name},</if>
+			<if test="userType != null  and userType != ''">user_type = #{userType},</if>
+			<if test="couponType != null  and couponType != ''">coupon_type = #{couponType},</if>
+			<if test="couponPrintCode != null  and couponPrintCode != ''">coupon_print_code = #{couponPrintCode},</if>
+			<if test="couponPrintType != null  and couponPrintType != ''">coupon_print_type = #{couponPrintType},</if>
+			<if test="couponProvideType != null  and couponProvideType != ''">coupon_provide_type = #{couponProvideType},</if>
+			<if test="couponProvideTime != null ">coupon_provide_time = #{couponProvideTime},</if>
  			<if test="email != null and email != ''">email = #{email},</if>
  			<if test="phonenumber != null and phonenumber != ''">phonenumber = #{phonenumber},</if>
  			<if test="sex != null and sex != ''">sex = #{sex},</if>
