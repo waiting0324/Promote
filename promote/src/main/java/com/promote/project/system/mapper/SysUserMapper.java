@@ -8,14 +8,13 @@ import java.util.List;
 
 /**
  * 使用者表 資料層
- * 
+ *
  * @author ruoyi
  */
-public interface SysUserMapper
-{
+public interface SysUserMapper {
     /**
      * 根據條件分頁查詢使用者列表
-     * 
+     *
      * @param sysUser 使用者資訊
      * @return 使用者資訊集合資訊
      */
@@ -23,7 +22,7 @@ public interface SysUserMapper
 
     /**
      * 通過使用者名稱查詢使用者
-     * 
+     *
      * @param userName 使用者名稱
      * @return 使用者物件資訊
      */
@@ -31,7 +30,7 @@ public interface SysUserMapper
 
     /**
      * 通過使用者ID查詢使用者
-     * 
+     *
      * @param userId 使用者ID
      * @return 使用者物件資訊
      */
@@ -39,7 +38,7 @@ public interface SysUserMapper
 
     /**
      * 新增使用者資訊
-     * 
+     *
      * @param user 使用者資訊
      * @return 結果
      */
@@ -47,7 +46,7 @@ public interface SysUserMapper
 
     /**
      * 修改使用者資訊
-     * 
+     *
      * @param user 使用者資訊
      * @return 結果
      */
@@ -55,16 +54,16 @@ public interface SysUserMapper
 
     /**
      * 修改使用者頭像
-     * 
+     *
      * @param userName 使用者名稱
-     * @param avatar 頭像地址
+     * @param avatar   頭像地址
      * @return 結果
      */
     public int updateUserAvatar(@Param("userName") String userName, @Param("avatar") String avatar);
 
     /**
      * 重置使用者密碼
-     * 
+     *
      * @param userName 使用者名稱
      * @param password 密碼
      * @return 結果
@@ -73,7 +72,7 @@ public interface SysUserMapper
 
     /**
      * 通過使用者ID刪除使用者
-     * 
+     *
      * @param userId 使用者ID
      * @return 結果
      */
@@ -81,7 +80,7 @@ public interface SysUserMapper
 
     /**
      * 批量刪除使用者資訊
-     * 
+     *
      * @param userIds 需要刪除的使用者ID
      * @return 結果
      */
@@ -89,7 +88,7 @@ public interface SysUserMapper
 
     /**
      * 校驗使用者名稱是否唯一
-     * 
+     *
      * @param userName 使用者名稱
      * @return 結果
      */
@@ -118,5 +117,15 @@ public interface SysUserMapper
      * @return 結果
      */
     public int insertUserByProWhitelist(ProWhitelist proWhitelist);
+
+    /**
+     * 旅宿業者變更密碼
+     *
+     * @param userId 統編
+     * @param birthDay 生日
+     * @param newPwd 新密碼
+     * @return 結果
+     */
+    public int resetPwd(@Param("userId") Long userId, @Param("birthDay") String birthDay, @Param("newPwd") String newPwd);
 
 }

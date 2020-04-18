@@ -1,8 +1,10 @@
 package com.promote.project.system.service.impl;
 
+import com.promote.common.exception.CustomException;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.project.system.domain.ProWhitelist;
+import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.mapper.ProWhitelistMapper;
 import com.promote.project.system.mapper.SysUserMapper;
 import com.promote.project.system.service.ISysHostelService;
@@ -33,14 +35,12 @@ public class SysHostelServiceImpl implements ISysHostelService {
     @Override
     @Transactional
     public int regist(String acct, String pwd) {
-        if (StringUtils.isNotEmpty(acct) && StringUtils.isNotEmpty(pwd)) {
-            ProWhitelist proWhitelist = selectProWhitelistByAcctPwd(acct, pwd);
-            if (StringUtils.isNotNull(proWhitelist)) {
-                proWhitelist.setWhitelistPwd(SecurityUtils.encryptPassword(pwd));
-                return userMapper.insertUserByProWhitelist(proWhitelist);
-            }
+        ProWhitelist proWhitelist = selectProWhitelistByAcctPwd(acct, pwd);
+        if (StringUtils.isNotNull(proWhitelist)) {
+            proWhitelist.setWhitelistPwd(SecurityUtils.encryptPassword(pwd));
+            return userMapper.insertUserByProWhitelist(proWhitelist);
         }
-        return 0;
+        throw new CustomException("查無此帳號");
     }
 
     /**
@@ -56,5 +56,21 @@ public class SysHostelServiceImpl implements ISysHostelService {
             return hostelMapper.selectProWhitelistByAcctPwd(acct, pwd);
         }
         return null;
+    }
+
+
+    /**
+     * 修改旅宿業者密碼
+     *
+     * @param user 使用者資訊
+     * @param newPwd 新密碼
+     * @return 結果
+     */
+    @Override
+    @Transactional
+    public int resetPwd(SysUser user, String newPwd) {
+        Long userId= user.getUserId();
+        String birthDay = user.getBirthday();
+        return userMapper.resetPwd(userId,birthDay,newPwd);
     }
 }
