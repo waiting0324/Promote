@@ -1,4 +1,4 @@
-package com.ruoyi.common.utils;
+package com.promote.common.utils;
 
 import javax.mail.*;
 import javax.mail.internet.AddressException;
@@ -23,7 +23,7 @@ public class EmailUtils {
 
     public static void main(String[] s){
         try {
-            sendEmail("huang818058@gmail.com");
+            sendEmail("dakhpc72@gmail.com");
         } catch (MessagingException e) {
             e.printStackTrace();
         }
