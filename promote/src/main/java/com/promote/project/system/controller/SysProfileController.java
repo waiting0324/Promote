@@ -63,7 +63,7 @@ public class SysProfileController extends BaseController
         {
             LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
             // 更新快取使用者資訊
-            loginUser.getUser().setNickName(user.getNickName());
+            loginUser.getUser().setName(user.getName());
             loginUser.getUser().setPhonenumber(user.getPhonenumber());
             loginUser.getUser().setEmail(user.getEmail());
             loginUser.getUser().setSex(user.getSex());

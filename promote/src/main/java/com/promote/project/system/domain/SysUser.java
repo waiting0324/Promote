@@ -28,6 +28,9 @@ public class SysUser extends BaseEntity
     @Excel(name = "使用者序號", cellType = ColumnType.NUMERIC, prompt = "使用者編號")
     private Long userId;
 
+    /** 使用者生日 */
+    private String birthday;
+
     /** 部門ID */
     @Excel(name = "部門編號", type = Type.IMPORT)
     private Long deptId;
@@ -36,9 +39,28 @@ public class SysUser extends BaseEntity
     @Excel(name = "登入名稱")
     private String userName;
 
-    /** 使用者暱稱 */
+    /** 密碼 */
+    private String password;
+
+    /** 使用者 姓名 or 商店名稱 */
     @Excel(name = "使用者名稱")
-    private String nickName;
+    private String name;
+
+    /** 抵用券領用類型 */
+    @Excel(name = "抵用券領用類型", readConverterExp = "0=電子,1=紙本")
+    private String couponType;
+
+    /** 抵用券 列印兌換碼 */
+    private String couponPrintCode;
+
+    /** 抵用券 列印狀態 */
+    private String couponPrintType;
+
+    /** 抵用券 發放狀態 */
+    private String couponProvideType;
+
+    /** 抵用券 發放時間 */
+    private Date couponProvideTime;
 
     /** 使用者郵箱 */
     @Excel(name = "使用者郵箱")
@@ -55,8 +77,12 @@ public class SysUser extends BaseEntity
     /** 使用者頭像 */
     private String avatar;
 
-    /** 密碼 */
-    private String password;
+    /** 商家緯度 */
+    private Double latitude;
+
+    /** 商家經度 */
+    private Double longitude;
+
 
     /** 鹽加密 */
     private String salt;
@@ -97,6 +123,79 @@ public class SysUser extends BaseEntity
 
     }
 
+    @NotBlank(message = "使用者生日不能為空")
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCouponType() {
+        return couponType;
+    }
+
+    public void setCouponType(String couponType) {
+        this.couponType = couponType;
+    }
+
+    public String getCouponPrintCode() {
+        return couponPrintCode;
+    }
+
+    public void setCouponPrintCode(String couponPrintCode) {
+        this.couponPrintCode = couponPrintCode;
+    }
+
+    public String getCouponPrintType() {
+        return couponPrintType;
+    }
+
+    public void setCouponPrintType(String couponPrintType) {
+        this.couponPrintType = couponPrintType;
+    }
+
+    public String getCouponProvideType() {
+        return couponProvideType;
+    }
+
+    public void setCouponProvideType(String couponProvideType) {
+        this.couponProvideType = couponProvideType;
+    }
+
+    public Date getCouponProvideTime() {
+        return couponProvideTime;
+    }
+
+    public void setCouponProvideTime(Date couponProvideTime) {
+        this.couponProvideTime = couponProvideTime;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
     public SysUser(Long userId)
     {
         this.userId = userId;
@@ -132,16 +231,6 @@ public class SysUser extends BaseEntity
         this.deptId = deptId;
     }
 
-    @Size(min = 0, max = 30, message = "使用者暱稱長度不能超過30個字元")
-    public String getNickName()
-    {
-        return nickName;
-    }
-
-    public void setNickName(String nickName)
-    {
-        this.nickName = nickName;
-    }
 
     @NotBlank(message = "使用者帳號不能為空")
     @Size(min = 0, max = 30, message = "使用者帳號長度不能超過30個字元")
@@ -167,7 +256,7 @@ public class SysUser extends BaseEntity
         this.email = email;
     }
 
-    @Size(min = 0, max = 11, message = "手機號碼長度不能超過11個字元")
+    @Size(min = 0, max = 10, message = "手機號碼長度不能超過10個字元")
     public String getPhonenumber()
     {
         return phonenumber;
@@ -305,7 +394,6 @@ public class SysUser extends BaseEntity
             .append("userId", getUserId())
             .append("deptId", getDeptId())
             .append("userName", getUserName())
-            .append("nickName", getNickName())
             .append("email", getEmail())
             .append("phonenumber", getPhonenumber())
             .append("sex", getSex())
