@@ -1,5 +1,6 @@
 package com.promote.project.system.mapper;
 
+import com.promote.project.system.domain.ProWhitelist;
 import com.promote.project.system.domain.SysUser;
 import org.apache.ibatis.annotations.Param;
 
@@ -109,4 +110,13 @@ public interface SysUserMapper
      * @return 結果
      */
     public SysUser checkEmailUnique(String email);
+
+    /**
+     * 新增使用者資訊
+     *
+     * @param proWhitelist 白名單資訊
+     * @return 結果
+     */
+    public int insertUserByProWhitelist(ProWhitelist proWhitelist);
+
 }

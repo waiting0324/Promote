@@ -178,5 +178,31 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			#{userId}
         </foreach> 
  	</delete>
+
+	<insert id="insertUserByProWhitelist" parameterType="ProWhitelist" useGeneratedKeys="true" keyProperty="userId">
+		insert into sys_user(
+		<if test="whitelistTaxIdNo != null and whitelistTaxIdNo != ''">user_id,</if>
+		<if test="whitelistAcct != null and whitelistAcct != ''">user_name,</if>
+		<if test="whitelistPwd != null and whitelistPwd != ''">password,</if>
+		<if test="whitelistName != null and whitelistName != ''">name,</if>
+		<if test="whitelistPhone != null and whitelistPhone != ''">phonenumber,</if>
+		<if test="whitelistAddr != null and whitelistAddr != ''">address,</if>
+		create_by,
+		create_time,
+		update_by,
+		update_time
+		)values(
+		<if test="whitelistTaxIdNo != null and whitelistTaxIdNo != ''">#{whitelistTaxIdNo},</if>
+		<if test="whitelistAcct != null and whitelistAcct != ''">#{whitelistAcct},</if>
+		<if test="whitelistPwd != null and whitelistPwd != ''">#{whitelistPwd},</if>
+		<if test="whitelistName != null and whitelistName != ''">#{whitelistName},</if>
+		<if test="whitelistPhone != null and whitelistPhone != ''">#{whitelistPhone},</if>
+		<if test="whitelistAddr != null and whitelistAddr != ''">#{whitelistAddr},</if>
+		'Trade-Van',
+		sysdate(),
+		'Trade-Van',
+		sysdate()
+		)
+	</insert>
 	
 </mapper> 

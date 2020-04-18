@@ -33,7 +33,7 @@ public class ProWhitelist extends BaseEntity {
     private String whitelistPwd;
 
     /**
-     * 白名單旅宿業者名
+     * 白名單旅宿業者店名
      */
     private String whitelistName;
 
