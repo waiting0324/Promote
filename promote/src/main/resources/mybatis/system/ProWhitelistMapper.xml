@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.promote.project.system.mapper.ProWhitelistMapper">
+    
+    <resultMap type="ProWhitelist" id="ProWhitelistResult">
+    	<id     property="whitelistId"      column="whitelist_id"      />
+        <result property="whitelistAcct"    column="whitelist_acct"    />
+        <result property="whitelistPwd"     column="whitelist_pwd"     />
+        <result property="whitelistName"   column="whitelist_name"   />
+        <result property="whitelistPhone"    column="whitelist_phone"    />
+        <result property="whitelistAddr"      column="whitelist_addr"      />
+        <result property="whitelistTaxIdNo"    column="whitelist_tax_id_no"    />
+        <result property="createBy"      column="create_by"      />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"      column="update_by"      />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+    
+    <sql id="selectProWhitelist">
+        select whitelist_id,whitelist_acct,whitelist_pwd,whitelist_name,whitelist_phone,whitelist_addr,whitelist_tax_id_no,create_by,create_time,update_by,update_time
+        from pro_whitelist
+    </sql>
+
+    <select id="selectProWhitelistByAcctPwd" resultMap="ProWhitelistResult">
+        <include refid="selectProWhitelist"/>
+        where whitelist_acct = #{acct} and whitelist_pwd = #{pwd}
+    </select>
+    
+</mapper>
