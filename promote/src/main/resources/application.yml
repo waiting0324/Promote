@@ -121,3 +121,15 @@ gen:
   autoRemovePre: false
   # 表字首（生成類名不會包含表字首，多個用逗號分隔）
   tablePrefix: sys_
+
+# Email工具類
+email:
+  # 服物器的SMTP地址
+  host: smtp.gmail.com
+  # 服物器的SMTP端口
+  port: 587
+  smtp: smtp
+  # 發信人Email
+  from: dakhpc72@gmail.com
+  # 發信人Email密碼
+  pwd: r150y9a018n

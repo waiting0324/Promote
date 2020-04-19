@@ -1,5 +1,9 @@
 package com.promote.common.utils;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
 import javax.mail.*;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -8,71 +12,93 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
+@Component
 public class EmailUtils {
-    /** Email服物器的SMTP地址 */
-    public static final String HOST = "smtp.gmail.com";
-    /** Email服物器的SMTP端口 */
-    public static final int PORT = 587;
-    public static final String SMTP = "smtp";
-    /** 發信人Email */
-    public static final String FROM = "dakhpc72@gmail.com";
-    /** 發信人Email密碼 */
-    public static final String PWD = "r150y9a018n";
-    public static final String TITLE = "振興抵用券";
+    /**
+     * 服物器的SMTP地址
+     */
+    public static String host;
+    /**
+     * 服物器的SMTP端口
+     */
+    public static int port;
+    public static String smtp ;
+    /**
+     * 發信人Email
+     */
+    public static String from;
+    /**
+     * 發信人Email密碼
+     */
+    public static String pwd;
     public static Transport transport;
 
-    public static void main(String[] s){
-        try {
-            sendEmail("dakhpc72@gmail.com");
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+
+    @Value("${email.host}")
+    public void setHost(String host) {
+        EmailUtils.host = host;
+    }
+
+    @Value("${email.port}")
+    public void setPort(int port) {
+        EmailUtils.port = port;
+    }
+
+    @Value("${email.smtp}")
+    public void setSmtp(String smtp) {
+        EmailUtils.smtp = smtp;
+    }
+
+    @Value("${email.from}")
+    public void setFrom(String from) {
+        EmailUtils.from = from;
+    }
+
+    @Value("${email.pwd}")
+    public void setPwd(String pwd) {
+        EmailUtils.pwd = pwd;
     }
 
     /**
-     *發送Email
+     * 發送Email
      *
      * @param toEmail 收信人Email
      * @throws AddressException
      * @throws MessagingException
      */
-    public static void sendEmail(String toEmail) throws AddressException, MessagingException {
+    public static void sendEmail(String toEmail, String title, String content) throws AddressException, MessagingException {
         Properties props = new Properties();
-        props.put("mail.smtp.host", HOST);
-        props.put("mail.smtp.port", PORT);
+        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.port", port);
         props.put("mail.smtp.auth", "true");
-        props.put("mail.user", FROM);
-        props.put("mail.password", PWD);
+        props.put("mail.user", from);
+        props.put("mail.password", pwd);
         props.put("mail.smtp.starttls.enable", "true");
         Session session = Session.getInstance(props, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(FROM, PWD);
+                return new PasswordAuthentication(from, pwd);
             }
         });
 
         MimeMessage message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(FROM));
+        message.setFrom(new InternetAddress(from));
         message.setRecipient(Message.RecipientType.TO,
                 new InternetAddress(toEmail));
-        message.setSubject(TITLE);
+        message.setSubject(title);
 
         // message.setText(mailContent);
-        Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
-        String dateString = formatter.format(date);
-        message.setContent("你已经请求了重置密码"
-                        + "<br/><span style = 'font-size:12px;color:#C0C0C0'>(为保障您账号的安全性,请您在5分钟内完成重置。)"
-                        + "</span><br/>如果你没有请求重置密码,请忽略这份邮件<br/><br/><br/><br/><br/>"
-                        + "<br/>*********某某平台<br/>" + dateString,
-                "text/html;charset=gbk");
+//        Date date = new Date();
+//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
+//        String dateString = formatter.format(date);
+        message.setContent(content, "text/html;charset=UTF-8");
         message.setSentDate(new Date());
         message.saveChanges();
 
         if (transport == null) {
-            transport = session.getTransport(SMTP);
+            transport = session.getTransport(smtp);
         }
         if (!transport.isConnected()) {
-            transport.connect(HOST,PORT,FROM, PWD);
+            transport.connect(host, port, from, pwd);
         }
         transport.sendMessage(message, message.getAllRecipients());
         transport.close();

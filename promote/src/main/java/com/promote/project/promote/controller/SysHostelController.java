@@ -1,5 +1,6 @@
 package com.promote.project.promote.controller;
 
+import com.promote.common.utils.EmailUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
@@ -11,6 +12,8 @@ import com.promote.project.system.domain.SysUser;
 import com.promote.project.promote.service.ISysHostelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.mail.MessagingException;
 
 /**
  * 旅宿業者 控制層
@@ -110,7 +113,7 @@ public class SysHostelController extends BaseController {
      * @param validCode 驗證碼
      * @return 結果
      */
-    @PostMapping()
+    @PostMapping("/forgetPwd")
     public AjaxResult forgetPwd(String acct, String newPwd,String validCode) {
         if(StringUtils.isNotEmpty(acct) && StringUtils.isNotEmpty(newPwd) && StringUtils.isNotEmpty(validCode)){
             String code = tokenService.getCacheObject("forget_pwd:" + acct);
@@ -120,5 +123,16 @@ public class SysHostelController extends BaseController {
             return AjaxResult.error("驗證碼錯誤");
         }
         return AjaxResult.error("帳號or新密碼or驗證碼未輸入值");
+    }
+
+    @GetMapping("/dendMail")
+    public AjaxResult sendEmail(){
+        System.out.println("發送Email");
+        try {
+            EmailUtils.sendEmail("dakhpc72@gmail.com","振興眷","測試測試測試測試測試測試測試");
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        return AjaxResult.success();
     }
 }
