@@ -165,4 +165,13 @@ public interface ISysUserService
      * @return 結果
      */
     public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
+
+
+    /**
+     * 通過使用者帳號及生日查詢使用者
+     *
+     * @param sysUser 使用者資料
+     * @return 結果
+     */
+    public String selectUserByIdBirthday(SysUser sysUser);
 }

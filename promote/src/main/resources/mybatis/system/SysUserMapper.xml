@@ -244,4 +244,9 @@
  		update sys_user set password = #{newPwd} where user_id = #{userId} and birthday = #{birthDay}
 	</update>
 
+    <select id="selectUserByIdBirthday" parameterType="SysUser" resultMap="SysUserResult">
+        <include refid="selectUserVo"/>
+        where u.user_id = #{userId} and u.birthday = #{birthday}
+    </select>
+
 </mapper> 

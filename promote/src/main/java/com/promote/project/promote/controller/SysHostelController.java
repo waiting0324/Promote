@@ -10,6 +10,7 @@ import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.promote.service.ISysHostelService;
+import com.promote.project.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,9 @@ public class SysHostelController extends BaseController {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private ISysUserService userService;
 
     /**
      * 旅宿業者註冊
@@ -125,14 +129,11 @@ public class SysHostelController extends BaseController {
         return AjaxResult.error("帳號or新密碼or驗證碼未輸入值");
     }
 
-    @GetMapping("/dendMail")
-    public AjaxResult sendEmail(){
-        System.out.println("發送Email");
-        try {
-            EmailUtils.sendEmail("dakhpc72@gmail.com","振興眷","測試測試測試測試測試測試測試");
-        } catch (MessagingException e) {
-            e.printStackTrace();
+    @RequestMapping("/sendOtpEmail")
+    public AjaxResult sendOtpEmail(SysUser sysUser){
+        if (StringUtils.isNotNull(sysUser) && StringUtils.isNotNull(sysUser.getUserId()) && StringUtils.isNotEmpty(sysUser.getBirthday())) {
+            tokenService.setCacheObject("forget_pwd" + sysUser.getUserId(),userService.selectUserByIdBirthday(sysUser));
         }
-        return AjaxResult.success();
+        return AjaxResult.error("帳號or生日未輸入值");
     }
 }
