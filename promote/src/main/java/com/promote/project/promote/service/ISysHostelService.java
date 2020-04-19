@@ -1,10 +1,7 @@
-package com.promote.project.system.service;
+package com.promote.project.promote.service;
 
-import com.promote.project.system.domain.ProWhitelist;
-import com.promote.project.system.domain.SysConfig;
+import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.system.domain.SysUser;
-
-import java.util.List;
 
 /**
  * 旅宿業者 服務層
@@ -38,5 +35,7 @@ public interface ISysHostelService {
      * @return 結果
      */
     public int resetPwd(SysUser user, String newPwd);
+
+
 
 }

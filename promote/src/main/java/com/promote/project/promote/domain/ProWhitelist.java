@@ -1,4 +1,4 @@
-package com.promote.project.system.domain;
+package com.promote.project.promote.domain;
 
 import com.promote.framework.aspectj.lang.annotation.Excel;
 import com.promote.framework.aspectj.lang.annotation.Excel.ColumnType;

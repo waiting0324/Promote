@@ -1,6 +1,6 @@
 package com.promote.project.system.mapper;
 
-import com.promote.project.system.domain.ProWhitelist;
+import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.system.domain.SysUser;
 import org.apache.ibatis.annotations.Param;
 

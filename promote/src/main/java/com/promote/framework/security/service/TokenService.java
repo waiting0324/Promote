@@ -216,4 +216,26 @@ public class TokenService
     {
         return Constants.LOGIN_TOKEN_KEY + uuid;
     }
+
+    /**
+     * 獲取redis內的資料
+     *
+     * @param key
+     * @param <T>
+     * @return
+     */
+    public <T> T getCacheObject(String key){
+        return redisCache.getCacheObject(key);
+    }
+
+    /**
+     * 設定redis內的資料
+     *
+     * @param key
+     * @param value
+     * @param <T>
+     */
+    public <T> void setCacheObject(String key,T value){
+        redisCache.setCacheObject(key,value);
+    }
 }

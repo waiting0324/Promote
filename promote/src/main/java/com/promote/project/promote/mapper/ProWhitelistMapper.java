@@ -1,10 +1,7 @@
-package com.promote.project.system.mapper;
+package com.promote.project.promote.mapper;
 
-import com.promote.project.system.domain.ProWhitelist;
-import com.promote.project.system.domain.SysConfig;
+import com.promote.project.promote.domain.ProWhitelist;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * 白名單 資料層

@@ -1,13 +1,13 @@
-package com.promote.project.system.service.impl;
+package com.promote.project.promote.service.impl;
 
 import com.promote.common.exception.CustomException;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
-import com.promote.project.system.domain.ProWhitelist;
+import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.system.domain.SysUser;
-import com.promote.project.system.mapper.ProWhitelistMapper;
+import com.promote.project.promote.mapper.ProWhitelistMapper;
 import com.promote.project.system.mapper.SysUserMapper;
-import com.promote.project.system.service.ISysHostelService;
+import com.promote.project.promote.service.ISysHostelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

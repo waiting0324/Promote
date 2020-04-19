@@ -1,27 +1,16 @@
-package com.promote.project.system.controller;
+package com.promote.project.promote.controller;
 
-import com.promote.common.constant.UserConstants;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
-import com.promote.common.utils.poi.ExcelUtil;
-import com.promote.framework.aspectj.lang.annotation.Log;
-import com.promote.framework.aspectj.lang.enums.BusinessType;
 import com.promote.framework.security.LoginUser;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
-import com.promote.framework.web.page.TableDataInfo;
-import com.promote.project.system.domain.SysConfig;
 import com.promote.project.system.domain.SysUser;
-import com.promote.project.system.service.ISysConfigService;
-import com.promote.project.system.service.ISysHostelService;
+import com.promote.project.promote.service.ISysHostelService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 旅宿業者 控制層
@@ -113,4 +102,23 @@ public class SysHostelController extends BaseController {
         return msg;
     }
 
+    /**
+     * 忘記密碼
+     *
+     * @param acct 帳號
+     * @param newPwd 新密碼
+     * @param validCode 驗證碼
+     * @return 結果
+     */
+    @PostMapping()
+    public AjaxResult forgetPwd(String acct, String newPwd,String validCode) {
+        if(StringUtils.isNotEmpty(acct) && StringUtils.isNotEmpty(newPwd) && StringUtils.isNotEmpty(validCode)){
+            String code = tokenService.getCacheObject("forget_pwd:" + acct);
+            if (validCode.equals(code)) {
+
+            }
+            return AjaxResult.error("驗證碼錯誤");
+        }
+        return AjaxResult.error("帳號or新密碼or驗證碼未輸入值");
+    }
 }

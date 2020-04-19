@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.promote.project.system.mapper.ProWhitelistMapper">
+<mapper namespace="com.promote.project.promote.mapper.ProWhitelistMapper">
     
     <resultMap type="ProWhitelist" id="ProWhitelistResult">
     	<id     property="whitelistId"      column="whitelist_id"      />
