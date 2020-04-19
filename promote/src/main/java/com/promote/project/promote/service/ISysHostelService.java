@@ -37,5 +37,12 @@ public interface ISysHostelService {
     public int resetPwd(SysUser user, String newPwd);
 
 
+    /**
+     * 忘記密碼_發送驗證碼
+     *
+     * @param sysUser 使用者資料
+     * @return 結果
+     */
+    public String sendOtpEmail(SysUser sysUser);
 
 }

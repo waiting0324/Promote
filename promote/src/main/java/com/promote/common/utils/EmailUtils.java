@@ -17,21 +17,21 @@ public class EmailUtils {
     /**
      * 服物器的SMTP地址
      */
-    public static String host;
+    private static String host;
     /**
      * 服物器的SMTP端口
      */
-    public static int port;
-    public static String smtp ;
+    private static int port;
+    private static String smtp ;
     /**
      * 發信人Email
      */
-    public static String from;
+    private static String from;
     /**
      * 發信人Email密碼
      */
-    public static String pwd;
-    public static Transport transport;
+    private static String pwd;
+    private static Transport transport;
 
 
     @Value("${email.host}")

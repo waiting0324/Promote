@@ -249,4 +249,5 @@
         where u.user_id = #{userId} and u.birthday = #{birthday}
     </select>
 
+
 </mapper> 
