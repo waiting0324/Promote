@@ -70,6 +70,9 @@ public class SysUser extends BaseEntity
     @Excel(name = "手機號碼")
     private String phonenumber;
 
+    /** 銀行帳戶 */
+    private String bankAccount;
+
     /** 使用者性別 */
     @Excel(name = "使用者性別", readConverterExp = "0=男,1=女,2=未知")
     private String sex;
@@ -394,6 +397,14 @@ public class SysUser extends BaseEntity
     public void setPostIds(Long[] postIds)
     {
         this.postIds = postIds;
+    }
+
+    public String getBankAccount() {
+        return bankAccount;
+    }
+
+    public void setBankAccount(String bankAccount) {
+        this.bankAccount = bankAccount;
     }
 
     public String getAddress() {
