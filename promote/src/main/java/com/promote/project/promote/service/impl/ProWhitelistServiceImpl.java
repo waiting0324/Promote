@@ -126,6 +126,7 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
         hostelMap.put("isFoodbeverage",-1);
         hostelMap.put("isCulture",-1);
         hostelMap.put("isSightseeing",-1);
+        hostelMap.put("type",1);
         if ("2007".equals(version)) {
             Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(hostelMap));
             reader.read(file);
@@ -150,7 +151,7 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
                             Method method = c.getMethod(methodName, columnType[i]);
                             if (method != null) {
                                 Integer index = hostelMap.get(columnName[i]);
-                                if(index == -1){
+                                if(index == null || index == -1){
                                     continue;
                                 }
                                 Object value = rowlist.get(index);
@@ -161,7 +162,7 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
                         }
                     }
                     Date now = DateUtils.dateTime("yyyy-MM-dd",DateUtils.getDate());
-                    proWhitelist.setType("1");
+                    proWhitelist.setType(hostelMap.get("type") != null ? hostelMap.get("type").toString() : null);
                     proWhitelist.setCreateTime(now);
                     proWhitelist.setUpdateTime(now);
                     proWhitelistMapper.insertProWhitelist(proWhitelist);
