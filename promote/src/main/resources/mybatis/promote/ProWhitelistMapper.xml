@@ -52,6 +52,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectProWhitelistVo"/>
         where id = #{id}
     </select>
+
+    <select id="selectProWhitelistByUsernameAndPwd" resultMap="ProWhitelistResult">
+        <include refid="selectProWhitelistVo"/>
+        where username = #{username} and password = #{password}
+    </select>
         
     <insert id="insertProWhitelist" parameterType="ProWhitelist">
         insert into pro_whitelist

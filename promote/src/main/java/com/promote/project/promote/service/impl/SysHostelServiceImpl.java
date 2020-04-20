@@ -22,6 +22,7 @@ import javax.mail.MessagingException;
  */
 @Service
 public class SysHostelServiceImpl implements ISysHostelService {
+
     @Autowired
     ProWhitelistMapper proWhitelistMapper;
 
@@ -31,18 +32,37 @@ public class SysHostelServiceImpl implements ISysHostelService {
     /**
      * 旅宿業者註冊
      *
-     * @param acct 帳號
-     * @param pwd  密碼
+     * @param username 帳號
+     * @param oldPwd  舊密碼
+     * @param newPwd  新密碼
      * @return 結果
      */
     @Override
-    @Transactional
-    public int regist(String acct, String pwd) {
-        ProWhitelist proWhitelist = selectProWhitelistByAcctPwd(acct, pwd);
-        if (StringUtils.isNotNull(proWhitelist)) {
-            proWhitelist.setPassword(SecurityUtils.encryptPassword(pwd));
-            return userMapper.insertUserByProWhitelist(proWhitelist);
+    @Transactional(rollbackFor = Exception.class)
+    public int regist(String username, String oldPwd, String newPwd) {
+
+        // 用預設帳號密碼從白名單中取出資料
+        ProWhitelist white = proWhitelistMapper.selectProWhitelistByUsernameAndPwd(username, oldPwd);
+
+        // 插入User表
+        if (StringUtils.isNotNull(white)) {
+
+            SysUser user = new SysUser();
+
+            user.setUserName(username);
+            user.setPassword(SecurityUtils.encryptPassword(newPwd));
+            user.setName(white.getName());
+            user.setBirthday("20200101");
+            // TODO 處理身分證/統一編號
+            user.setAddress(white.getAddress());
+            user.setPhonenumber(white.getPhonenumber());
+            user.setEmail(white.getEmail());
+            // TODO 處理角色問題
+            user.setIsAgreeTerms("0");
+
+            return userMapper.insertUser(user);
         }
+
         throw new CustomException("查無此帳號");
     }
 
@@ -56,7 +76,7 @@ public class SysHostelServiceImpl implements ISysHostelService {
     @Override
     public ProWhitelist selectProWhitelistByAcctPwd(String acct, String pwd) {
         if (StringUtils.isNotEmpty(acct) && StringUtils.isNotEmpty(pwd)) {
-            return proWhitelistMapper.selectProWhitelistByAcctPwd(acct, pwd);
+            return proWhitelistMapper.selectProWhitelistByUsernameAndPwd(acct, pwd);
         }
         return null;
     }

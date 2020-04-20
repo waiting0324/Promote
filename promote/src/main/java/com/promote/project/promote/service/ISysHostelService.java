@@ -12,11 +12,12 @@ public interface ISysHostelService {
     /**
      * 旅宿業者註冊
      *
-     * @param acct 帳號
-     * @param pwd  密碼
+     * @param username 帳號
+     * @param oldPwd  舊密碼
+     * @param newPwd  新密碼
      * @return 結果
      */
-    public int regist(String acct, String pwd);
+    public int regist(String username, String oldPwd, String newPwd);
 
     /**
      * 取得旅宿業者
