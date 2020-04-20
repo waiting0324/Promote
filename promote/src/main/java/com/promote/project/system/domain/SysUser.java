@@ -134,6 +134,7 @@ public class SysUser extends BaseEntity
 
     }
 
+
     @NotBlank(message = "使用者生日不能為空")
     public String getBirthday() {
         return birthday;

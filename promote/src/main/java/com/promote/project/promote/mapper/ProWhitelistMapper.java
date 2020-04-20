@@ -15,11 +15,11 @@ public interface ProWhitelistMapper
     /**
      * 根據帳號,密碼取得旅宿業者資料
      *
-     * @param acct 帳號
-     * @param pwd 密碼
+     * @param username 帳號
+     * @param password 密碼
      * @return 結果
      */
-    public ProWhitelist selectProWhitelistByAcctPwd(@Param("acct") String acct, @Param("pwd") String pwd);
+    public ProWhitelist selectProWhitelistByUsernameAndPwd(@Param("username") String username, @Param("password") String password);
 
 
     /**

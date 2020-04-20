@@ -24,6 +24,7 @@ import javax.mail.MessagingException;
 @RestController
 @RequestMapping("/hostel")
 public class SysHostelController extends BaseController {
+
     @Autowired
     private ISysHostelService hostelService;
 
@@ -35,9 +36,9 @@ public class SysHostelController extends BaseController {
      * 旅宿業者註冊
      */
     @PostMapping("/regist")
-    public AjaxResult regist(String acct, String pwd) {
-        if (StringUtils.isNotEmpty(acct) && StringUtils.isNotEmpty(pwd)) {
-            return toAjax(hostelService.regist(acct, pwd));
+    public AjaxResult regist(String username, String oldPwd, String newPwd) {
+        if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(oldPwd) && StringUtils.isNotEmpty(newPwd)) {
+            return toAjax(hostelService.regist(username, oldPwd, newPwd));
         }
         return AjaxResult.error("帳號or密碼未輸入值");
     }

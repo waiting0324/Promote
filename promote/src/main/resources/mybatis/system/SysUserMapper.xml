@@ -124,10 +124,10 @@
     <insert id="insertUser" parameterType="SysUser" useGeneratedKeys="true" keyProperty="userId">
         insert into sys_user(
         <if test="userId != null and userId != 0">user_id,</if>
+        <if test="birthday != null and birthday != 0">birthday,</if>
         <if test="deptId != null and deptId != 0">dept_id,</if>
         <if test="userName != null and userName != ''">user_name,</if>
         <if test="name != null  and name != ''">name,</if>
-        <if test="userType != null  and userType != ''">user_type,</if>
         <if test="couponType != null  and couponType != ''">coupon_type,</if>
         <if test="couponPrintCode != null  and couponPrintCode != ''">coupon_print_code,</if>
         <if test="couponPrintType != null  and couponPrintType != ''">coupon_print_type,</if>
@@ -146,10 +146,10 @@
         create_time
         )values(
         <if test="userId != null and userId != ''">#{userId},</if>
+        <if test="birthday != null and birthday != ''">#{birthday},</if>
         <if test="deptId != null and deptId != ''">#{deptId},</if>
         <if test="userName != null and userName != ''">#{userName},</if>
-        <if test="name != null  and name != ''">name,</if>
-        <if test="userType != null  and userType != ''">#{user_type},</if>
+        <if test="name != null  and name != ''">#{name},</if>
         <if test="couponType != null  and couponType != ''">#{couponType},</if>
         <if test="couponPrintCode != null  and couponPrintCode != ''">#{couponPrintCode},</if>
         <if test="couponPrintType != null  and couponPrintType != ''">#{couponPrintType},</if>
