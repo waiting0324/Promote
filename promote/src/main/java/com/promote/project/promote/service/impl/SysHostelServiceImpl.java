@@ -40,7 +40,7 @@ public class SysHostelServiceImpl implements ISysHostelService {
     public int regist(String acct, String pwd) {
         ProWhitelist proWhitelist = selectProWhitelistByAcctPwd(acct, pwd);
         if (StringUtils.isNotNull(proWhitelist)) {
-            proWhitelist.setWhitelistPwd(SecurityUtils.encryptPassword(pwd));
+            proWhitelist.setPassword(SecurityUtils.encryptPassword(pwd));
             return userMapper.insertUserByProWhitelist(proWhitelist);
         }
         throw new CustomException("查無此帳號");

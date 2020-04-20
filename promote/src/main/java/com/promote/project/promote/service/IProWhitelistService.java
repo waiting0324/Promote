@@ -1,30 +1,20 @@
-package com.promote.project.promote.mapper;
+package com.promote.project.promote.service;
 
 import com.promote.project.promote.domain.ProWhitelist;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 /**
- * 白名單 資料層
+ * 白名單Service介面
  * 
- * @author 曾培晃
+ * @author 6550 劉威廷
+ * @date 2020-04-20
  */
-public interface ProWhitelistMapper
+public interface IProWhitelistService 
 {
     /**
-     * 根據帳號,密碼取得旅宿業者資料
-     *
-     * @param acct 帳號
-     * @param pwd 密碼
-     * @return 結果
-     */
-    public ProWhitelist selectProWhitelistByAcctPwd(@Param("acct") String acct, @Param("pwd") String pwd);
-
-
-    /**
      * 查詢白名單
-     *
+     * 
      * @param id 白名單ID
      * @return 白名單
      */
@@ -32,7 +22,7 @@ public interface ProWhitelistMapper
 
     /**
      * 查詢白名單列表
-     *
+     * 
      * @param proWhitelist 白名單
      * @return 白名單集合
      */
@@ -40,7 +30,7 @@ public interface ProWhitelistMapper
 
     /**
      * 新增白名單
-     *
+     * 
      * @param proWhitelist 白名單
      * @return 結果
      */
@@ -48,25 +38,25 @@ public interface ProWhitelistMapper
 
     /**
      * 修改白名單
-     *
+     * 
      * @param proWhitelist 白名單
      * @return 結果
      */
     public int updateProWhitelist(ProWhitelist proWhitelist);
 
     /**
-     * 刪除白名單
-     *
+     * 批量刪除白名單
+     * 
+     * @param ids 需要刪除的白名單ID
+     * @return 結果
+     */
+    public int deleteProWhitelistByIds(Long[] ids);
+
+    /**
+     * 刪除白名單資訊
+     * 
      * @param id 白名單ID
      * @return 結果
      */
     public int deleteProWhitelistById(Long id);
-
-    /**
-     * 批量刪除白名單
-     *
-     * @param ids 需要刪除的資料ID
-     * @return 結果
-     */
-    public int deleteProWhitelistByIds(Long[] ids);
 }
