@@ -2,6 +2,8 @@ package com.promote.project.promote.domain;
 
 import com.promote.framework.aspectj.lang.annotation.Excel;
 import com.promote.framework.web.domain.BaseEntity;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * 白名單物件 pro_whitelist
@@ -210,7 +212,7 @@ public class ProWhitelist extends BaseEntity
 
     @Override
     public String toString() {
-        /*return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
             .append("owner", getOwner())
             .append("name", getName())
@@ -228,7 +230,6 @@ public class ProWhitelist extends BaseEntity
             .append("isSightseeing", getIsSightseeing())
             .append("updateTime", getUpdateTime())
             .append("createTime", getCreateTime())
-            .toString();*/
-        return "";
+            .toString();
     }
 }

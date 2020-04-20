@@ -18,10 +18,14 @@
         <result property="couponProvideTime" column="coupon_provide_time"/>
         <result property="email" column="email"/>
         <result property="phonenumber" column="phonenumber"/>
+        <result property="bankAccount" column="bank_account"/>
         <result property="sex" column="sex"/>
         <result property="avatar" column="avatar"/>
+        <result property="address" column="address"/>
         <result property="latitude" column="latitude"/>
         <result property="longitude" column="longitude"/>
+        <result property="isSupportCoupon" column="is_support_coupon"/>
+        <result property="isAgreeTerms" column="is_agree_terms"/>
         <result property="status" column="status"/>
         <result property="delFlag" column="del_flag"/>
         <result property="loginIp" column="login_ip"/>
@@ -54,7 +58,10 @@
     </resultMap>
 
     <sql id="selectUserVo">
-        select u.user_id, u.birthday, u.dept_id, u.user_name, u.password, u.name, u.coupon_type, u.coupon_print_type, u.coupon_provide_type, u.coupon_provide_time, u.latitude, u.longitude, u.email, u.avatar, u.phonenumber, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,
+        select u.user_id, u.birthday, u.dept_id, u.user_name, u.password, u.name, u.coupon_type,
+         u.coupon_print_type, u.coupon_provide_type, u.coupon_provide_time, u.address, u.latitude,
+         u.longitude, u.is_support_coupon, u.is_agree_terms,u.email, u.avatar, u.phonenumber, u.bank_account, u.sex,
+         u.status, u.del_flag, u.login_ip, u.login_date,u.create_by, u.create_time, u.remark,
         d.dept_id, d.parent_id, d.dept_name, d.order_num, d.leader, d.status as dept_status,
         r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
         from sys_user u
