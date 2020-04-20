@@ -33,7 +33,6 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
     @Autowired
     private ProWhitelistMapper proWhitelistMapper;
 
-    private Map<String,Integer> hostelMap = new ConcurrentHashMap<String,Integer>();
 
     /**
      * 查詢白名單
@@ -112,30 +111,49 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
     @Override
     @Transactional
     public void importHostel(InputStream file, String version) {
+        //白名單欄位與白名單Excel之欄位對應順序
+        Map<String,Integer> hostelMap = new ConcurrentHashMap<String,Integer>();
+        hostelMap.put("owner",-1);
+        hostelMap.put("name",2);
+        hostelMap.put("taxNo",22);
+        hostelMap.put("username",26);
+        hostelMap.put("password",-1);
+        hostelMap.put("address",4);
+        hostelMap.put("phonenumber",6);
+        hostelMap.put("email",27);
+        hostelMap.put("isNMarket",-1);
+        hostelMap.put("isTMarket",-1);
+        hostelMap.put("isFoodbeverage",-1);
+        hostelMap.put("isCulture",-1);
+        hostelMap.put("isSightseeing",-1);
         if ("2007".equals(version)) {
-            Excel07SaxReader reader = new Excel07SaxReader(createRowHandler());
+            Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(hostelMap));
             reader.read(file);
         } else if ("2003".equals(version)) {
-            Excel03SaxReader reader = new Excel03SaxReader(createRowHandler());
+            Excel03SaxReader reader = new Excel03SaxReader(createRowHandler(hostelMap));
             reader.read(file);
         }
     }
 
-    private RowHandler createRowHandler() {
+    private RowHandler createRowHandler(Map<String,Integer> hostelMap) {
         return new RowHandler() {
             @Override
             public void handle(int sheetIndex, int rowIndex, List<Object> rowlist) {
                 if (rowIndex > 0 && rowlist != null) {
                     Class c = ProWhitelist.class;
-                    String[] columnName = {"owner","name","taxNo","username","password","address","phonenumber","email","type","isNMarket","isTMarket","isFoodbeverage","isCulture","isSightseeing"};
-                    Class[] columnType={String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class};
+                    String[] columnName = {"owner","name","taxNo","username","password","address","phonenumber","email","isNMarket","isTMarket","isFoodbeverage","isCulture","isSightseeing"};
+                    Class[] columnType={String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class};
                     ProWhitelist proWhitelist = new ProWhitelist();
-                    for (int i = 0; i < rowlist.size(); i++) {
+                    for (int i = 0; i < columnName.length; i++) {
                         try {
                             String methodName = new StringBuilder("set").append(columnName[i].substring(0, 1).toUpperCase()).append(columnName[i].substring(1)).toString();
                             Method method = c.getMethod(methodName, columnType[i]);
                             if (method != null) {
-                                Object value = rowlist.get(i);
+                                Integer index = hostelMap.get(columnName[i]);
+                                if(index == -1){
+                                    continue;
+                                }
+                                Object value = rowlist.get(index);
                                 method.invoke(proWhitelist, StringUtils.isNotNull(value) ? value.toString() : null);
                             }
                         } catch (Exception e) {
@@ -143,6 +161,7 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
                         }
                     }
                     Date now = DateUtils.dateTime("yyyy-MM-dd",DateUtils.getDate());
+                    proWhitelist.setType("1");
                     proWhitelist.setCreateTime(now);
                     proWhitelist.setUpdateTime(now);
                     proWhitelistMapper.insertProWhitelist(proWhitelist);
