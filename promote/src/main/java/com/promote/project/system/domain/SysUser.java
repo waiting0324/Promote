@@ -83,6 +83,14 @@ public class SysUser extends BaseEntity
     /** 商家經度 */
     private Double longitude;
 
+    /** 商家地址 */
+    private String address;
+
+    /** 旅宿業者是否協助發放抵用券 ( 0不協助 1協助) */
+    private String isSupportCoupon;
+
+    /** 是否同意註冊條款 (0 不同意 1同意 ) */
+    private String isAgreeTerms;
 
     /** 鹽加密 */
     private String salt;
@@ -387,7 +395,31 @@ public class SysUser extends BaseEntity
     {
         this.postIds = postIds;
     }
-    
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getIsSupportCoupon() {
+        return isSupportCoupon;
+    }
+
+    public void setIsSupportCoupon(String isSupportCoupon) {
+        this.isSupportCoupon = isSupportCoupon;
+    }
+
+    public String getIsAgreeTerms() {
+        return isAgreeTerms;
+    }
+
+    public void setIsAgreeTerms(String isAgreeTerms) {
+        this.isAgreeTerms = isAgreeTerms;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
