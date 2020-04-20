@@ -62,10 +62,19 @@ public interface IProWhitelistService
     public int deleteProWhitelistById(Long id);
 
     /**
-     * 匯入旅宿業者白名單資料
+     * 將旅店資料匯入白名單
      *
      * @param file 資料
      * @param version Excel版本
      */
-    public void importHostel(InputStream file, String version);
+    public void importHostelData(InputStream file, String version);
+
+
+    /**
+     * 將商家資料匯入白名單
+     *
+     * @param file 資料
+     * @param version Excel版本
+     */
+    public void importStoreData(InputStream file, String version);
 }
