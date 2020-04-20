@@ -1,5 +1,8 @@
 package com.promote.project.promote.controller;
 
+import cn.hutool.poi.excel.sax.Excel07SaxReader;
+import cn.hutool.poi.excel.sax.handler.RowHandler;
+import com.promote.common.utils.StringUtils;
 import com.promote.common.utils.poi.ExcelUtil;
 import com.promote.framework.aspectj.lang.annotation.Log;
 import com.promote.framework.aspectj.lang.enums.BusinessType;
@@ -11,7 +14,10 @@ import com.promote.project.promote.service.IProWhitelistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -94,4 +100,23 @@ public class ProWhitelistController extends BaseController
     {
         return toAjax(proWhitelistService.deleteProWhitelistByIds(ids));
     }
+
+    /**
+     * 將旅店資料匯入白名單
+     */
+    @PostMapping("/hostel")
+    public AjaxResult importHostel(MultipartFile file) throws Exception{
+        if(file != null){
+            String Filename = file.getOriginalFilename();
+            if(Filename.indexOf(".txt") > -1){
+                //TODO 文字檔
+            }else if(Filename.indexOf(".xls") > -1){
+                String version = Filename.indexOf(".xlsx") > -1 ? "2007" : "2003";
+                proWhitelistService.importHostel(file.getInputStream(),version);
+            }
+            return AjaxResult.success();
+        }
+        return AjaxResult.error("找不到上傳資料");
+    }
+
 }

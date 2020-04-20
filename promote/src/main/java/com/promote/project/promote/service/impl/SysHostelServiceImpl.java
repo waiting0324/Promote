@@ -23,7 +23,7 @@ import javax.mail.MessagingException;
 @Service
 public class SysHostelServiceImpl implements ISysHostelService {
     @Autowired
-    ProWhitelistMapper hostelMapper;
+    ProWhitelistMapper proWhitelistMapper;
 
     @Autowired
     SysUserMapper userMapper;
@@ -56,7 +56,7 @@ public class SysHostelServiceImpl implements ISysHostelService {
     @Override
     public ProWhitelist selectProWhitelistByAcctPwd(String acct, String pwd) {
         if (StringUtils.isNotEmpty(acct) && StringUtils.isNotEmpty(pwd)) {
-            return hostelMapper.selectProWhitelistByAcctPwd(acct, pwd);
+            return proWhitelistMapper.selectProWhitelistByAcctPwd(acct, pwd);
         }
         return null;
     }

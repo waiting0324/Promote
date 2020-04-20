@@ -2,6 +2,7 @@ package com.promote.project.promote.service;
 
 import com.promote.project.promote.domain.ProWhitelist;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -59,4 +60,12 @@ public interface IProWhitelistService
      * @return 結果
      */
     public int deleteProWhitelistById(Long id);
+
+    /**
+     * 匯入旅宿業者白名單資料
+     *
+     * @param file 資料
+     * @param version Excel版本
+     */
+    public void importHostel(InputStream file, String version);
 }
