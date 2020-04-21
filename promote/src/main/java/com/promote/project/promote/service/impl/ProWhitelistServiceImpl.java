@@ -64,7 +64,7 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
      */
     @Override
     public int insertProWhitelist(ProWhitelist proWhitelist) {
-        proWhitelist.setCreateTime(DateUtils.getNowDate());
+        proWhitelist.setCreateTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
         return proWhitelistMapper.insertProWhitelist(proWhitelist);
     }
 
@@ -76,7 +76,7 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
      */
     @Override
     public int updateProWhitelist(ProWhitelist proWhitelist) {
-        proWhitelist.setUpdateTime(DateUtils.getNowDate());
+        proWhitelist.setUpdateTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
         return proWhitelistMapper.updateProWhitelist(proWhitelist);
     }
 
@@ -108,33 +108,33 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
      * @param file    資料
      * @param version Excel版本
      */
-    @Override
-    @Transactional
-    public void importHostelData(InputStream file, String version) {
-        //白名單欄位與白名單Excel之欄位對應順序
-        Map<String,Integer> hostelMap = new ConcurrentHashMap<String,Integer>();
-//        hostelMap.put("owner",-1);
-        hostelMap.put("name",2);
-        hostelMap.put("taxNo",22);
-        hostelMap.put("username",26);
-//        hostelMap.put("password",-1);
-        hostelMap.put("address",4);
-        hostelMap.put("phonenumber",6);
-        hostelMap.put("email",27);
-//        hostelMap.put("isNMarket",-1);
-//        hostelMap.put("isTMarket",-1);
-//        hostelMap.put("isFoodbeverage",-1);
-//        hostelMap.put("isCulture",-1);
-//        hostelMap.put("isSightseeing",-1);
-        hostelMap.put("type",1);
-        if ("2007".equals(version)) {
-            Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(hostelMap));
-            reader.read(file,1);
-        } else if ("2003".equals(version)) {
-            Excel03SaxReader reader = new Excel03SaxReader(createRowHandler(hostelMap));
-            reader.read(file,1);
-        }
-    }
+//    @Override
+//    @Transactional
+//    public void importHostelData(InputStream file, String version) {
+//        //白名單欄位與白名單Excel之欄位對應順序
+//        Map<String,Integer> hostelMap = new ConcurrentHashMap<String,Integer>();
+////        hostelMap.put("owner",-1);
+//        hostelMap.put("name",2);
+//        hostelMap.put("taxNo",22);
+//        hostelMap.put("username",26);
+////        hostelMap.put("password",-1);
+//        hostelMap.put("address",4);
+//        hostelMap.put("phonenumber",6);
+//        hostelMap.put("email",27);
+////        hostelMap.put("isNMarket",-1);
+////        hostelMap.put("isTMarket",-1);
+////        hostelMap.put("isFoodbeverage",-1);
+////        hostelMap.put("isCulture",-1);
+////        hostelMap.put("isSightseeing",-1);
+//        hostelMap.put("type",1);
+//        if ("2007".equals(version)) {
+//            Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(hostelMap));
+//            reader.read(file,1);
+//        } else if ("2003".equals(version)) {
+//            Excel03SaxReader reader = new Excel03SaxReader(createRowHandler(hostelMap));
+//            reader.read(file,1);
+//        }
+//    }
 
 
     /**
@@ -143,79 +143,91 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
      * @param file    資料
      * @param version Excel版本
      */
+//    @Override
+//    @Transactional
+//    public void importStoreData(InputStream file, String version) {
+//        //白名單欄位與白名單Excel之欄位對應順序
+//        Map<String,Integer> storeMap = new ConcurrentHashMap<String,Integer>();
+//        storeMap.put("owner",5);
+//        storeMap.put("name",1);
+//        storeMap.put("taxNo",2);
+////        storeMap.put("username",-1);
+////        storeMap.put("password",-1);
+//        storeMap.put("address",3);
+//        storeMap.put("phonenumber",6);
+////        storeMap.put("email",-1);
+//        storeMap.put("isNMarket",7);
+//        storeMap.put("isTMarket",8);
+//        storeMap.put("isFoodbeverage",10);
+//        storeMap.put("isCulture",11);
+//        storeMap.put("isSightseeing",12);
+//        storeMap.put("type",2);
+//        if ("2007".equals(version)) {
+//            Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(storeMap));
+//            reader.read(file,1);
+//        } else if ("2003".equals(version)) {
+//            Excel03SaxReader reader = new Excel03SaxReader(createRowHandler(storeMap));
+//            reader.read(file,1);
+//        }
+//    }
+
+    /**
+     * 根據代號及資料類型查找白名單資料
+     *
+     * @param id 代號
+     * @param type 資料類型
+     * @return 白名單
+     */
     @Override
-    @Transactional
-    public void importStoreData(InputStream file, String version) {
-        //白名單欄位與白名單Excel之欄位對應順序
-        Map<String,Integer> storeMap = new ConcurrentHashMap<String,Integer>();
-        storeMap.put("owner",5);
-        storeMap.put("name",1);
-        storeMap.put("taxNo",2);
-//        storeMap.put("username",-1);
-//        storeMap.put("password",-1);
-        storeMap.put("address",3);
-        storeMap.put("phonenumber",6);
-//        storeMap.put("email",-1);
-        storeMap.put("isNMarket",7);
-        storeMap.put("isTMarket",8);
-        storeMap.put("isFoodbeverage",10);
-        storeMap.put("isCulture",11);
-        storeMap.put("isSightseeing",12);
-        storeMap.put("type",2);
-        if ("2007".equals(version)) {
-            Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(storeMap));
-            reader.read(file,1);
-        } else if ("2003".equals(version)) {
-            Excel03SaxReader reader = new Excel03SaxReader(createRowHandler(storeMap));
-            reader.read(file,1);
-        }
+    public ProWhitelist selectProWhitelistByIdType(String id, String type) {
+        return proWhitelistMapper.selectProWhitelistByIdType(id,type);
     }
 
-    private RowHandler createRowHandler(Map<String,Integer> dataMap) {
-        return new RowHandler() {
-            @Override
-            public void handle(int sheetIndex, int rowIndex, List<Object> rowlist) {
-                if (rowIndex > 0 && rowlist != null) {
-                    Class c = ProWhitelist.class;
-//                    String[] columnName = {"owner","name","taxNo","username","password","address","phonenumber","email","isNMarket","isTMarket","isFoodbeverage","isCulture","isSightseeing"};
-//                    Class[] columnType={String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class};
-                    Field[] fields = c.getDeclaredFields();
-                    List<String> columnNameList = new ArrayList<String>();
-                    List<Class> columnTypeList = new ArrayList<Class>();
-                    for(Field field : fields){
-                        String fieldName = field.getName();
-                        if("serialVersionUID".equals(fieldName) || "id".equals(fieldName) || "type".equals(fieldName)){
-                            continue;
-                        }
-                        columnNameList.add(fieldName);
-                        columnTypeList.add(field.getType());
-                    }
-
-                    ProWhitelist proWhitelist = new ProWhitelist();
-                    for (int i = 0; i < columnNameList.size(); i++) {
-                        try {
-                            String columnName = columnNameList.get(i);
-                            String methodName = new StringBuilder("set").append(columnName.substring(0, 1).toUpperCase()).append(columnName.substring(1)).toString();
-                            Method method = c.getMethod(methodName, columnTypeList.get(i));
-                            if (method != null) {
-                                Integer index = dataMap.get(columnName);
-                                if(index == null){
-                                    continue;
-                                }
-                                Object value = rowlist.get(index);
-                                method.invoke(proWhitelist, StringUtils.isNotNull(value) ? value.toString() : null);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    Date now = DateUtils.dateTime("yyyy-MM-dd",DateUtils.getDate());
-                    proWhitelist.setType(dataMap.get("type") != null ? dataMap.get("type").toString() : null);
-                    proWhitelist.setCreateTime(now);
-                    proWhitelist.setUpdateTime(now);
-                    proWhitelistMapper.insertProWhitelist(proWhitelist);
-                }
-            }
-        };
-    }
+//    private RowHandler createRowHandler(Map<String,Integer> dataMap) {
+//        return new RowHandler() {
+//            @Override
+//            public void handle(int sheetIndex, int rowIndex, List<Object> rowlist) {
+//                if (rowIndex > 0 && rowlist != null) {
+//                    Class c = ProWhitelist.class;
+////                    String[] columnName = {"owner","name","taxNo","username","password","address","phonenumber","email","isNMarket","isTMarket","isFoodbeverage","isCulture","isSightseeing"};
+////                    Class[] columnType={String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class,String.class};
+//                    Field[] fields = c.getDeclaredFields();
+//                    List<String> columnNameList = new ArrayList<String>();
+//                    List<Class> columnTypeList = new ArrayList<Class>();
+//                    for(Field field : fields){
+//                        String fieldName = field.getName();
+//                        if("serialVersionUID".equals(fieldName) || "id".equals(fieldName) || "type".equals(fieldName)){
+//                            continue;
+//                        }
+//                        columnNameList.add(fieldName);
+//                        columnTypeList.add(field.getType());
+//                    }
+//
+//                    ProWhitelist proWhitelist = new ProWhitelist();
+//                    for (int i = 0; i < columnNameList.size(); i++) {
+//                        try {
+//                            String columnName = columnNameList.get(i);
+//                            String methodName = new StringBuilder("set").append(columnName.substring(0, 1).toUpperCase()).append(columnName.substring(1)).toString();
+//                            Method method = c.getMethod(methodName, columnTypeList.get(i));
+//                            if (method != null) {
+//                                Integer index = dataMap.get(columnName);
+//                                if(index == null){
+//                                    continue;
+//                                }
+//                                Object value = rowlist.get(index);
+//                                method.invoke(proWhitelist, StringUtils.isNotNull(value) ? value.toString() : null);
+//                            }
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                    Date now = DateUtils.dateTime("yyyy-MM-dd",DateUtils.getDate());
+//                    proWhitelist.setType(dataMap.get("type") != null ? dataMap.get("type").toString() : null);
+//                    proWhitelist.setCreateTime(now);
+//                    proWhitelist.setUpdateTime(now);
+//                    proWhitelistMapper.insertProWhitelist(proWhitelist);
+//                }
+//            }
+//        };
+//    }
 }

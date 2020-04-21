@@ -134,9 +134,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </delete>
 
-    <select id="selectProWhitelistByCode" parameterType="String" resultMap="ProWhitelistResult">
+    <select id="selectProWhitelistByIdType" resultMap="ProWhitelistResult">
         <include refid="selectProWhitelistVo"/>
-        where code = #{code}
+        where id = #{id} and type = #{type}
     </select>
     
 </mapper>

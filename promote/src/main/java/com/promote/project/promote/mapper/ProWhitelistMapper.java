@@ -74,10 +74,10 @@ public interface ProWhitelistMapper
     /**
      * 查詢白名單
      *
-     * @param code 旅宿業者代號
+     * @param id 旅宿業者代號
      * @return 白名單
      */
-    public ProWhitelist selectProWhitelistByCode(String code);
+    public ProWhitelist selectProWhitelistByIdType(@Param("id") String id,@Param("type") String type);
 
 
 }

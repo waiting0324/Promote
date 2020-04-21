@@ -67,7 +67,7 @@ public interface IProWhitelistService
      * @param file 資料
      * @param version Excel版本
      */
-    public void importHostelData(InputStream file, String version);
+//    public void importHostelData(InputStream file, String version);
 
 
     /**
@@ -76,5 +76,14 @@ public interface IProWhitelistService
      * @param file 資料
      * @param version Excel版本
      */
-    public void importStoreData(InputStream file, String version);
+//    public void importStoreData(InputStream file, String version);
+
+    /**
+     * 根據代號及資料類型查找白名單資料
+     *
+     * @param id 代號
+     * @param type 資料類型
+     * @return 白名單
+     */
+    public ProWhitelist selectProWhitelistByIdType(String id,String type);
 }
