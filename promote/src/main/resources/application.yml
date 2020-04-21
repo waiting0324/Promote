@@ -133,3 +133,11 @@ email:
   from: dakhpc72@gmail.com
   # 發信人Email密碼
   pwd: r150y9a018n
+
+ftp:
+  host: 127.0.0.1
+  port: 21
+  username: ftpUser
+  password: s89236001
+  remoteDir: /
+  localDir: D://

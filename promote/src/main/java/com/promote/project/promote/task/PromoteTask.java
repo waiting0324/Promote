@@ -9,12 +9,12 @@ import com.promote.common.utils.StringUtils;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,26 +28,23 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2020-04-21
  */
 @Component("promoteTask")
+@ConfigurationProperties(prefix = "ftp")
 public class PromoteTask {
 
     @Autowired
     private ProWhitelistMapper proWhitelistMapper;
 
-    private static String host;
+    private String host;
 
-    private static String port;
+    private int port;
 
-    private static String ftpUser;
+    private String username;
 
-    private static String ftpPwd;
+    private String password;
 
-    private static String directory;
+    private String remoteDir;
 
-    private static String ftpPath;
-
-    private static String fileName;
-
-    private static String outputPath;
+    private String localDir;
 
     /**
      * 從FTP上下載差異檔
@@ -55,12 +52,26 @@ public class PromoteTask {
      * @throws Exception
      */
     public void downloadDiffData() throws Exception {
-        Ftp ftp = new Ftp(host);
-        ftp.cd(directory);
-        ftp.download(ftpPath, fileName, FileUtil.file("d:/test2.jpg"));
-        dealDiffData("TODO");
-        ftp.delFile("TODO");
+
+        // FTP 連接
+        Ftp ftp = new Ftp(host, port, username, password, Charset.forName("utf8"));
+
+        // 讀取檔案列表
+        List<String> files = ftp.ls(remoteDir);
+
+        // 循環下載所有檔案
+        for (String fileName : files) {
+            ftp.download(remoteDir, fileName, FileUtil.file(localDir + fileName));
+        }
+
+        // 刪除遠端資料
+        ftp.delDir(remoteDir);
+
+        // 關閉FTP連接
         ftp.close();
+
+        // TODO 解析Excel檔案
+        // dealDiffData("");
     }
 
 
@@ -173,5 +184,53 @@ public class PromoteTask {
                 }
             }
         };
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRemoteDir() {
+        return remoteDir;
+    }
+
+    public void setRemoteDir(String remoteDir) {
+        this.remoteDir = remoteDir;
+    }
+
+    public String getLocalDir() {
+        return localDir;
+    }
+
+    public void setLocalDir(String localDir) {
+        this.localDir = localDir;
     }
 }
