@@ -85,19 +85,18 @@ public class PromoteTask {
         File[] localFiles = FileUtil.ls(localDir);
         for (File localFile : localFiles) {
             // TODO 需要做商家或旅宿業者判斷
-            proWhitelistService.importStoreData(FileUtil.getInputStream(localFile), "2007");
+//            proWhitelistService.importStoreData(FileUtil.getInputStream(localFile), "2007");
         }
     }
 
 
     /**
-     * 處理差異檔
+     * 處理白名單匯入及差異檔
      *
-     * @param path 差異檔路徑
+     * @param path 白名單路徑
      */
     public void dealDiffData(String path) {
         if (StringUtils.isNotEmpty(path)) {
-            //        Map<String, Integer> pair = new ConcurrentHashMap<String, Integer>();
             Map<String, Integer> pair = new HashMap<String, Integer>();
             //白名單Field與白名單Excel映射關係
             boolean isHostel = true;  //TODO 待確認檔名規則
@@ -185,7 +184,6 @@ public class PromoteTask {
                             columnTypeList.add(field.getType());
                         }
                         Integer type = pair.get("type");
-
                         ProWhitelist proWhitelist = proWhitelistService.selectProWhitelistByIdType(id,type.toString());
                         if (proWhitelist == null) {
                             needInsert = true;
@@ -225,7 +223,6 @@ public class PromoteTask {
 //                                    throw new Exception();
 //                                }
                                 proWhitelistService.updateProWhitelist(proWhitelist);
-
                             }
                             totalSuccess++;
 //                            count++; //測試用
@@ -247,7 +244,8 @@ public class PromoteTask {
                         }
                     }
                 }catch(Exception e){
-                    e.printStackTrace();
+                    //DO NOTHING
+//                    e.printStackTrace();
                 }
             }
         };
