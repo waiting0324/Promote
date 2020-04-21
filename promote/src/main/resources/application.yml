@@ -140,4 +140,4 @@ ftp:
   username: ftpUser
   password: s89236001
   remoteDir: /
-  localDir: D://
+  localDir: E://TEMP

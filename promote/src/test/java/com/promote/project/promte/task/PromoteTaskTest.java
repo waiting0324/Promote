@@ -22,6 +22,6 @@ public class PromoteTaskTest {
 
     @Test
     public void testFtp() throws Exception {
-        promoteTask.downloadDiffData();
+        promoteTask.ftpFetchFile();
     }
 }
