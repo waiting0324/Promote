@@ -15,8 +15,8 @@ public class ProWhitelist extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 流水號 */
-    private Long id;
+    /** 系統代號 */
+    private String id;
 
     /** 負責人姓名 */
     @Excel(name = "負責人姓名")
@@ -74,16 +74,15 @@ public class ProWhitelist extends BaseEntity
     @Excel(name = "是否為觀光工廠 ( 0否 1是 )")
     private String isSightseeing;
 
-    public void setId(Long id) 
-    {
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Long getId() 
-    {
-        return id;
-    }
-    public void setOwner(String owner) 
+    public void setOwner(String owner)
     {
         this.owner = owner;
     }

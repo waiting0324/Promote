@@ -48,7 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
     
-    <select id="selectProWhitelistById" parameterType="Long" resultMap="ProWhitelistResult">
+    <select id="selectProWhitelistById" parameterType="String" resultMap="ProWhitelistResult">
         <include refid="selectProWhitelistVo"/>
         where id = #{id}
     </select>
