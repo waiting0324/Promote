@@ -133,5 +133,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectProWhitelistByCode" parameterType="String" resultMap="ProWhitelistResult">
+        <include refid="selectProWhitelistVo"/>
+        where code = #{code}
+    </select>
     
 </mapper>

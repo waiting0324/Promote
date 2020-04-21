@@ -11,6 +11,7 @@ import com.promote.framework.web.domain.AjaxResult;
 import com.promote.framework.web.page.TableDataInfo;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.service.IProWhitelistService;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

@@ -69,4 +69,13 @@ public interface ProWhitelistMapper
      * @return 結果
      */
     public int deleteProWhitelistByIds(Long[] ids);
+
+
+    /**
+     * 查詢白名單
+     *
+     * @param code 旅宿業者代號
+     * @return 白名單
+     */
+    public ProWhitelist selectProWhitelistByCode(String code);
 }
