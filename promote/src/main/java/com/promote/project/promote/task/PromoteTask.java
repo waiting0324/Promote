@@ -11,6 +11,7 @@ import com.promote.project.monitor.domain.SysOperLog;
 import com.promote.project.monitor.service.ISysOperLogService;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
+import com.promote.project.promote.service.IProWhitelistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,12 @@ public class PromoteTask {
     @Autowired
     private ProWhitelistMapper proWhitelistMapper;
 
+    @Autowired
+    private IProWhitelistService proWhitelistService;
+
+    @Autowired
+    ISysOperLogService operLogServic;
+
     private static String host;
 
     private static String port;
@@ -53,7 +60,6 @@ public class PromoteTask {
 
     private int totalFail;
 
-    ISysOperLogService operLogService = SpringUtils.getBean(ISysOperLogService.class);
 
     /**
      * 從FTP上下載差異檔
@@ -76,57 +82,59 @@ public class PromoteTask {
      * @param path 差異檔路徑
      */
     private void dealDiffData(String path) {
-//        Map<String, Integer> pair = new ConcurrentHashMap<String, Integer>();
-        Map<String, Integer> pair = new HashMap<String, Integer>();
-        //白名單Field與白名單Excel映射關係
-        if (true) {
-            //旅宿
-            pair.put("id", 0);
-            pair.put("name", 2);
-            pair.put("taxNo", 22);
+        if (StringUtils.isNotEmpty(path)) {
+            //        Map<String, Integer> pair = new ConcurrentHashMap<String, Integer>();
+            Map<String, Integer> pair = new HashMap<String, Integer>();
+            //白名單Field與白名單Excel映射關係
+            if (true) {
+                //旅宿
+                pair.put("id", 0);
+                pair.put("name", 2);
+                pair.put("taxNo", 22);
 //            pair.put("username", 26); TODO待確認
 //            pair.put("password", ); TODO待確認
-            pair.put("address", 4);
-            pair.put("phonenumber", 6);
-            pair.put("email", 27);
-            pair.put("type", 1);
-        } else {
-            pair.put("id", 0);
-            pair.put("owner", 5);
-            pair.put("name", 1);
-            pair.put("taxNo", 2);
+                pair.put("address", 4);
+                pair.put("phonenumber", 6);
+                pair.put("email", 27);
+                pair.put("type", 1);
+            } else {
+                pair.put("id", 0);
+                pair.put("owner", 5);
+                pair.put("name", 1);
+                pair.put("taxNo", 2);
 //            pair.put("username", 26); TODO待確認
 //            pair.put("password", ); TODO待確認
-            pair.put("address", 3);
-            pair.put("phonenumber", 6);
-            pair.put("type", 2);
-            pair.put("isNMarket", 7);
-            pair.put("isTMarket", 8);
-            pair.put("isFoodbeverage", 10);
-            pair.put("isCulture", 11);
-            pair.put("isSightseeing", 12);
-        }
-        Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(pair));
-        reader.read(path, 1);
-        String mathodName = PromoteTask.class.getName() + ".dealDiffData(String path)";
-        Date now = DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime());
-        if(totalSuccess > 0){
-            SysOperLog successLog = new SysOperLog();
-            successLog.setMethod(mathodName);
-            successLog.setOperatorType(2);
-            successLog.setOperName("SYSTEM");
-            successLog.setJsonResult("白名單匯入共成功: " + totalSuccess + "筆");
-            successLog.setOperTime(now);
-            operLogService.insertOperlog(successLog);
-        }
-        if(totalFail > 0){
-            SysOperLog failLog = new SysOperLog();
-            failLog.setMethod(mathodName);
-            failLog.setOperatorType(2);
-            failLog.setOperName("SYSTEM");
-            failLog.setErrorMsg("白名單匯入共失敗: " + totalFail + "筆");
-            failLog.setOperTime(now);
-            operLogService.insertOperlog(failLog);
+                pair.put("address", 3);
+                pair.put("phonenumber", 6);
+                pair.put("type", 2);
+                pair.put("isNMarket", 7);
+                pair.put("isTMarket", 8);
+                pair.put("isFoodbeverage", 10);
+                pair.put("isCulture", 11);
+                pair.put("isSightseeing", 12);
+            }
+            Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(pair));
+            reader.read(path, 1);
+            String mathodName = PromoteTask.class.getName() + ".dealDiffData(String path)";
+            Date now = DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime());
+            if (totalSuccess > 0) {
+                SysOperLog successLog = new SysOperLog();
+                successLog.setMethod(mathodName);
+                successLog.setOperatorType(2);
+                successLog.setOperName("SYSTEM");
+                successLog.setJsonResult("執行白名單匯入- 共成功: " + totalSuccess + "筆");
+                successLog.setOperTime(now);
+                operLogServic.insertOperlog(successLog);
+            }
+            if (totalFail > 0) {
+                SysOperLog failLog = new SysOperLog();
+                failLog.setMethod(mathodName);
+                failLog.setOperatorType(2);
+                failLog.setOperName("SYSTEM");
+                failLog.setErrorMsg("執行白名單匯入-共失敗: " + totalFail + "筆");
+                failLog.setOperTime(now);
+                operLogServic.insertOperlog(failLog);
+            }
         }
     }
 
@@ -143,29 +151,30 @@ public class PromoteTask {
                     List<Class> columnTypeList = new ArrayList<Class>();
                     for (Field field : fields) {
                         String fieldName = field.getName();
-                        if ("serialVersionUID".equals(fieldName) || "id".equals(fieldName) || "type".equals(fieldName)) {
+                        if ("serialVersionUID".equals(fieldName) || "type".equals(fieldName)) {
                             continue;
                         }
                         columnNameList.add(fieldName);
                         columnTypeList.add(field.getType());
                     }
-                    String code = null;
                     ProWhitelist proWhitelist = null;
                     Integer type = pair.get("type");
-                    Date now = DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime());
-                    if(type != null && type == 1){
-                        code = (String) rowlist.get(pair.get("旅宿業者代號"));
-                        proWhitelist = proWhitelistMapper.selectProWhitelistByCode(code);
-                    }else{
-                        code = (String) rowlist.get(pair.get("店家代碼"));
-                    }
+                    String code = (String) rowlist.get(pair.get("id"));
 
+                    if (type != null) {
+                        if (type == 1) {
+                            code = (String) rowlist.get(pair.get("旅宿業者代號"));
+                            proWhitelist = proWhitelistMapper.selectProWhitelistByCode(code);
+                        } else {
+                            code = (String) rowlist.get(pair.get("店家代碼"));
+                        }
+                    }
                     //                    String code = (String) rowlist.get(dataMap.get("旅宿業者代號"));
 //                    ProWhitelist proWhitelist = proWhitelistMapper.selectProWhitelistByCode(code);
                     if (proWhitelist == null) {
                         needInsert = true;
                         proWhitelist = new ProWhitelist();
-                        proWhitelist.setCreateTime(now);
+//                        proWhitelist.setCreateTime(now);
                     }
                     for (int i = 0; i < columnNameList.size(); i++) {
                         try {
@@ -184,13 +193,13 @@ public class PromoteTask {
                             e.printStackTrace();
                         }
                     }
-                    proWhitelist.setUpdateTime(now);
+//                    proWhitelist.setUpdateTime(now);
                     proWhitelist.setType(type != null ? type.toString() : null);
                     try {
                         if (needInsert) {
-                            proWhitelistMapper.insertProWhitelist(proWhitelist);
+                            proWhitelistService.insertProWhitelist(proWhitelist);
                         } else {
-                            proWhitelistMapper.updateProWhitelist(proWhitelist);
+                            proWhitelistService.updateProWhitelist(proWhitelist);
                         }
                         totalSuccess++;
                     } catch (Exception e) {
@@ -200,14 +209,14 @@ public class PromoteTask {
                         failLog.setOperatorType(2);
                         failLog.setOperName("SYSTEM");
                         String errMsg = "";
-                        if(type == 1){
-                            errMsg = "旅宿業者白名單" + (needInsert ? "新增" : "更新") + "失敗";
-                        }else if(type == 2){
-                            errMsg = "店家白名單" + (needInsert ? "新增" : "更新") + "失敗";
+                        if (type == 1) {
+                            errMsg = "執行旅宿業者白名單" + (needInsert ? "新增" : "更新") + "失敗:";
+                        } else if (type == 2) {
+                            errMsg = "執行店家白名單" + (needInsert ? "新增" : "更新") + "失敗:";
                         }
                         failLog.setErrorMsg(errMsg);
-                        failLog.setOperTime(now);
-                        operLogService.insertOperlog(failLog);
+                        failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
+                        operLogServic.insertOperlog(failLog);
                         e.printStackTrace();
                     }
                 }
