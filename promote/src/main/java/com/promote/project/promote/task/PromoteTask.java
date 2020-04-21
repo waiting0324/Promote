@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
@@ -41,6 +42,7 @@ public class PromoteTask {
     @Autowired
     ISysOperLogService operLogServic;
 
+    // 與FTP相關配置 開始
     private String host;
 
     private int port;
@@ -52,6 +54,7 @@ public class PromoteTask {
     private String remoteDir;
 
     private String localDir;
+    // 與FTP相關配置 結束
 
     private int totalSuccess;
 
@@ -60,10 +63,8 @@ public class PromoteTask {
 
     /**
      * 從FTP上下載差異檔
-     *
-     * @throws Exception
      */
-    public void downloadDiffData() throws Exception {
+    public void ftpFetchFile() throws Exception {
 
         // FTP 連接
         Ftp ftp = new Ftp(host, port, username, password, Charset.forName("utf8"));
@@ -73,7 +74,7 @@ public class PromoteTask {
 
         // 循環下載所有檔案
         for (String fileName : files) {
-            ftp.download(remoteDir, fileName, FileUtil.file(localDir + fileName));
+            ftp.download(remoteDir, fileName, FileUtil.file(localDir + "/" +  fileName));
         }
 
         // 刪除遠端資料
@@ -81,6 +82,13 @@ public class PromoteTask {
 
         // 關閉FTP連接
         ftp.close();
+
+        // 開始將Excel檔案匯入資料庫
+        File[] localFiles = FileUtil.ls(localDir);
+        for (File localFile : localFiles) {
+            // TODO 需要做商家或旅宿業者判斷
+            proWhitelistService.importStoreData(FileUtil.getInputStream(localFile), "2007");
+        }
     }
 
 

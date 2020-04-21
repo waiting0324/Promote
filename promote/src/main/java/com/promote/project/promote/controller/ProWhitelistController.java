@@ -28,7 +28,7 @@ import java.util.List;
  * @date 2020-04-20
  */
 @RestController
-@RequestMapping("/system/whitelist")
+@RequestMapping("/promote/whitelist")
 public class ProWhitelistController extends BaseController
 {
     @Autowired
