@@ -78,4 +78,6 @@ public interface ProWhitelistMapper
      * @return 白名單
      */
     public ProWhitelist selectProWhitelistByCode(String code);
+
+
 }

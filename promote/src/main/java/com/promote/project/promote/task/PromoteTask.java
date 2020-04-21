@@ -6,6 +6,9 @@ import cn.hutool.poi.excel.sax.Excel07SaxReader;
 import cn.hutool.poi.excel.sax.handler.RowHandler;
 import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.StringUtils;
+import com.promote.common.utils.spring.SpringUtils;
+import com.promote.project.monitor.domain.SysOperLog;
+import com.promote.project.monitor.service.ISysOperLogService;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -49,6 +49,12 @@ public class PromoteTask {
 
     private static String outputPath;
 
+    private int totalSuccess;
+
+    private int totalFail;
+
+    ISysOperLogService operLogService = SpringUtils.getBean(ISysOperLogService.class);
+
     /**
      * 從FTP上下載差異檔
      *
@@ -70,7 +76,8 @@ public class PromoteTask {
      * @param path 差異檔路徑
      */
     private void dealDiffData(String path) {
-        Map<String, Integer> pair = new ConcurrentHashMap<String, Integer>();
+//        Map<String, Integer> pair = new ConcurrentHashMap<String, Integer>();
+        Map<String, Integer> pair = new HashMap<String, Integer>();
         //白名單Field與白名單Excel映射關係
         if (true) {
             //旅宿
@@ -99,9 +106,28 @@ public class PromoteTask {
             pair.put("isCulture", 11);
             pair.put("isSightseeing", 12);
         }
-
         Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(pair));
         reader.read(path, 1);
+        String mathodName = PromoteTask.class.getName() + ".dealDiffData(String path)";
+        Date now = DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime());
+        if(totalSuccess > 0){
+            SysOperLog successLog = new SysOperLog();
+            successLog.setMethod(mathodName);
+            successLog.setOperatorType(2);
+            successLog.setOperName("SYSTEM");
+            successLog.setJsonResult("白名單匯入共成功: " + totalSuccess + "筆");
+            successLog.setOperTime(now);
+            operLogService.insertOperlog(successLog);
+        }
+        if(totalFail > 0){
+            SysOperLog failLog = new SysOperLog();
+            failLog.setMethod(mathodName);
+            failLog.setOperatorType(2);
+            failLog.setOperName("SYSTEM");
+            failLog.setErrorMsg("白名單匯入共失敗: " + totalFail + "筆");
+            failLog.setOperTime(now);
+            operLogService.insertOperlog(failLog);
+        }
     }
 
 
@@ -117,7 +143,7 @@ public class PromoteTask {
                     List<Class> columnTypeList = new ArrayList<Class>();
                     for (Field field : fields) {
                         String fieldName = field.getName();
-                        if ("serialVersionUID".equals(fieldName) || "type".equals(fieldName)) {
+                        if ("serialVersionUID".equals(fieldName) || "id".equals(fieldName) || "type".equals(fieldName)) {
                             continue;
                         }
                         columnNameList.add(fieldName);
@@ -126,7 +152,7 @@ public class PromoteTask {
                     String code = null;
                     ProWhitelist proWhitelist = null;
                     Integer type = pair.get("type");
-                    Date now = DateUtils.dateTime("yyyy-MM-dd", DateUtils.getDate());
+                    Date now = DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime());
                     if(type != null && type == 1){
                         code = (String) rowlist.get(pair.get("旅宿業者代號"));
                         proWhitelist = proWhitelistMapper.selectProWhitelistByCode(code);
@@ -159,15 +185,29 @@ public class PromoteTask {
                         }
                     }
                     proWhitelist.setUpdateTime(now);
-                    proWhitelist.setType(pair.get("type") != null ? pair.get("type").toString() : null);
+                    proWhitelist.setType(type != null ? type.toString() : null);
                     try {
                         if (needInsert) {
                             proWhitelistMapper.insertProWhitelist(proWhitelist);
                         } else {
                             proWhitelistMapper.updateProWhitelist(proWhitelist);
                         }
+                        totalSuccess++;
                     } catch (Exception e) {
-
+                        totalFail++;
+                        SysOperLog failLog = new SysOperLog();
+                        failLog.setMethod(PromoteTask.class.getName() + ".dealDiffData(String path)");
+                        failLog.setOperatorType(2);
+                        failLog.setOperName("SYSTEM");
+                        String errMsg = "";
+                        if(type == 1){
+                            errMsg = "旅宿業者白名單" + (needInsert ? "新增" : "更新") + "失敗";
+                        }else if(type == 2){
+                            errMsg = "店家白名單" + (needInsert ? "新增" : "更新") + "失敗";
+                        }
+                        failLog.setErrorMsg(errMsg);
+                        failLog.setOperTime(now);
+                        operLogService.insertOperlog(failLog);
                         e.printStackTrace();
                     }
                 }
