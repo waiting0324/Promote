@@ -13,17 +13,11 @@ import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 排程任務
@@ -48,6 +42,12 @@ public class PromoteTask {
     private String remoteDir;
 
     private String localDir;
+
+    private int totalSuccess;
+
+    private int totalFail;
+
+    ISysOperLogService operLogService = SpringUtils.getBean(ISysOperLogService.class);
 
     /**
      * 從FTP上下載差異檔
@@ -218,53 +218,5 @@ public class PromoteTask {
                 }
             }
         };
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRemoteDir() {
-        return remoteDir;
-    }
-
-    public void setRemoteDir(String remoteDir) {
-        this.remoteDir = remoteDir;
-    }
-
-    public String getLocalDir() {
-        return localDir;
-    }
-
-    public void setLocalDir(String localDir) {
-        this.localDir = localDir;
     }
 }
