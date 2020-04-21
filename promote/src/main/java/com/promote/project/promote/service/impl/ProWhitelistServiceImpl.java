@@ -129,10 +129,10 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
         hostelMap.put("type",1);
         if ("2007".equals(version)) {
             Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(hostelMap));
-            reader.read(file);
+            reader.read(file,1);
         } else if ("2003".equals(version)) {
             Excel03SaxReader reader = new Excel03SaxReader(createRowHandler(hostelMap));
-            reader.read(file);
+            reader.read(file,1);
         }
     }
 
@@ -164,10 +164,10 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
         storeMap.put("type",2);
         if ("2007".equals(version)) {
             Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(storeMap));
-            reader.read(file);
+            reader.read(file,1);
         } else if ("2003".equals(version)) {
             Excel03SaxReader reader = new Excel03SaxReader(createRowHandler(storeMap));
-            reader.read(file);
+            reader.read(file,1);
         }
     }
 
