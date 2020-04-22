@@ -18,18 +18,17 @@ import com.promote.framework.security.handle.LogoutSuccessHandlerImpl;
 
 /**
  * spring security配置
- * 
+ *
  * @author ruoyi
  */
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter
-{
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * 自定義使用者認證邏輯
      */
     @Autowired
     private UserDetailsService userDetailsService;
-    
+
     /**
      * 認證失敗處理類
      */
@@ -47,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
      */
     @Autowired
     private JwtAuthenticationTokenFilter authenticationTokenFilter;
-    
+
     /**
      * 解決 無法直接注入 AuthenticationManager
      *
@@ -56,8 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
      */
     @Bean
     @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception
-    {
+    public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
@@ -77,8 +75,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
      * authenticated       |   使用者登入後可訪問
      */
     @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception
-    {
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 // CRSF禁用，因為不使用session
                 .csrf().disable()
@@ -89,7 +86,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 // 過濾請求
                 .authorizeRequests()
                 // 對於登入login 驗證碼captchaImage 允許匿名訪問
-                .antMatchers("/**/login", "/captchaImage", "/**/regist").anonymous()
+                .antMatchers("/**/login", "/captchaImage", "/**/regist","/store/**").anonymous()
                 .antMatchers(
                         HttpMethod.GET,
                         "/*.html",
@@ -114,13 +111,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
-    
+
     /**
      * 強雜湊雜湊加密實現
      */
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder()
-    {
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -128,8 +124,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
      * 身份認證介面
      */
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception
-    {
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
     }
 }

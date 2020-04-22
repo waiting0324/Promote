@@ -75,6 +75,8 @@ public class ProStoreServiceImpl implements IProStoreService {
         user.setBankAccount(bankAccount);
         user.setBankAccountName(bankAccountName);
         user.setIsAgreeTerms(proWhitelist.getIsAgreeTerms());
+
+        user.setBirthday("20200101"); //TO FIX
         // 插入User表
         userMapper.insertUser(user);
         // 處理角色問題

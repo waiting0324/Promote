@@ -106,7 +106,7 @@ public class PromoteTask {
         if (StringUtils.isNotEmpty(path)) {
             Map<String, Integer> pair = new HashMap<String, Integer>();
             //白名單Field與白名單Excel映射關係
-            boolean isHostel = true;  //TODO 待確認檔名規則
+            boolean isHostel = false;  //TODO 待確認檔名規則
             if (isHostel) {
                 //旅宿
                 pair.put("id", 0);
@@ -136,7 +136,7 @@ public class PromoteTask {
             }
             if(path.indexOf(".xlsx") > -1){
                 Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(pair));
-                reader.read(path, 1);
+                reader.read(path, 0);
             }else{
                 Excel03SaxReader reader = new Excel03SaxReader(createRowHandler(pair));
                 reader.read(path, 0);
@@ -207,7 +207,7 @@ public class PromoteTask {
                                         continue;
                                     }
                                     Object value = rowlist.get(index);
-                                    method.invoke(proWhitelist, StringUtils.isNotNull(value) ? value.toString() : null);
+                                    method.invoke(proWhitelist, StringUtils.isNotNull(value) ? value.toString().trim() : null);
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();

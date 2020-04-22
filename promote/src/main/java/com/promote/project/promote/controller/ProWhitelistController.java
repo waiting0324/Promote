@@ -64,7 +64,7 @@ public class ProWhitelistController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:whitelist:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
+        public AjaxResult getInfo(@PathVariable("id") String id)
     {
         return AjaxResult.success(proWhitelistService.selectProWhitelistById(id));
     }
