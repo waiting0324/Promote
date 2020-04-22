@@ -136,4 +136,11 @@ public interface SysUserMapper {
      */
     public SysUser selectUserByIdBirthday(SysUser sysUser);
 
+
+    /**
+     * 根據身分證查詢 消費者
+     * @param identity 身分證
+     * @return 使用者Bean
+     */
+    public SysUser selectConsumerByIdentity(String identity);
 }
