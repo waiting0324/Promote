@@ -113,6 +113,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="address != null  and address != ''">address = #{address},</if>
             <if test="phonenumber != null  and phonenumber != ''">phonenumber = #{phonenumber},</if>
             <if test="email != null  and email != ''">email = #{email},</if>
+            <if test="isAgreeTerms != null and isAgreeTerms != ''">is_agree_terms = #{isAgreeTerms},</if>
             <if test="type != null  and type != ''">type = #{type},</if>
             <if test="isRegisted != null  and isRegisted != ''">is_registed = #{isRegisted},</if>
             <if test="isNMarket != null  and isNMarket != ''">is_n_market = #{isNMarket},</if>
