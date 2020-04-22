@@ -1,0 +1,72 @@
+package com.promote.project.promote.service;
+
+import com.promote.project.promote.domain.Coupon;
+import com.promote.project.system.domain.SysUser;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+/**
+ * 抵用券Service介面
+ * 
+ * @author 6550 劉威廷
+ * @date 2020-04-22
+ */
+public interface ICouponService 
+{
+    /**
+     * 查詢抵用券
+     * 
+     * @param sn 抵用券ID
+     * @return 抵用券
+     */
+    public Coupon selectCouponById(String sn);
+
+    /**
+     * 查詢抵用券列表
+     * 
+     * @param coupon 抵用券
+     * @return 抵用券集合
+     */
+    public List<Coupon> selectCouponList(Coupon coupon);
+
+    /**
+     * 新增抵用券
+     * 
+     * @param coupon 抵用券
+     * @return 結果
+     */
+    public int insertCoupon(Coupon coupon);
+
+    /**
+     * 修改抵用券
+     * 
+     * @param coupon 抵用券
+     * @return 結果
+     */
+    public int updateCoupon(Coupon coupon);
+
+    /**
+     * 批量刪除抵用券
+     * 
+     * @param sns 需要刪除的抵用券ID
+     * @return 結果
+     */
+    public int deleteCouponByIds(String[] sns);
+
+    /**
+     * 刪除抵用券資訊
+     * 
+     * @param sn 抵用券ID
+     * @return 結果
+     */
+    public int deleteCouponById(String sn);
+
+    /**
+     * 旅宿業者發送抵用券給消費者
+     * @param user 要發放抵用券的使用者
+     * @param code 簡訊驗證碼
+     */
+    @Transactional
+    void sendCoupon(SysUser user, String code);
+}

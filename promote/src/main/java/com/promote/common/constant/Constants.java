@@ -45,6 +45,11 @@ public class Constants
     public static final String CAPTCHA_CODE_KEY = "captcha_codes:";
 
     /**
+     * OTP驗證碼 redis key
+     */
+    public static final String OTP_CODE_KEY = "otp_codes:";
+
+    /**
      * 登入使用者 redis key
      */
     public static final String LOGIN_TOKEN_KEY = "login_tokens:";
