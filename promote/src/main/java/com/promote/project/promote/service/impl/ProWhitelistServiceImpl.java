@@ -30,7 +30,7 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
      * @return 白名單
      */
     @Override
-    public ProWhitelist selectProWhitelistById(Long id) {
+    public ProWhitelist selectProWhitelistById(String id) {
         return proWhitelistMapper.selectProWhitelistById(id);
     }
 

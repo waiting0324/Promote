@@ -25,7 +25,7 @@ public interface IProStoreService {
      * @param bankAccountName 銀行戶名
      */
     @Transactional(rollbackFor = Exception.class)
-    public void regist(String userName, String password, String name, String identity, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName);
+    public void regist(String id, String userName, String password, String name, String identity, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName);
 
 
 

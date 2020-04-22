@@ -74,7 +74,7 @@ public class ProStoreController extends BaseController {
      * 店家註冊
      */
     @PostMapping("/regist")
-    public AjaxResult regist(String isFromApp, String userName, String password, String name, String identity, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName, String uuid, String code) {
+    public AjaxResult regist(String isFromApp, String id, String userName, String password, String name, String identity, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName, String uuid, String code) {
         if (StringUtils.isEmpty(isFromApp)) {
             //web
             String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
@@ -84,9 +84,9 @@ public class ProStoreController extends BaseController {
             }
         }
         if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(password) || StringUtils.isEmpty(name) || StringUtils.isEmpty(identity) || StringUtils.isEmpty(phonenumber) || StringUtils.isEmpty(storeName) || StringUtils.isEmpty(address) || StringUtils.isEmpty(bankAccount) || StringUtils.isEmpty(bankAccountName)) {
-            return AjaxResult.error("所有欄位皆為必輸");
+            return AjaxResult.error("所有欄位皆為必輸欄位");
         }
-        storeService.regist(userName,password,name,identity,phonenumber,storeName,address,bankAccount,bankAccountName);
+        storeService.regist(id, userName, password, name, identity, phonenumber, storeName, address, bankAccount, bankAccountName);
         return AjaxResult.success();
     }
 

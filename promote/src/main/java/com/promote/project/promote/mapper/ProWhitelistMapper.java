@@ -28,7 +28,7 @@ public interface ProWhitelistMapper
      * @param id 白名單ID
      * @return 白名單
      */
-    public ProWhitelist selectProWhitelistById(Long id);
+    public ProWhitelist selectProWhitelistById(String id);
 
     /**
      * 查詢白名單列表
