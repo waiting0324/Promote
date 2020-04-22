@@ -40,7 +40,7 @@ public class SysStoreController extends BaseController {
      * 店家白名單檢核
      */
     @GetMapping("/checkWhitelist")
-    public AjaxResult regist(String taxNo) {
+    public AjaxResult checkWhitelist(String taxNo) {
         if (StringUtils.isNotEmpty(taxNo)) {
             ProWhitelist proWhitelist = proWhitelistService.selectProWhitelistByTaxNo(taxNo);
             if (proWhitelist != null) {
@@ -69,5 +69,6 @@ public class SysStoreController extends BaseController {
         operLogService.insertOperlog("白名單", null, null, SysStoreController.class.getName() + ".updIsAgreeTerms(String agreeTermsFlg)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, "店家不同意註冊條款");
         return AjaxResult.error("店家不同意註冊條款");
     }
+    
 
 }
