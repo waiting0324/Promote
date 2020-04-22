@@ -119,6 +119,7 @@ public class PromoteTask {
                 pair.put("email", 27);
                 pair.put("type", 1);
             } else {
+                //店家
                 pair.put("id", 0);
                 pair.put("owner", 5);
                 pair.put("name", 1);
@@ -134,16 +135,20 @@ public class PromoteTask {
                 pair.put("isCulture", 11);
                 pair.put("isSightseeing", 12);
             }
+            //根據Excel版本的不同選用不同的方式處理
             if(path.indexOf(".xlsx") > -1){
+                //Excel 2007
                 Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(pair));
                 reader.read(path, 0);
             }else{
+                //Excel 2003
                 Excel03SaxReader reader = new Excel03SaxReader(createRowHandler(pair));
                 reader.read(path, 0);
             }
             String mathodName = PromoteTask.class.getName() + ".dealDiffData(String path)";
             Date now = DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime());
             if (totalSuccess > 0) {
+                //成功筆數寫log
                 SysOperLog successLog = new SysOperLog();
                 successLog.setMethod(mathodName);
                 successLog.setOperatorType(2);
@@ -153,6 +158,7 @@ public class PromoteTask {
                 operLogServic.insertOperlog(successLog);
             }
             if (totalFail > 0) {
+                //失敗筆數寫log
                 SysOperLog failLog = new SysOperLog();
                 failLog.setMethod(mathodName);
                 failLog.setOperatorType(2);
@@ -171,6 +177,7 @@ public class PromoteTask {
         return new RowHandler() {
             @Override
             public void handle(int sheetIndex, int rowIndex, List<Object> rowlist) {
+                //每一列都會呼叫此方法一次
                 try{
                     if (rowIndex > 0 && rowlist != null) {
                         String id = rowlist.get(pair.get("id")).toString();
@@ -180,7 +187,9 @@ public class PromoteTask {
                         boolean needInsert = false;
                         Class c = ProWhitelist.class;
                         Field[] fields = c.getDeclaredFields();
+                        //白名單Model的屬性名
                         List<String> columnNameList = new ArrayList<String>();
+                        //白名單Model的屬性類型
                         List<Class> columnTypeList = new ArrayList<Class>();
                         for (Field field : fields) {
                             String fieldName = field.getName();
@@ -191,6 +200,7 @@ public class PromoteTask {
                             columnTypeList.add(field.getType());
                         }
                         Integer type = pair.get("type");
+                        //根據id及類型去查白名單table,有查到做update,沒查到做insert
                         ProWhitelist proWhitelist = proWhitelistService.selectProWhitelistByIdType(id,type.toString());
                         if (proWhitelist == null) {
                             needInsert = true;
@@ -200,6 +210,7 @@ public class PromoteTask {
                             try {
                                 String columnName = columnNameList.get(i);
                                 String methodName = new StringBuilder("set").append(columnName.substring(0, 1).toUpperCase()).append(columnName.substring(1)).toString();
+                                //取得白名單Model的setter方法
                                 Method method = c.getMethod(methodName, columnTypeList.get(i));
                                 if (method != null) {
                                     Integer index = pair.get(columnName);
@@ -207,6 +218,7 @@ public class PromoteTask {
                                         continue;
                                     }
                                     Object value = rowlist.get(index);
+                                    //設定Excel的值到白名單Model
                                     method.invoke(proWhitelist, StringUtils.isNotNull(value) ? value.toString().trim() : null);
                                 }
                             } catch (Exception e) {
@@ -216,6 +228,7 @@ public class PromoteTask {
                         proWhitelist.setType(type != null ? type.toString() : null);
                         try {
                             if (needInsert) {
+                                //新增
 //                                if(count == 3){
 //                                    //測試用
 //                                    count++;
@@ -224,6 +237,7 @@ public class PromoteTask {
                                 proWhitelistService.insertProWhitelist(proWhitelist);
 
                             } else {
+                                //更新
 //                                if(count == 3){
 //                                    //測試用
 //                                    count++;
@@ -234,6 +248,7 @@ public class PromoteTask {
                             totalSuccess++;
 //                            count++; //測試用
                         } catch (Exception e) {
+                            //新增或更新失敗時寫log
                             totalFail++;
                             SysOperLog failLog = new SysOperLog();
                             failLog.setMethod(PromoteTask.class.getName() + ".dealDiffData(String path)");
