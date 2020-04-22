@@ -6,6 +6,7 @@ import com.promote.project.promote.mapper.ProWhitelistMapper;
 import com.promote.project.promote.service.IProWhitelistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -63,6 +64,7 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
      * @return 結果
      */
     @Override
+    @Transactional
     public int updateProWhitelist(ProWhitelist proWhitelist) {
         proWhitelist.setUpdateTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
         return proWhitelistMapper.updateProWhitelist(proWhitelist);

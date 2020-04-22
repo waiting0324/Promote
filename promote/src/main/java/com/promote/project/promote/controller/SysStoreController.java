@@ -58,7 +58,13 @@ public class SysStoreController extends BaseController {
     @PutMapping("/updIsAgreeTerms")
     public AjaxResult updIsAgreeTerms(String id, String agreeTermsFlg){
         if(StringUtils.isNotEmpty(agreeTermsFlg)){
-
+            ProWhitelist proWhitelist = new ProWhitelist();
+            proWhitelist.setId(id);
+            proWhitelist.setIsAgreeTerms(agreeTermsFlg);
+            if(proWhitelistService.updateProWhitelist(proWhitelist) > 0){
+                return AjaxResult.success();
+            }
+            return AjaxResult.error("更新白名單是否同意註冊條款失敗");
         }
         operLogService.insertOperlog("白名單", null, null, SysStoreController.class.getName() + ".updIsAgreeTerms(String agreeTermsFlg)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, "店家不同意註冊條款");
         return AjaxResult.error("店家不同意註冊條款");
