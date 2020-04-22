@@ -114,7 +114,8 @@
             u.user_id,
             u.name,
             u.birthday,
-            u.phonenumber
+            u.phonenumber,
+            u.coupon_type
         FROM
             sys_user u
             LEFT JOIN sys_user_role ur ON u.user_id = ur.user_id

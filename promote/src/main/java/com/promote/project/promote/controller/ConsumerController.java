@@ -5,6 +5,7 @@ import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.service.IConsumerService;
 import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ public class ConsumerController extends BaseController {
     @Autowired
     IConsumerService consumerService;
 
+    @PreAuthorize("@ss.hasRole('hostel')")
     @GetMapping("/identity/{identity}")
     public AjaxResult selectByIdentity(@PathVariable("identity") String identity) {
 
