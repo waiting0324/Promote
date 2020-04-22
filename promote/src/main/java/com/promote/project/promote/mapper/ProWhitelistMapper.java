@@ -80,4 +80,11 @@ public interface ProWhitelistMapper
     public ProWhitelist selectProWhitelistByIdType(@Param("id") String id,@Param("type") String type);
 
 
+    /**
+     * 根據統編/身分證字號查找白名單資料
+     *
+     * @param taxNo 統編/身分證字號
+     * @return 白名單
+     */
+    public ProWhitelist selectProWhitelistByTaxNo(String taxNo);
 }

@@ -1,6 +1,9 @@
 package com.promote.project.monitor.service.impl;
 
+import java.util.Date;
 import java.util.List;
+
+import com.promote.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.promote.project.monitor.domain.SysOperLog;
@@ -71,5 +74,47 @@ public class SysOperLogServiceImpl implements ISysOperLogService
     public void cleanOperLog()
     {
         operLogMapper.cleanOperLog();
+    }
+
+
+    /**
+     * 新增操作日誌
+     *
+     * @param title 操作模組
+     * @param businessType 業務型別
+     * @param businessTypes 業務型別陣列
+     * @param method 請求方法
+     * @param requestMethod 請求方式
+     * @param operatorType 操作類別
+     * @param operName 操作人員
+     * @param deptName 部門名稱
+     * @param operUrl 請求地址
+     * @param operIp 操作地址
+     * @param operLocation 操作地點
+     * @param operParam 請求引數
+     * @param jsonResult 返回引數
+     * @param status 狀態
+     * @param errorMsg 錯誤訊息
+     */
+    @Override
+    public void insertOperlog(String title, Integer businessType, Integer[] businessTypes, String method, String requestMethod, Integer operatorType, String operName, String deptName, String operUrl, String operIp, String operLocation, String operParam, String jsonResult, Integer status, String errorMsg) {
+        SysOperLog sysOperLog = new SysOperLog();
+        sysOperLog.setTitle(title);
+        sysOperLog.setBusinessType(businessType);
+        sysOperLog.setBusinessTypes(businessTypes);
+        sysOperLog.setMethod(method);
+        sysOperLog.setRequestMethod(requestMethod);
+        sysOperLog.setOperatorType(operatorType);
+        sysOperLog.setOperName(operName);
+        sysOperLog.setDeptName(deptName);
+        sysOperLog.setOperUrl(operUrl);
+        sysOperLog.setOperIp(operIp);
+        sysOperLog.setOperLocation(operLocation);
+        sysOperLog.setOperParam(operParam);
+        sysOperLog.setJsonResult(jsonResult);
+        sysOperLog.setStatus(status);
+        sysOperLog.setErrorMsg(errorMsg);
+        sysOperLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
+        insertOperlog(sysOperLog);
     }
 }
