@@ -46,11 +46,10 @@ public class SysHostelServiceImpl implements ISysHostelService {
      * @return 結果
      */
     @Override
-    public int regist(String username, String oldPwd, String newPwd) {
+    public void regist(String username, String oldPwd, String newPwd) {
 
         // 用預設帳號密碼從白名單中取出資料
         ProWhitelist white = proWhitelistMapper.selectProWhitelistByUsernameAndPwd(username, oldPwd);
-
 
         if (StringUtils.isNull(white)) {
             throw new CustomException("預設帳號或預設密碼不正確");
@@ -90,8 +89,6 @@ public class SysHostelServiceImpl implements ISysHostelService {
         // 將白名單更新為已註冊
         white.setIsRegisted("1");
         proWhitelistMapper.updateProWhitelist(white);
-
-        return 1;
     }
 
     /**

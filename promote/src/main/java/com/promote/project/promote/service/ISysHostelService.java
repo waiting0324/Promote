@@ -19,7 +19,7 @@ public interface ISysHostelService {
      * @return 結果
      */
     @Transactional(rollbackFor = Exception.class)
-    public int regist(String username, String oldPwd, String newPwd);
+    public void regist(String username, String oldPwd, String newPwd);
 
     /**
      * 取得旅宿業者

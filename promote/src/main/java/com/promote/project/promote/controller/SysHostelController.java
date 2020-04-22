@@ -39,7 +39,9 @@ public class SysHostelController extends BaseController {
             return AjaxResult.error("帳號or舊密碼or新密碼 未輸入值");
         }
 
-        return toAjax(hostelService.regist(username, oldPwd, newPwd));
+        hostelService.regist(username, oldPwd, newPwd);
+
+        return AjaxResult.success();
     }
 
     /**
