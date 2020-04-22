@@ -5,6 +5,7 @@ import com.promote.common.exception.CustomException;
 import com.promote.common.utils.EmailUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
+import com.promote.framework.security.service.SysLoginService;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
 import com.promote.project.promote.service.ISysHostelService;
@@ -29,13 +30,16 @@ import java.util.List;
 public class SysHostelServiceImpl implements ISysHostelService {
 
     @Autowired
-    ProWhitelistMapper proWhitelistMapper;
+    private ProWhitelistMapper proWhitelistMapper;
 
     @Autowired
-    SysUserMapper userMapper;
+    private SysUserMapper userMapper;
 
     @Autowired
     private SysUserRoleMapper userRoleMapper;
+
+    @Autowired
+    private SysLoginService loginService;
 
     /**
      * 旅宿業者註冊
@@ -63,6 +67,10 @@ public class SysHostelServiceImpl implements ISysHostelService {
             throw new CustomException("該帳號在使用者表中已經存在");
         }
 
+        if (newPwd.equals(oldPwd)) {
+            throw new CustomException("新密碼不可使用預設密碼");
+        }
+
         // 將白名單資料轉為使用者資料
         SysUser user = new SysUser();
         user.setUserName(username);
@@ -71,7 +79,7 @@ public class SysHostelServiceImpl implements ISysHostelService {
         user.setName(white.getName());
         user.setBirthday("20200101");
         user.setAddress(white.getAddress());
-        user.setPhonenumber(white.getPhonenumber());
+        user.setPhonenumber(white.getPhonenumber().replace("-", ""));
         user.setEmail(white.getEmail());
         user.setIsAgreeTerms(white.getIsAgreeTerms());
 
@@ -90,6 +98,25 @@ public class SysHostelServiceImpl implements ISysHostelService {
         white.setIsRegisted("1");
         proWhitelistMapper.updateProWhitelist(white);
     }
+
+    @Override
+    public String login(String username, String password, String code, String uuid) {
+
+        // 先查詢是否是第一次登入
+        ProWhitelist white = proWhitelistMapper.selectProWhitelistByUsernameAndPwd(username, password);
+
+        if (StringUtils.isNotNull(white) && !"1".equals(white.getIsRegisted())) {
+            throw new CustomException("旅宿業者第一次登入，請先跳轉到旅宿業者註冊頁面");
+        } else if (StringUtils.isNotNull(white) && "1".equals(white.getIsRegisted())) {
+            throw new CustomException("此預設帳號密碼已經完成註冊，請使用新的密碼進行登入");
+        }
+
+        // 非第一次登入，則正常進行登入
+        String token = loginService.login(username, password, code, uuid);
+
+        return token;
+    }
+
 
     /**
      * 取得旅宿業者
@@ -154,6 +181,7 @@ public class SysHostelServiceImpl implements ISysHostelService {
         }
         throw new CustomException("查無此人");
     }
+
 
 
     /**

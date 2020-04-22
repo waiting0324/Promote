@@ -1,5 +1,6 @@
 package com.promote.project.promote.controller;
 
+import com.promote.common.constant.Constants;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
@@ -10,7 +11,10 @@ import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.service.ISysHostelService;
 import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 旅宿業者 控制層
@@ -18,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  * @author 曾培晃
  */
 @RestController
-@RequestMapping("/promote/hostel")
+@RequestMapping("/hostel")
 public class SysHostelController extends BaseController {
 
     @Autowired
@@ -42,6 +46,26 @@ public class SysHostelController extends BaseController {
         hostelService.regist(username, oldPwd, newPwd);
 
         return AjaxResult.success();
+    }
+
+    /**
+     * 旅宿業者 登入
+     * @param username
+     * @param password
+     */
+    @PostMapping("/login")
+    public AjaxResult login(String username, String password, String code, String uuid) {
+
+        AjaxResult ajax = AjaxResult.success();
+
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
+            return AjaxResult.error("帳號or密碼 未輸入值");
+        }
+
+        String token = hostelService.login(username, password, code, uuid);
+        ajax.put(Constants.TOKEN, token);
+
+        return ajax;
     }
 
     /**
