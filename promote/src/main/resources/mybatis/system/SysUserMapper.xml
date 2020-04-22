@@ -19,8 +19,10 @@
         <result property="email" column="email"/>
         <result property="phonenumber" column="phonenumber"/>
         <result property="bankAccount" column="bank_account"/>
+        <result property="bankAccountName" column="bank_account_name"/>
         <result property="sex" column="sex"/>
         <result property="avatar" column="avatar"/>
+        <result property="storeName" column="store_name"/>
         <result property="address" column="address"/>
         <result property="latitude" column="latitude"/>
         <result property="longitude" column="longitude"/>
@@ -150,9 +152,13 @@
         <if test="couponProvideTime != null ">coupon_provide_time,</if>
         <if test="latitude != null ">latitude,</if>
         <if test="longitude != null ">longitude,</if>
+        <if test="address != null and address != ''">address,</if>
         <if test="email != null and email != ''">email,</if>
         <if test="avatar != null and avatar != ''">avatar,</if>
+        <if test="storeName != null and storeName != ''">store_name,</if>
         <if test="phonenumber != null and phonenumber != ''">phonenumber,</if>
+        <if test="bankAccount != null and bankAccount != ''">bank_account,</if>
+        <if test="bankAccountName != null and bankAccountName != ''">bank_account_name,</if>
         <if test="sex != null and sex != ''">sex,</if>
         <if test="password != null and password != ''">password,</if>
         <if test="status != null and status != ''">status,</if>
@@ -174,9 +180,13 @@
         <if test="couponProvideTime != null ">#{couponProvideTime},</if>
         <if test="latitude != null ">#{latitude},</if>
         <if test="longitude != null ">#{longitude},</if>
+        <if test="address != null and address != ''">#{address},</if>
         <if test="email != null and email != ''">#{email},</if>
         <if test="avatar != null and avatar != ''">#{avatar},</if>
+        <if test="storeName != null and storeName != ''">#{storeName},</if>
         <if test="phonenumber != null and phonenumber != ''">#{phonenumber},</if>
+        <if test="bankAccount != null and bankAccount != ''">#{bankAccount},</if>
+        <if test="bankAccountName != null and bankAccountName != ''">#{bankAccountName},</if>
         <if test="sex != null and sex != ''">#{sex},</if>
         <if test="password != null and password != ''">#{password},</if>
         <if test="status != null and status != ''">#{status},</if>

@@ -1,0 +1,93 @@
+package com.promote.project.promote.controller;
+
+import com.promote.common.constant.Constants;
+import com.promote.common.exception.user.CaptchaException;
+import com.promote.common.utils.ServletUtils;
+import com.promote.common.utils.StringUtils;
+import com.promote.common.utils.ip.IpUtils;
+import com.promote.framework.redis.RedisCache;
+import com.promote.framework.web.controller.BaseController;
+import com.promote.framework.web.domain.AjaxResult;
+import com.promote.project.monitor.service.ISysOperLogService;
+import com.promote.project.promote.domain.ProWhitelist;
+import com.promote.project.promote.service.IProStoreService;
+import com.promote.project.promote.service.IProWhitelistService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * 店家 控制層
+ *
+ * @author 曾培晃
+ */
+@RestController
+@RequestMapping("/store")
+public class ProStoreController extends BaseController {
+    @Autowired
+    private IProWhitelistService whitelistService;
+
+    @Autowired
+    private ISysOperLogService operLogService;
+
+    @Autowired
+    private RedisCache redisCache;
+
+    @Autowired
+    private IProStoreService storeService;
+
+    /**
+     * 店家白名單檢核
+     */
+    @GetMapping("/checkWhitelist")
+    public AjaxResult checkWhitelist(String taxNo) {
+        if (StringUtils.isNotEmpty(taxNo)) {
+            ProWhitelist proWhitelist = whitelistService.selectProWhitelistByTaxNo(taxNo);
+            if (proWhitelist != null) {
+                return AjaxResult.success(proWhitelist);
+            }
+            operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".regist(String taxNo)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, "白名單內查無資料");
+            return AjaxResult.error("白名單內查無資料");
+        }
+        return AjaxResult.error("未輸入任何值");
+    }
+
+    /**
+     * 店家是否同意註冊條款
+     */
+    @PutMapping("/updIsAgreeTerms")
+    public AjaxResult updIsAgreeTerms(String id, String agreeTermsFlg) {
+        if (StringUtils.isNotEmpty(agreeTermsFlg)) {
+            ProWhitelist proWhitelist = new ProWhitelist();
+            proWhitelist.setId(id);
+            proWhitelist.setIsAgreeTerms(agreeTermsFlg);
+            if (whitelistService.updateProWhitelist(proWhitelist) > 0) {
+                return AjaxResult.success();
+            }
+            return AjaxResult.error("更新白名單是否同意註冊條款失敗");
+        }
+        operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".updIsAgreeTerms(String agreeTermsFlg)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, "店家不同意註冊條款");
+        return AjaxResult.error("店家不同意註冊條款");
+    }
+
+
+    /**
+     * 店家註冊
+     */
+    @PostMapping("/regist")
+    public AjaxResult regist(String isFromApp, String id, String userName, String password, String name, String identity, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName, String uuid, String code) {
+        if (StringUtils.isEmpty(isFromApp)) {
+            //web
+            String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
+            String captcha = redisCache.getCacheObject(verifyKey);
+            if (!code.equalsIgnoreCase(captcha)) {
+                throw new CaptchaException();
+            }
+        }
+        if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(password) || StringUtils.isEmpty(name) || StringUtils.isEmpty(identity) || StringUtils.isEmpty(phonenumber) || StringUtils.isEmpty(storeName) || StringUtils.isEmpty(address) || StringUtils.isEmpty(bankAccount) || StringUtils.isEmpty(bankAccountName)) {
+            return AjaxResult.error("所有欄位皆為必輸欄位");
+        }
+        storeService.regist(id, userName, password, name, identity, phonenumber, storeName, address, bankAccount, bankAccountName);
+        return AjaxResult.success();
+    }
+
+}
