@@ -135,9 +135,17 @@ email:
   pwd: r150y9a018n
 
 ftp:
+  # FTP 遠端地址
   host: 127.0.0.1
+  # FTP 端口
   port: 21
+  # FTP 登入帳號
   username: ftpUser
+  # FTP 登入密碼
   password: s89236001
+  # 遠端資料夾路徑
   remoteDir: /
-  localDir: E://TEMP
+  # 本地暫存資料夾
+  localTempDir: D:\FTP\temp
+  # 本地儲存已處理檔案
+  localStoreDir: D:\FTP\store

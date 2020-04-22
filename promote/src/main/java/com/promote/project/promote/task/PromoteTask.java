@@ -7,11 +7,9 @@ import cn.hutool.poi.excel.sax.Excel07SaxReader;
 import cn.hutool.poi.excel.sax.handler.RowHandler;
 import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.StringUtils;
-import com.promote.common.utils.spring.SpringUtils;
 import com.promote.project.monitor.domain.SysOperLog;
 import com.promote.project.monitor.service.ISysOperLogService;
 import com.promote.project.promote.domain.ProWhitelist;
-import com.promote.project.promote.mapper.ProWhitelistMapper;
 import com.promote.project.promote.service.IProWhitelistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -32,6 +30,7 @@ import java.util.*;
 @Component("promoteTask")
 @ConfigurationProperties(prefix = "ftp")
 public class PromoteTask {
+
     @Autowired
     private IProWhitelistService proWhitelistService;
 
@@ -49,7 +48,9 @@ public class PromoteTask {
 
     private String remoteDir;
 
-    private String localDir;
+    private String localTempDir;
+
+    private String localStoreDir;
     // 與FTP相關配置 結束
 
     private int totalSuccess;
@@ -72,7 +73,7 @@ public class PromoteTask {
 
         // 循環下載所有檔案
         for (String fileName : files) {
-            ftp.download(remoteDir, fileName, FileUtil.file(localDir + "/" +  fileName));
+            ftp.download(remoteDir, fileName, FileUtil.file(localTempDir + "/" +  fileName));
         }
 
         // 刪除遠端資料
@@ -82,11 +83,17 @@ public class PromoteTask {
         ftp.close();
 
         // 開始將Excel檔案匯入資料庫
-        File[] localFiles = FileUtil.ls(localDir);
+        File[] localFiles = FileUtil.ls(localTempDir);
         for (File localFile : localFiles) {
             // TODO 需要做商家或旅宿業者判斷
-//            proWhitelistService.importStoreData(FileUtil.getInputStream(localFile), "2007");
+            this.dealDiffData(localFile.getPath());
         }
+
+        // 將檔案從臨時資料夾轉到儲存資料夾
+        FileUtil.copyContent(FileUtil.newFile(localTempDir), FileUtil.newFile(localStoreDir), true);
+
+        // 刪除暫存文件
+        FileUtil.clean(localTempDir);
     }
 
 
@@ -129,7 +136,7 @@ public class PromoteTask {
             }
             if(path.indexOf(".xlsx") > -1){
                 Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(pair));
-                reader.read(path, 0);
+                reader.read(path, 1);
             }else{
                 Excel03SaxReader reader = new Excel03SaxReader(createRowHandler(pair));
                 reader.read(path, 0);
@@ -291,11 +298,19 @@ public class PromoteTask {
         this.remoteDir = remoteDir;
     }
 
-    public String getLocalDir() {
-        return localDir;
+    public String getLocalTempDir() {
+        return localTempDir;
     }
 
-    public void setLocalDir(String localDir) {
-        this.localDir = localDir;
+    public void setLocalTempDir(String localTempDir) {
+        this.localTempDir = localTempDir;
+    }
+
+    public String getLocalStoreDir() {
+        return localStoreDir;
+    }
+
+    public void setLocalStoreDir(String localStoreDir) {
+        this.localStoreDir = localStoreDir;
     }
 }
