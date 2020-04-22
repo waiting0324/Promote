@@ -2,6 +2,7 @@ package com.promote.project.promote.service;
 
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.system.domain.SysUser;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 旅宿業者 服務層
@@ -17,6 +18,7 @@ public interface ISysHostelService {
      * @param newPwd  新密碼
      * @return 結果
      */
+    @Transactional(rollbackFor = Exception.class)
     public int regist(String username, String oldPwd, String newPwd);
 
     /**

@@ -124,6 +124,7 @@
     <insert id="insertUser" parameterType="SysUser" useGeneratedKeys="true" keyProperty="userId">
         insert into sys_user(
         <if test="userId != null and userId != 0">user_id,</if>
+        <if test="identity != null and identity != 0">identity,</if>
         <if test="birthday != null and birthday != 0">birthday,</if>
         <if test="deptId != null and deptId != 0">dept_id,</if>
         <if test="userName != null and userName != ''">user_name,</if>
@@ -141,11 +142,13 @@
         <if test="sex != null and sex != ''">sex,</if>
         <if test="password != null and password != ''">password,</if>
         <if test="status != null and status != ''">status,</if>
+        <if test="isAgreeTerms != null and isAgreeTerms != ''">is_agree_terms,</if>
         <if test="createBy != null and createBy != ''">create_by,</if>
         <if test="remark != null and remark != ''">remark,</if>
         create_time
         )values(
         <if test="userId != null and userId != ''">#{userId},</if>
+        <if test="identity != null and identity != ''">#{identity},</if>
         <if test="birthday != null and birthday != ''">#{birthday},</if>
         <if test="deptId != null and deptId != ''">#{deptId},</if>
         <if test="userName != null and userName != ''">#{userName},</if>
@@ -163,6 +166,7 @@
         <if test="sex != null and sex != ''">#{sex},</if>
         <if test="password != null and password != ''">#{password},</if>
         <if test="status != null and status != ''">#{status},</if>
+        <if test="isAgreeTerms != null and isAgreeTerms != ''">#{isAgreeTerms},</if>
         <if test="createBy != null and createBy != ''">#{createBy},</if>
         <if test="remark != null and remark != ''">#{remark},</if>
         sysdate()
