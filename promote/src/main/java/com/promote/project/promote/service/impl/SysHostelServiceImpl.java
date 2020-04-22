@@ -1,19 +1,24 @@
 package com.promote.project.promote.service.impl;
 
+import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.utils.EmailUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.project.promote.domain.ProWhitelist;
-import com.promote.project.system.domain.SysUser;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
-import com.promote.project.system.mapper.SysUserMapper;
 import com.promote.project.promote.service.ISysHostelService;
+import com.promote.project.system.domain.SysUser;
+import com.promote.project.system.domain.SysUserRole;
+import com.promote.project.system.mapper.SysUserMapper;
+import com.promote.project.system.mapper.SysUserRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 旅宿業者 服務層實現
@@ -29,41 +34,61 @@ public class SysHostelServiceImpl implements ISysHostelService {
     @Autowired
     SysUserMapper userMapper;
 
+    @Autowired
+    private SysUserRoleMapper userRoleMapper;
+
     /**
      * 旅宿業者註冊
      *
      * @param username 帳號
-     * @param oldPwd  舊密碼
-     * @param newPwd  新密碼
+     * @param oldPwd   舊密碼
+     * @param newPwd   新密碼
      * @return 結果
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public int regist(String username, String oldPwd, String newPwd) {
+    public void regist(String username, String oldPwd, String newPwd) {
 
         // 用預設帳號密碼從白名單中取出資料
         ProWhitelist white = proWhitelistMapper.selectProWhitelistByUsernameAndPwd(username, oldPwd);
 
-        // 插入User表
-        if (StringUtils.isNotNull(white)) {
-
-            SysUser user = new SysUser();
-
-            user.setUserName(username);
-            user.setPassword(SecurityUtils.encryptPassword(newPwd));
-            user.setName(white.getName());
-            user.setBirthday("20200101");
-            // TODO 處理身分證/統一編號
-            user.setAddress(white.getAddress());
-            user.setPhonenumber(white.getPhonenumber());
-            user.setEmail(white.getEmail());
-            // TODO 處理角色問題
-            user.setIsAgreeTerms("0");
-
-            return userMapper.insertUser(user);
+        if (StringUtils.isNull(white)) {
+            throw new CustomException("預設帳號或預設密碼不正確");
         }
 
-        throw new CustomException("查無此帳號");
+        if ("1".equals(white.getIsRegisted())) {
+            throw new CustomException("此預設帳號已經被註冊過");
+        }
+
+        if (StringUtils.isNotNull(userMapper.selectUserByUserName(username))) {
+            throw new CustomException("該帳號在使用者表中已經存在");
+        }
+
+        // 將白名單資料轉為使用者資料
+        SysUser user = new SysUser();
+        user.setUserName(username);
+        user.setIdentity(white.getTaxNo());
+        user.setPassword(SecurityUtils.encryptPassword(newPwd));
+        user.setName(white.getName());
+        user.setBirthday("20200101");
+        user.setAddress(white.getAddress());
+        user.setPhonenumber(white.getPhonenumber());
+        user.setEmail(white.getEmail());
+        user.setIsAgreeTerms(white.getIsAgreeTerms());
+
+        // 插入User表
+        userMapper.insertUser(user);
+
+        // 處理角色問題
+        List<SysUserRole> userRoleList = new ArrayList<>();
+        SysUserRole ur = new SysUserRole();
+        ur.setUserId(user.getUserId());
+        ur.setRoleId(RoleConstants.HOSTEL_ROLE_ID);
+        userRoleList.add(ur);
+        userRoleMapper.batchUserRole(userRoleList);
+
+        // 將白名單更新為已註冊
+        white.setIsRegisted("1");
+        proWhitelistMapper.updateProWhitelist(white);
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.promote.project.promote.controller;
 
-import com.promote.common.utils.EmailUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
@@ -8,13 +7,10 @@ import com.promote.framework.security.LoginUser;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
-import com.promote.project.system.domain.SysUser;
 import com.promote.project.promote.service.ISysHostelService;
-import com.promote.project.system.service.ISysUserService;
+import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import javax.mail.MessagingException;
 
 /**
  * 旅宿業者 控制層
@@ -22,7 +18,7 @@ import javax.mail.MessagingException;
  * @author 曾培晃
  */
 @RestController
-@RequestMapping("/hostel")
+@RequestMapping("/promote/hostel")
 public class SysHostelController extends BaseController {
 
     @Autowired
@@ -37,10 +33,15 @@ public class SysHostelController extends BaseController {
      */
     @PostMapping("/regist")
     public AjaxResult regist(String username, String oldPwd, String newPwd) {
-        if (StringUtils.isNotEmpty(username) && StringUtils.isNotEmpty(oldPwd) && StringUtils.isNotEmpty(newPwd)) {
-            return toAjax(hostelService.regist(username, oldPwd, newPwd));
+
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(oldPwd)
+                || StringUtils.isEmpty(newPwd)) {
+            return AjaxResult.error("帳號or舊密碼or新密碼 未輸入值");
         }
-        return AjaxResult.error("帳號or密碼未輸入值");
+
+        hostelService.regist(username, oldPwd, newPwd);
+
+        return AjaxResult.success();
     }
 
     /**

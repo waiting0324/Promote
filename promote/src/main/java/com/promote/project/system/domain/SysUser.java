@@ -28,6 +28,9 @@ public class SysUser extends BaseEntity
     @Excel(name = "使用者序號", cellType = ColumnType.NUMERIC, prompt = "使用者編號")
     private Long userId;
 
+    /** 使用者 身分證/居留證/統一編號 */
+    private String identity;
+
     /** 使用者生日 */
     private String birthday;
 
@@ -430,6 +433,14 @@ public class SysUser extends BaseEntity
 
     public void setIsAgreeTerms(String isAgreeTerms) {
         this.isAgreeTerms = isAgreeTerms;
+    }
+
+    public String getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(String identity) {
+        this.identity = identity;
     }
 
     @Override

@@ -50,6 +50,12 @@ public class ProWhitelist extends BaseEntity
     @Excel(name = "電子信箱")
     private String email;
 
+    /** 是否同意註冊條款 */
+    private String isAgreeTerms;
+
+    /** 是否已註冊過 ( 0否 1是 )*/
+    private String isRegisted;
+
     /** 資料類型 (1旅宿業者 2商家) */
     @Excel(name = "資料類型 (1旅宿業者 2商家)")
     private String type;
@@ -207,6 +213,22 @@ public class ProWhitelist extends BaseEntity
     public String getIsSightseeing() 
     {
         return isSightseeing;
+    }
+
+    public String getIsAgreeTerms() {
+        return isAgreeTerms;
+    }
+
+    public void setIsAgreeTerms(String isAgreeTerms) {
+        this.isAgreeTerms = isAgreeTerms;
+    }
+
+    public String getIsRegisted() {
+        return isRegisted;
+    }
+
+    public void setIsRegisted(String isRegisted) {
+        this.isRegisted = isRegisted;
     }
 
     @Override

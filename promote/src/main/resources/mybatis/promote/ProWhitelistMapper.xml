@@ -14,6 +14,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="address"    column="address"    />
         <result property="phonenumber"    column="phonenumber"    />
         <result property="email"    column="email"    />
+        <result property="isAgreeTerms"    column="is_agree_terms"    />
+        <result property="isRegisted"    column="is_registed"    />
         <result property="type"    column="type"    />
         <result property="isNMarket"    column="is_n_market"    />
         <result property="isTMarket"    column="is_t_market"    />
@@ -25,7 +27,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectProWhitelistVo">
-        select id, owner, name, tax_no, username, password, address, phonenumber, email, type, is_n_market, is_t_market, is_foodbeverage, is_culture, is_sightseeing, update_time, create_time from pro_whitelist
+        select id, owner, name, tax_no, username, password, address, phonenumber, email, is_agree_terms, is_registed, type, is_n_market, is_t_market, is_foodbeverage, is_culture, is_sightseeing, update_time, create_time from pro_whitelist
     </sql>
 
     <select id="selectProWhitelistList" parameterType="ProWhitelist" resultMap="ProWhitelistResult">
@@ -112,6 +114,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="phonenumber != null  and phonenumber != ''">phonenumber = #{phonenumber},</if>
             <if test="email != null  and email != ''">email = #{email},</if>
             <if test="type != null  and type != ''">type = #{type},</if>
+            <if test="isRegisted != null  and isRegisted != ''">is_registed = #{isRegisted},</if>
             <if test="isNMarket != null  and isNMarket != ''">is_n_market = #{isNMarket},</if>
             <if test="isTMarket != null  and isTMarket != ''">is_t_market = #{isTMarket},</if>
             <if test="isFoodbeverage != null  and isFoodbeverage != ''">is_foodbeverage = #{isFoodbeverage},</if>
