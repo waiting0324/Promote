@@ -183,6 +183,17 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
         return proWhitelistMapper.selectProWhitelistByIdType(id,type);
     }
 
+    /**
+     * 根據統編/身分證字號查找白名單資料
+     *
+     * @param taxNo 統編/身分證字號
+     * @return 白名單
+     */
+    @Override
+    public ProWhitelist selectProWhitelistByTaxNo(String taxNo) {
+        return proWhitelistMapper.selectProWhitelistByTaxNo(taxNo);
+    }
+
 //    private RowHandler createRowHandler(Map<String,Integer> dataMap) {
 //        return new RowHandler() {
 //            @Override

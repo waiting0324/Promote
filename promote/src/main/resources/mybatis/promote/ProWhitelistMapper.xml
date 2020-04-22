@@ -138,5 +138,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectProWhitelistVo"/>
         where id = #{id} and type = #{type}
     </select>
+
+    <select id="selectProWhitelistByTaxNo" parameterType="String" resultMap="ProWhitelistResult">
+        <include refid="selectProWhitelistVo"/>
+        where tax_no = #{taxNo}
+    </select>
     
 </mapper>
