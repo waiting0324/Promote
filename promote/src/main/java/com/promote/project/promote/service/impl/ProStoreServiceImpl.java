@@ -2,14 +2,11 @@ package com.promote.project.promote.service.impl;
 
 import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
-import com.promote.common.utils.EmailUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
-import com.promote.framework.security.service.SysLoginService;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
 import com.promote.project.promote.service.IProStoreService;
-import com.promote.project.promote.service.ISysHostelService;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.domain.SysUserRole;
 import com.promote.project.system.mapper.SysUserMapper;
@@ -18,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +50,7 @@ public class ProStoreServiceImpl implements IProStoreService {
      * @param bankAccount     銀行帳戶
      * @param bankAccountName 銀行戶名
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void regist(String id, String userName, String password, String name, String identity, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName) {
 
@@ -76,7 +73,7 @@ public class ProStoreServiceImpl implements IProStoreService {
         user.setBankAccountName(bankAccountName);
         user.setIsAgreeTerms(proWhitelist.getIsAgreeTerms());
 
-        user.setBirthday("20200101"); //TO FIX
+        user.setBirthday("20200101"); //TODO FIX
         // 插入User表
         userMapper.insertUser(user);
         // 處理角色問題

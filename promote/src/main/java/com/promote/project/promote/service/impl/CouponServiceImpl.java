@@ -14,6 +14,7 @@ import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.mapper.SysUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -113,6 +114,7 @@ public class CouponServiceImpl implements ICouponService
     }
 
     @Override
+    @Transactional
     public int sendCoupon(SysUser user, String code) {
 
         // 檢驗是否有消費者ID

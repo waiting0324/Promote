@@ -57,7 +57,7 @@ public class Constants
     /**
      * 驗證碼有效期（分鐘）
      */
-    public static final Integer CAPTCHA_EXPIRATION = 2;
+    public static final Integer CAPTCHA_EXPIRATION = 5;
 
     /**
      * 令牌
@@ -107,5 +107,16 @@ public class Constants
     /**
      * 密碼的正則表達式
      */
-    public static final String PASSWORD_REGEX = "[0-9A-Za-z]{6,20} ";
+    public static final String PASSWORD_REGEX = "[0-9A-Za-z]{6,20}";
+
+    /**
+     * 驗證碼使用EMAIL方式驗證
+     */
+    public static final String VERI_CODE_TYPE_EMAIL = "1";
+
+    /**
+     * 驗證碼使用OTP方式驗證
+     */
+    public static final String VERI_CODE_TYPE_OTP = "2";
+
 }
