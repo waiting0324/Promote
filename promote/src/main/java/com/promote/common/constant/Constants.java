@@ -45,9 +45,9 @@ public class Constants
     public static final String CAPTCHA_CODE_KEY = "captcha_codes:";
 
     /**
-     * OTP驗證碼 redis key
+     * OTP、Email 驗證碼 redis key
      */
-    public static final String OTP_CODE_KEY = "otp_codes:";
+    public static final String VERIFICATION_CODE_KEY = "verification_codes:";
 
     /**
      * 登入使用者 redis key
@@ -103,4 +103,9 @@ public class Constants
      * 資源對映路徑 字首
      */
     public static final String RESOURCE_PREFIX = "/profile";
+
+    /**
+     * 密碼的正則表達式
+     */
+    public static final String PASSWORD_REGEX = "[0-9A-Za-z]{6,20} ";
 }
