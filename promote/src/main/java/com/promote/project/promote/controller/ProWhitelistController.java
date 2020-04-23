@@ -1,8 +1,5 @@
 package com.promote.project.promote.controller;
 
-import cn.hutool.poi.excel.sax.Excel07SaxReader;
-import cn.hutool.poi.excel.sax.handler.RowHandler;
-import com.promote.common.utils.StringUtils;
 import com.promote.common.utils.poi.ExcelUtil;
 import com.promote.framework.aspectj.lang.annotation.Log;
 import com.promote.framework.aspectj.lang.enums.BusinessType;
@@ -11,14 +8,10 @@ import com.promote.framework.web.domain.AjaxResult;
 import com.promote.framework.web.page.TableDataInfo;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.service.IProWhitelistService;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -64,7 +57,7 @@ public class ProWhitelistController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:whitelist:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
+    public AjaxResult getInfo(@PathVariable("id") String id)
     {
         return AjaxResult.success(proWhitelistService.selectProWhitelistById(id));
     }

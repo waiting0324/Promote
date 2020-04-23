@@ -99,11 +99,9 @@ public class CouponController extends BaseController
     /**
      * 旅宿業者發送抵用券給消費者
      */
+    @PreAuthorize("@ss.hasRole('hostel')")
     @PostMapping("/send")
     public AjaxResult sendCoupon(SysUser user, String code) {
-        AjaxResult ajax = AjaxResult.success();
-        couponService.sendCoupon(user, code);
-
-        return ajax;
+        return toAjax(couponService.sendCoupon(user, code));
     }
 }

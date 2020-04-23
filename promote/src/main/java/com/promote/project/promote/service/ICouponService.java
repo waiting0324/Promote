@@ -66,7 +66,8 @@ public interface ICouponService
      * 旅宿業者發送抵用券給消費者
      * @param user 要發放抵用券的使用者
      * @param code 簡訊驗證碼
+     * @return
      */
     @Transactional
-    void sendCoupon(SysUser user, String code);
+    int sendCoupon(SysUser user, String code);
 }

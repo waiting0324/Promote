@@ -1,13 +1,17 @@
 package com.promote.project.promote.service.impl;
 
+import com.promote.common.constant.CouponConstants;
 import com.promote.common.constant.StoreTypeConstants;
+import com.promote.common.exception.CustomException;
 import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.SecurityUtils;
+import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
 import com.promote.project.promote.domain.Coupon;
 import com.promote.project.promote.mapper.CouponMapper;
 import com.promote.project.promote.service.ICouponService;
 import com.promote.project.system.domain.SysUser;
+import com.promote.project.system.mapper.SysUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +32,9 @@ public class CouponServiceImpl implements ICouponService
 {
     @Autowired
     private CouponMapper couponMapper;
+
+    @Autowired
+    private SysUserMapper userMapper;
 
     @Autowired
     private RedisCache redisCache;
@@ -106,7 +113,17 @@ public class CouponServiceImpl implements ICouponService
     }
 
     @Override
-    public void sendCoupon(SysUser user, String code) {
+    public int sendCoupon(SysUser user, String code) {
+
+        // 檢驗是否有消費者ID
+        if (StringUtils.isNull(user.getUserId())) {
+            throw new CustomException("未指定消費者ID");
+        }
+
+        // 查詢該消費者是否已經發過抵用券
+        if (CouponConstants.IS_PROVIDE.equals(userMapper.selectUserById(user.getUserId()).getCouponProvideType())) {
+            throw new CustomException("該消費者已經領過抵用券");
+        }
 
         // 驗證OTP驗證碼
         // 從Redis中取出驗證碼
@@ -123,39 +140,64 @@ public class CouponServiceImpl implements ICouponService
             throw new CaptchaException();
         }*/
 
-        // 設定抵用券資料，發送抵用券
-        List<Coupon> couponList = new ArrayList<>();
-        for (int i = 0; i < 16; i++) {
+        // 消費者選擇使用電子(虛擬)方式發放抵用券
+        if (CouponConstants.COUPON_TYPE_VIRTUAL.equals(user.getCouponType())) {
 
-            // 設定抵用券的基本資料
-            Coupon coupon = new Coupon();
-            coupon.setSn(LocalDate.now().format(DateTimeFormatter.ofPattern("MMdd")) + UUID.randomUUID());
-            coupon.setUserId(user.getUserId());
-            coupon.setHostelId(SecurityUtils.getLoginUser().getUser().getUserId());
-            coupon.setIsUsed("0");
+            // 設定抵用券資料，發送抵用券
+            List<Coupon> couponList = new ArrayList<>();
+            for (int i = 0; i < 16; i++) {
 
-            // 夜市
-            if (i <= 3) {
-                coupon.setStoreType(StoreTypeConstants.NIGHT_MARKET);
-            }
-            // 餐廳
-            else if (4 <= i && i <= 7) {
-                coupon.setStoreType(StoreTypeConstants.RESTAURANT);
-            }
-            // 商圈
-            else if (8 <= i && i <= 11) {
-                coupon.setStoreType(StoreTypeConstants.SHOPPING_AERA);
-            }
-            // 商圈
-            else if (12 <= i && i <= 15) {
-                coupon.setStoreType(StoreTypeConstants.ART);
+                // 設定抵用券的基本資料
+                Coupon coupon = new Coupon();
+                coupon.setSn(LocalDate.now().format(DateTimeFormatter.ofPattern("MMdd")) + UUID.randomUUID());
+                coupon.setUserId(user.getUserId());
+                coupon.setHostelId(SecurityUtils.getLoginUser().getUser().getUserId());
+                coupon.setIsUsed("0");
+
+                // 夜市
+                if (i <= 3) {
+                    coupon.setStoreType(StoreTypeConstants.NIGHT_MARKET);
+                }
+                // 餐廳
+                else if (4 <= i && i <= 7) {
+                    coupon.setStoreType(StoreTypeConstants.RESTAURANT);
+                }
+                // 商圈
+                else if (8 <= i && i <= 11) {
+                    coupon.setStoreType(StoreTypeConstants.SHOPPING_AERA);
+                }
+                // 藝文
+                else if (12 <= i && i <= 15) {
+                    coupon.setStoreType(StoreTypeConstants.ART);
+                }
+
+                couponList.add(coupon);
             }
 
-            couponList.add(coupon);
+            // 寫入抵用券表
+            couponMapper.insertCouponList(couponList);
+
+        }
+        // 消費者選擇使用紙本方式發放抵用券
+        else if (CouponConstants.COUPON_TYPE_PAPER.equals(user.getCouponType())) {
+            // TODO 連接KIOSK
+        } else {
+            throw new CustomException("消費者選擇發放抵用券的方式不正確");
         }
 
-        // 寫入抵用券表
-        couponMapper.insertCouponList(couponList);
+
+        // 處理要更新的消費者資料
+        SysUser updateUser = new SysUser();
+        updateUser.setUserId(user.getUserId());
+        // 電子或紙本
+        updateUser.setCouponType(user.getCouponType());
+        updateUser.setPhonenumber(user.getPhonenumber());
+        // 是否已發送
+        updateUser.setCouponProvideType(CouponConstants.IS_PROVIDE);
+        updateUser.setCouponProvideTime(DateUtils.getNowDate());
+
+        // 更新消費者資料
+        return userMapper.updateUser(updateUser);
 
     }
 }

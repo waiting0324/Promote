@@ -203,7 +203,6 @@
             <if test="deptId != null and deptId != 0">dept_id = #{deptId},</if>
             <if test="userName != null and userName != ''">user_name = #{userName},</if>
             <if test="name != null  and name != ''">name = #{name},</if>
-            <if test="userType != null  and userType != ''">user_type = #{userType},</if>
             <if test="couponType != null  and couponType != ''">coupon_type = #{couponType},</if>
             <if test="couponPrintCode != null  and couponPrintCode != ''">coupon_print_code = #{couponPrintCode},</if>
             <if test="couponPrintType != null  and couponPrintType != ''">coupon_print_type = #{couponPrintType},</if>
