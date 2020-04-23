@@ -45,7 +45,7 @@ public class ProStoreController extends BaseController {
             if (proWhitelist != null) {
                 return AjaxResult.success(proWhitelist);
             }
-            operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".regist(String taxNo)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, "白名單內查無資料");
+            operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".checkWhitelist(String taxNo)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, "白名單內查無資料");
             return AjaxResult.error("白名單內查無資料");
         }
         return AjaxResult.error("未輸入任何值");
@@ -57,16 +57,20 @@ public class ProStoreController extends BaseController {
     @PutMapping("/updIsAgreeTerms")
     public AjaxResult updIsAgreeTerms(String id, String agreeTermsFlg) {
         if (StringUtils.isNotEmpty(agreeTermsFlg)) {
-            ProWhitelist proWhitelist = new ProWhitelist();
-            proWhitelist.setId(id);
-            proWhitelist.setIsAgreeTerms(agreeTermsFlg);
-            if (whitelistService.updateProWhitelist(proWhitelist) > 0) {
-                return AjaxResult.success();
+            if("1".equals(agreeTermsFlg)){
+                //同意
+                ProWhitelist proWhitelist = new ProWhitelist();
+                proWhitelist.setId(id);
+                proWhitelist.setIsAgreeTerms(agreeTermsFlg);
+                if (whitelistService.updateProWhitelist(proWhitelist) > 0) {
+                    return AjaxResult.success();
+                }
+                return AjaxResult.error("更新白名單是否同意註冊條款失敗");
             }
-            return AjaxResult.error("更新白名單是否同意註冊條款失敗");
+            operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".updIsAgreeTerms(String id, String agreeTermsFlg)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, "店家不同意註冊條款");
+            return AjaxResult.error("店家不同意註冊條款");
         }
-        operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".updIsAgreeTerms(String agreeTermsFlg)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, "店家不同意註冊條款");
-        return AjaxResult.error("店家不同意註冊條款");
+        return AjaxResult.error("店家需填選註冊條款");
     }
 
 
