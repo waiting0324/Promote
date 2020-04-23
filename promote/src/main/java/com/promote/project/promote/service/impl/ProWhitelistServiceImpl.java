@@ -180,7 +180,7 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
      * @return 白名單
      */
     @Override
-    public ProWhitelist selectProWhitelistByTaxNo(String taxNo) {
+    public List<ProWhitelist> selectProWhitelistByTaxNo(String taxNo) {
         return proWhitelistMapper.selectProWhitelistByTaxNo(taxNo);
     }
 

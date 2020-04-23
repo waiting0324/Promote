@@ -219,7 +219,7 @@ public class PromoteTask {
                                     }
                                     Object value = rowlist.get(index);
                                     //設定Excel的值到白名單Model
-                                    method.invoke(proWhitelist, StringUtils.isNotNull(value) ? value.toString().trim() : null);
+                                    method.invoke(proWhitelist, StringUtils.isNotNull(value) ? value.toString().trim().replaceAll("\\u00A0+", "") : null);
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
