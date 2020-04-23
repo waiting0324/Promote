@@ -2,7 +2,6 @@ package com.promote.project.promote.service;
 
 import com.promote.project.promote.domain.Coupon;
 import com.promote.project.system.domain.SysUser;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -68,6 +67,5 @@ public interface ICouponService
      * @param code 簡訊驗證碼
      * @return
      */
-    @Transactional
     int sendCoupon(SysUser user, String code);
 }

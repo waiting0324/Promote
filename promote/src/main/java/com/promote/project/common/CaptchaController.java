@@ -1,19 +1,20 @@
 package com.promote.project.common;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.promote.common.constant.Constants;
 import com.promote.common.utils.IdUtils;
 import com.promote.common.utils.VerifyCodeUtils;
 import com.promote.common.utils.sign.Base64;
 import com.promote.framework.redis.RedisCache;
 import com.promote.framework.web.domain.AjaxResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 驗證碼操作處理
@@ -34,7 +35,7 @@ public class CaptchaController
     {
         // 生成隨機字串
         // String verifyCode = VerifyCodeUtils.generateVerifyCode(4);
-        String verifyCode = String.format("%04d", new Random().nextInt(10000));
+        String verifyCode = String.format("%04d", new Random().nextInt(9999));
         // 唯一標識
         String uuid = IdUtils.simpleUUID();
         String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;

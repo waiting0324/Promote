@@ -1,25 +1,23 @@
 package com.promote.common.utils;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import javax.mail.*;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
 @Component
 public class EmailUtils {
     /**
-     * 服物器的SMTP地址
+     * 服務器的SMTP地址
      */
     private static String host;
     /**
-     * 服物器的SMTP端口
+     * 服務器的SMTP端口
      */
     private static int port;
     private static String smtp ;

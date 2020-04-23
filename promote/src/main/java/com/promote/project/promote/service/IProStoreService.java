@@ -1,9 +1,5 @@
 package com.promote.project.promote.service;
 
-import com.promote.project.promote.domain.ProWhitelist;
-import com.promote.project.system.domain.SysUser;
-import org.springframework.transaction.annotation.Transactional;
-
 /**
  * 店家 服務層
  *
@@ -24,8 +20,7 @@ public interface IProStoreService {
      * @param bankAccount 銀行帳戶
      * @param bankAccountName 銀行戶名
      */
-    @Transactional(rollbackFor = Exception.class)
-    public void regist(String id, String userName, String password, String identity, String name, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName);
+    public void regist(String id, String userName, String password, String name, String identity, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName);
 
 
 

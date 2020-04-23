@@ -6,8 +6,11 @@ import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.service.ICommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.mail.MessagingException;
 
 /**
  * @author 6550 劉威廷
@@ -20,6 +23,18 @@ public class ProCommonController extends BaseController {
 
     @Autowired
     ICommonService commonService;
+
+    /**
+     * 發送驗證碼
+     * @param username 帳號
+     * @param type 驗證類型 ( 1:Email 2:簡訊OTP )
+     */
+    @PostMapping("/captcha")
+    public AjaxResult captcha(String username, String type) throws MessagingException {
+        AjaxResult ajax = AjaxResult.success();
+        commonService.sendCaptcha(username, type);
+        return ajax;
+    }
 
 
     /**
