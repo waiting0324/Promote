@@ -1,5 +1,7 @@
 package com.promote.project.promote.service;
 
+import com.promote.project.system.domain.SysUser;
+
 /**
  * @author 6550 劉威廷
  * @date 2020/4/23 下午 02:07
@@ -15,4 +17,13 @@ public interface ICommonService {
      * @return
      */
     int forgetPwd(String code, String username, String newPwd);
+
+    /**
+     * 資料遮罩
+     *
+     * @param sysUser 使用者資料
+     * @param extraField 額外需遮罩的欄位
+     * @return 遮罩後的使用者資料
+     */
+    SysUser hidePersonalInfo(SysUser sysUser,String[] extraField);
 }
