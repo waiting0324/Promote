@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/common")
-public class CommonController extends BaseController {
+public class ProCommonController extends BaseController {
 
     @Autowired
     ICommonService commonService;
