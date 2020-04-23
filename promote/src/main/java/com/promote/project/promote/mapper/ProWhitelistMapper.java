@@ -86,5 +86,5 @@ public interface ProWhitelistMapper
      * @param taxNo 統編/身分證字號
      * @return 白名單
      */
-    public ProWhitelist selectProWhitelistByTaxNo(String taxNo);
+    public List<ProWhitelist> selectProWhitelistByTaxNo(String taxNo);
 }

@@ -2,6 +2,7 @@ package com.promote.project.promote.service.impl;
 
 import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
+import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.EmailUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
@@ -46,8 +47,8 @@ public class ProStoreServiceImpl implements IProStoreService {
      *
      * @param userName        帳號
      * @param password        密碼
-     * @param name            姓名/商店名稱
      * @param identity        身分證/居留證/統一編號
+     * @param name            姓名/商店名稱
      * @param phonenumber     手機號碼
      * @param storeName       商家實際店名
      * @param address         商家地址
@@ -55,14 +56,13 @@ public class ProStoreServiceImpl implements IProStoreService {
      * @param bankAccountName 銀行戶名
      */
     @Override
-    public void regist(String id, String userName, String password, String name, String identity, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName) {
-
+    public void regist(String id, String userName, String password, String identity, String name, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName) {
+        if (StringUtils.isNotNull(userMapper.selectUserByUserName(userName))) {
+            throw new CustomException("該帳號已被使用");
+        }
         ProWhitelist proWhitelist = proWhitelistMapper.selectProWhitelistById(id);
         if (StringUtils.isNull(proWhitelist)) {
             throw new CustomException("白名單內並無此店家");
-        }
-        if (StringUtils.isNotNull(userMapper.selectUserByUserName(userName))) {
-            throw new CustomException("該帳號在使用者表中已經存在");
         }
         SysUser user = new SysUser();
         user.setUserName(userName);
@@ -86,7 +86,12 @@ public class ProStoreServiceImpl implements IProStoreService {
         ur.setRoleId(RoleConstants.STORE_ROLE_ID);
         userRoleList.add(ur);
         userRoleMapper.batchUserRole(userRoleList);
+
+        //將白名單更新為已同意註冊條款
         proWhitelist.setIsAgreeTerms("1");
+        //將白名單更新為已註冊
+        proWhitelist.setIsRegisted("1");
+        proWhitelist.setUpdateTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
         proWhitelistMapper.updateProWhitelist(proWhitelist);
     }
 }

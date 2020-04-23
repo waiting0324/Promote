@@ -15,6 +15,9 @@ import com.promote.project.promote.service.IProWhitelistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * 店家 控制層
  *
@@ -41,8 +44,8 @@ public class ProStoreController extends BaseController {
     @GetMapping("/checkWhitelist")
     public AjaxResult checkWhitelist(String taxNo) {
         if (StringUtils.isNotEmpty(taxNo)) {
-            ProWhitelist proWhitelist = whitelistService.selectProWhitelistByTaxNo(taxNo);
-            if (proWhitelist != null) {
+            List<ProWhitelist> proWhitelist = whitelistService.selectProWhitelistByTaxNo(taxNo);
+            if (proWhitelist != null && proWhitelist.size() > 0) {
                 return AjaxResult.success(proWhitelist);
             }
             operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".checkWhitelist(String taxNo)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, "白名單內查無資料");
@@ -54,31 +57,34 @@ public class ProStoreController extends BaseController {
     /**
      * 店家是否同意註冊條款
      */
-    @PutMapping("/updIsAgreeTerms")
-    public AjaxResult updIsAgreeTerms(String id, String agreeTermsFlg) {
-        if (StringUtils.isNotEmpty(agreeTermsFlg)) {
-            if("1".equals(agreeTermsFlg)){
-                //同意
-                ProWhitelist proWhitelist = new ProWhitelist();
-                proWhitelist.setId(id);
-                proWhitelist.setIsAgreeTerms(agreeTermsFlg);
-                if (whitelistService.updateProWhitelist(proWhitelist) > 0) {
-                    return AjaxResult.success();
-                }
-                return AjaxResult.error("更新白名單是否同意註冊條款失敗");
-            }
-            operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".updIsAgreeTerms(String id, String agreeTermsFlg)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, "店家不同意註冊條款");
-            return AjaxResult.error("店家不同意註冊條款");
-        }
-        return AjaxResult.error("店家需填選註冊條款");
-    }
+//    @PutMapping("/updIsAgreeTerms")
+//    public AjaxResult updIsAgreeTerms(String id, String agreeTermsFlg) {
+//        if (StringUtils.isNotEmpty(agreeTermsFlg)) {
+//            if ("1".equals(agreeTermsFlg)) {
+//                //同意
+//                ProWhitelist proWhitelist = new ProWhitelist();
+//                proWhitelist.setId(id);
+//                proWhitelist.setIsAgreeTerms(agreeTermsFlg);
+//                if (whitelistService.updateProWhitelist(proWhitelist) > 0) {
+//                    return AjaxResult.success();
+//                }
+//                return AjaxResult.error("更新白名單是否同意註冊條款失敗");
+//            }
+//            operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".updIsAgreeTerms(String id, String agreeTermsFlg)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, "店家不同意註冊條款");
+//            return AjaxResult.error("店家不同意註冊條款");
+//        }
+//        return AjaxResult.error("店家需填選註冊條款");
+//    }
 
 
     /**
      * 店家註冊
      */
     @PostMapping("/regist")
-    public AjaxResult regist(String isFromApp, String id, String userName, String password, String name, String identity, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName, String uuid, String code) {
+    public AjaxResult regist(String agreeTermsFlg, String isFromApp, String uuid, String code, String id, String userName, String password, String name, String identity, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName) {
+        if (StringUtils.isEmpty(agreeTermsFlg) || !("1".equals(agreeTermsFlg))) {
+            return AjaxResult.error("店家需勾選註冊條款");
+        }
         if (StringUtils.isEmpty(isFromApp)) {
             //web
             String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
@@ -90,7 +96,7 @@ public class ProStoreController extends BaseController {
         if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(password) || StringUtils.isEmpty(name) || StringUtils.isEmpty(identity) || StringUtils.isEmpty(phonenumber) || StringUtils.isEmpty(storeName) || StringUtils.isEmpty(address) || StringUtils.isEmpty(bankAccount) || StringUtils.isEmpty(bankAccountName)) {
             return AjaxResult.error("所有欄位皆為必輸欄位");
         }
-        storeService.regist(id, userName, password, name, identity, phonenumber, storeName, address, bankAccount, bankAccountName);
+        storeService.regist(id, userName, password, identity , name, phonenumber, storeName, address, bankAccount, bankAccountName);
         return AjaxResult.success();
     }
 
