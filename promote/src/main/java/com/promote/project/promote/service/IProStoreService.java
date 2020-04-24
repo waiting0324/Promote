@@ -1,5 +1,8 @@
 package com.promote.project.promote.service;
 
+import com.promote.project.system.domain.SysUser;
+import org.springframework.web.bind.annotation.RequestBody;
+
 /**
  * 店家 服務層
  *
@@ -23,5 +26,11 @@ public interface IProStoreService {
     public void regist(String id, String userName, String password, String name, String identity, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName);
 
 
-
+    /**
+     * 修改店家基本資料
+     *
+     * @param sysUser 使用者資料
+     * @return 結果
+     */
+    int updateStoreInfo(SysUser sysUser);
 }

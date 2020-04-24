@@ -95,6 +95,10 @@ public class ProStoreServiceImpl implements IProStoreService {
         proWhitelistMapper.updateProWhitelist(proWhitelist);
     }
 
+    @Override
+    public int updateStoreInfo(SysUser sysUser) {
+        return userMapper.updateUser(sysUser);
+    }
 
 
 }
