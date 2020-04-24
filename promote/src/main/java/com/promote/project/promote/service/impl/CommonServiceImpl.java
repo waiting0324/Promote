@@ -5,6 +5,7 @@ import com.promote.common.constant.Constants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.exception.user.CaptchaExpireException;
+import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.EmailUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
@@ -18,7 +19,9 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -49,12 +52,10 @@ public class CommonServiceImpl implements ICommonService {
         String verifyKey = Constants.VERIFICATION_CODE_KEY + username;
         String captcha = redisCache.getCacheObject(verifyKey);
         redisCache.deleteObject(verifyKey);
-        if (captcha == null)
-        {
+        if (captcha == null) {
             throw new CaptchaExpireException();
         }
-        if (!code.equalsIgnoreCase(captcha))
-        {
+        if (!code.equalsIgnoreCase(captcha)) {
             throw new CaptchaException();
         }
 
@@ -63,25 +64,69 @@ public class CommonServiceImpl implements ICommonService {
     }
 
 
-
     /**
      * 資料遮罩
      *
-     * @param sysUser 使用者資料
+     * @param sysUser    使用者資料
      * @param extraField 額外需遮罩的欄位
      * @return 遮罩後的使用者資料
      */
     @Override
-    public SysUser hidePersonalInfo(SysUser sysUser,String[] extraField) {
+    public SysUser hidePersonalInfo(SysUser sysUser, String... extraField) {
         if (sysUser != null) {
             Class c = SysUser.class;
-            Field[] fields = c.getDeclaredFields();
-            List<String> columnNameList = new ArrayList<String>();
             //預設需遮罩的欄位
             String[] defaultField = {"identity", "birthday", "userName", "password", "name", "email", "phonenumber", "bankAccount", "bankAccountName"};
-            for (Field field : fields) {
-                columnNameList.add(field.getName());
+            //所有需遮罩的欄位
+            List<String> columnNameList = Arrays.asList(defaultField);
+            for (String fieldName : extraField) {
+                columnNameList.add(fieldName);
             }
+            for (int i = 0; i < columnNameList.size(); i++) {
+                String columnName = columnNameList.get(i);
+                String getMethodName = new StringBuilder("get").append(columnName.substring(0, 1).toUpperCase()).append(columnName.substring(1)).toString();
+                String setMethodName = new StringBuilder("set").append(columnName.substring(0, 1).toUpperCase()).append(columnName.substring(1)).toString();
+                try {
+                    //取得白名單Model的getter方法
+                    Method getMethod = c.getMethod(getMethodName);
+                    if (getMethod != null) {
+                        Object tempValue = getMethod.invoke(sysUser);
+                        String oriValue = StringUtils.isNotNull(tempValue) ? tempValue.toString() : null;
+                        if (oriValue != null) {
+                            StringBuilder tempResult = new StringBuilder("");
+                            //把值用*遮罩起來
+                            for (int j = 0; j < oriValue.length(); j++) {
+                                char unit = oriValue.charAt(j);
+                                if (unit != ' ' && unit != '-' && unit != '/' && unit != '@') {
+                                    if (j % 2 == 0) {
+                                        tempResult.append("*");
+                                        continue;
+                                    }
+                                }
+                                tempResult.append(unit);
+                            }
+                            String result = tempResult.toString();
+                            Class fieldType = c.getDeclaredField(columnName).getType();
+                            //取得白名單Model的setter方法
+                            Method setMethod = c.getMethod(setMethodName, fieldType);
+                            //把值放進SysUser
+                            if (setMethod != null) {
+                                String typename = fieldType.getName();
+                                switch (typename) {
+                                    case "java.lang.String":
+                                        setMethod.invoke(sysUser, result);
+                                        break;
+                                    default:
+                                        //其餘類型不處理
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
         }
         return sysUser;
     }
