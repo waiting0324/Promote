@@ -1,6 +1,7 @@
 package com.promote.project.promote.controller;
 
 import com.promote.common.constant.Constants;
+import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
@@ -14,6 +15,7 @@ import com.promote.project.monitor.service.ISysOperLogService;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.service.IProStoreService;
 import com.promote.project.promote.service.IProWhitelistService;
+import com.promote.project.system.domain.SysRole;
 import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -123,12 +125,23 @@ public class ProStoreController extends BaseController {
      */
     @GetMapping("/getStoreInfo")
     public AjaxResult getStoreInfo() {
+        AjaxResult ajax =new AjaxResult();
+        //取得登入者
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         if (loginUser != null) {
+            //取得使用者資料
             SysUser user = loginUser.getUser();
             if (user != null) {
                 user.setPassword(null);
-                return AjaxResult.success(user);
+                //取得角色
+                List<SysRole> sysRoles = user.getRoles();
+                for(SysRole sysRole : sysRoles){
+                    if(RoleConstants.STORE_ROLE_ID.equals(sysRole.getRoleId())){
+                        ajax.put("role","店家");
+                    }
+                }
+                ajax.put("user",user);
+                return ajax;
             }
             return AjaxResult.error("查無此店家");
         }

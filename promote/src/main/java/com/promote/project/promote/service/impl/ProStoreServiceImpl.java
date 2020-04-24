@@ -63,6 +63,8 @@ public class ProStoreServiceImpl implements IProStoreService {
         insertUser.setBankAccountName(user.getBankAccountName());
         insertUser.setIsAgreeTerms(user.getIsAgreeTerms());
 
+
+
         // insertUser.setBirthday("20200101"); //TODO FIX
         // 插入User表
         userMapper.insertUser(insertUser);
