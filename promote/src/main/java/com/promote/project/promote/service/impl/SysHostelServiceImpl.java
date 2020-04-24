@@ -60,10 +60,10 @@ public class SysHostelServiceImpl implements ISysHostelService {
         }
 
         if ("1".equals(white.getIsRegisted())) {
-            throw new CustomException("此預設帳號已經被註冊過");
+            throw new CustomException("此預設帳號已經被註冊過，請使用新密碼進行登入");
         }
 
-        if (StringUtils.isNotNull(userMapper.selectUserByUserName(username))) {
+        if (StringUtils.isNotNull(userMapper.selectUserByUsername(username))) {
             throw new CustomException("該帳號在使用者表中已經存在");
         }
 
@@ -73,7 +73,7 @@ public class SysHostelServiceImpl implements ISysHostelService {
 
         // 將白名單資料轉為使用者資料
         SysUser user = new SysUser();
-        user.setUserName(username);
+        user.setUsername(username);
         user.setIdentity(white.getTaxNo());
         user.setPassword(SecurityUtils.encryptPassword(newPwd));
         user.setName(white.getName());

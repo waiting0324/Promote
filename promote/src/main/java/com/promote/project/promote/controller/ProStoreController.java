@@ -18,7 +18,6 @@ import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -87,10 +86,23 @@ public class ProStoreController extends BaseController {
      * 店家註冊
      */
     @PostMapping("/regist")
-    public AjaxResult regist(String agreeTermsFlg, String isFromApp, String uuid, String code, String id, String userName, String password, String name, String identity, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName) {
-        if (StringUtils.isEmpty(agreeTermsFlg) || !("1".equals(agreeTermsFlg))) {
-            return AjaxResult.error("請勾選註冊條款");
+    public AjaxResult regist(SysUser user, String isFromApp, String uuid, String code, String whitelistId) {
+
+        // 註冊條款校驗
+        if (StringUtils.isEmpty(user.getIsAgreeTerms()) || !("1".equals(user.getIsAgreeTerms()))) {
+            return AjaxResult.error("商家需勾選註冊條款");
         }
+
+        // 必填欄位檢核
+        if (StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(user.getPassword()) ||
+                StringUtils.isEmpty(user.getName()) || StringUtils.isEmpty(user.getIdentity()) ||
+                StringUtils.isEmpty(user.getPhonenumber()) || StringUtils.isEmpty(user.getStoreName()) ||
+                StringUtils.isEmpty(user.getAddress()) || StringUtils.isEmpty(user.getBankAccount()) ||
+                StringUtils.isEmpty(user.getBankAccountName())) {
+            return AjaxResult.error("所有欄位皆為必輸欄位");
+        }
+
+        // 圖形驗證碼校驗
         if (StringUtils.isEmpty(isFromApp)) {
             //web
             String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
@@ -99,10 +111,10 @@ public class ProStoreController extends BaseController {
                 throw new CaptchaException();
             }
         }
-        if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(password) || StringUtils.isEmpty(name) || StringUtils.isEmpty(identity) || StringUtils.isEmpty(phonenumber) || StringUtils.isEmpty(storeName) || StringUtils.isEmpty(address) || StringUtils.isEmpty(bankAccount) || StringUtils.isEmpty(bankAccountName)) {
-            return AjaxResult.error("所有欄位皆為必輸欄位");
-        }
-        storeService.regist(id, userName, password, identity, name, phonenumber, storeName, address, bankAccount, bankAccountName);
+
+        // 進行註冊
+        storeService.regist(user, whitelistId);
+
         return AjaxResult.success();
     }
 

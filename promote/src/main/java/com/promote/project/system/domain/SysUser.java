@@ -49,7 +49,7 @@ public class SysUser extends BaseEntity {
      * 使用者帳號
      */
     @Excel(name = "登入名稱")
-    private String userName;
+    private String username;
 
     /**
      * 密碼
@@ -312,12 +312,12 @@ public class SysUser extends BaseEntity {
 
     @NotBlank(message = "使用者帳號不能為空")
     @Size(min = 0, max = 30, message = "使用者帳號長度不能超過30個字元")
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Email(message = "郵箱格式不正確")
@@ -497,7 +497,7 @@ public class SysUser extends BaseEntity {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("userId", getUserId())
                 .append("deptId", getDeptId())
-                .append("userName", getUserName())
+                .append("userName", getUsername())
                 .append("email", getEmail())
                 .append("phonenumber", getPhonenumber())
                 .append("sex", getSex())
