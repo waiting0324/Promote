@@ -144,6 +144,13 @@ public class ProStoreController extends BaseController {
     @PutMapping("/updateStoreInfo")
     public AjaxResult updateStoreInfo(@RequestBody SysUser sysUser) {
         if(sysUser != null){
+            if(sysUser.getUserId() == null){
+                return AjaxResult.error("userId需有值");
+            }
+            if(storeService.updateStoreInfo(sysUser) > 0){
+                return AjaxResult.success();
+            }
+            return AjaxResult.error("修改店家基本資料失敗，請聯絡管理員");
         }
         return AjaxResult.error("請輸入資料");
     }

@@ -2,6 +2,7 @@ package com.promote.project.promote.service;
 
 import com.promote.project.system.domain.SysUser;
 
+
 /**
  * 店家 服務層
  *
@@ -18,5 +19,11 @@ public interface IProStoreService {
     public void regist(SysUser user, String whitelistId);
 
 
-
+    /**
+     * 修改店家基本資料
+     *
+     * @param sysUser 使用者資料
+     * @return 結果
+     */
+    int updateStoreInfo(SysUser sysUser);
 }
