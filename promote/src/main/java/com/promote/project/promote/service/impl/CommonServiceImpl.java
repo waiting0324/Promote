@@ -9,7 +9,6 @@ import com.promote.common.utils.EmailUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
-import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.service.ICommonService;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.mapper.SysUserMapper;
@@ -17,12 +16,10 @@ import com.promote.project.system.service.ISysConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+import javax.mail.MessagingException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.mail.MessagingException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
