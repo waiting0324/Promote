@@ -40,7 +40,7 @@ public class ConsumerController extends BaseController {
 
 
     /**
-     * 店家註冊
+     * 消費者註冊
      */
     @PostMapping("/regist")
     public AjaxResult regist(String agreeTermsFlg, String isFromApp, String uuid, String code, String userName, String password, String name, String identity, String phonenumber, String birthday) {

@@ -12,6 +12,7 @@ import com.promote.project.monitor.service.ISysOperLogService;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.service.IProStoreService;
 import com.promote.project.promote.service.IProWhitelistService;
+import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -83,7 +84,7 @@ public class ProStoreController extends BaseController {
     @PostMapping("/regist")
     public AjaxResult regist(String agreeTermsFlg, String isFromApp, String uuid, String code, String id, String userName, String password, String name, String identity, String phonenumber, String storeName, String address, String bankAccount, String bankAccountName) {
         if (StringUtils.isEmpty(agreeTermsFlg) || !("1".equals(agreeTermsFlg))) {
-            return AjaxResult.error("店家需勾選註冊條款");
+            return AjaxResult.error("請勾選註冊條款");
         }
         if (StringUtils.isEmpty(isFromApp)) {
             //web
@@ -98,6 +99,14 @@ public class ProStoreController extends BaseController {
         }
         storeService.regist(id, userName, password, identity , name, phonenumber, storeName, address, bankAccount, bankAccountName);
         return AjaxResult.success();
+    }
+
+    /**
+     * 取得店家基本資料
+     */
+    @GetMapping("/checkWhitelist")
+    public SysUser getStoreInfo(){
+
     }
 
 }
