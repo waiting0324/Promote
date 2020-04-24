@@ -218,6 +218,8 @@
             <if test="sex != null and sex != ''">sex = #{sex},</if>
             <if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
             <if test="storeName != null and storeName != ''">store_name = #{storeName},</if>
+            <if test="latitude != null">latitude = #{latitude},</if>
+            <if test="longitude != null">longitude = #{longitude},</if>
             <if test="address != null and address != ''">address = #{address},</if>
             <if test="status != null and status != ''">status = #{status},</if>
             <if test="loginIp != null and loginIp != ''">login_ip = #{loginIp},</if>
