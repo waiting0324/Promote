@@ -3,6 +3,7 @@ package com.promote.project.promote.controller;
 import com.promote.common.constant.Constants;
 import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.user.CaptchaException;
+import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.common.utils.ip.IpUtils;
@@ -20,6 +21,7 @@ import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 /**
@@ -30,6 +32,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/store")
 public class ProStoreController extends BaseController {
+
     @Autowired
     private IProWhitelistService whitelistService;
 
@@ -49,7 +52,7 @@ public class ProStoreController extends BaseController {
      * 店家白名單檢核
      */
     @GetMapping("/checkWhitelist")
-    public AjaxResult checkWhitelist(String taxNo) {
+    public AjaxResult checkWhitelist(@NotBlank String taxNo) {
         if (StringUtils.isNotEmpty(taxNo)) {
             List<ProWhitelist> proWhitelist = whitelistService.selectProWhitelistByTaxNo(taxNo);
             if (proWhitelist != null && proWhitelist.size() > 0) {

@@ -5,7 +5,6 @@ import com.promote.common.exception.CustomException;
 import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
-import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
 import com.promote.project.promote.service.IProStoreService;
@@ -16,7 +15,6 @@ import com.promote.project.system.mapper.SysUserRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,9 +44,14 @@ public class ProStoreServiceImpl implements IProStoreService {
         if (StringUtils.isNotNull(userMapper.selectUserByUsername(user.getUsername()))) {
             throw new CustomException("該帳號已被使用");
         }
-        ProWhitelist proWhitelist = proWhitelistMapper.selectProWhitelistById(whitelistId);
-        if (StringUtils.isNull(proWhitelist)) {
+
+        // 白名單驗證
+        ProWhitelist white = proWhitelistMapper.selectProWhitelistById(whitelistId);
+        if (StringUtils.isNull(white)) {
             throw new CustomException("白名單內並無此店家");
+        }
+        if (user.getIdentity().equals(white.getTaxNo())) {
+            throw new CustomException("填寫的統編與白名單資料不一致");
         }
 
         SysUser insertUser = new SysUser();
@@ -78,12 +81,12 @@ public class ProStoreServiceImpl implements IProStoreService {
         userRoleMapper.batchUserRole(userRoleList);
 
         //將白名單更新為已同意註冊條款
-        proWhitelist.setIsAgreeTerms("1");
+        white.setIsAgreeTerms("1");
 
         //將白名單更新為已註冊
-        proWhitelist.setIsRegisted("1");
-        proWhitelist.setUpdateTime(DateUtils.getNowDate());
-        proWhitelistMapper.updateProWhitelist(proWhitelist);
+        white.setIsRegisted("1");
+        white.setUpdateTime(DateUtils.getNowDate());
+        proWhitelistMapper.updateProWhitelist(white);
     }
 
     @Override
