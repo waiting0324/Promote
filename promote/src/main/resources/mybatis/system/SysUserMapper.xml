@@ -6,6 +6,7 @@
 
     <resultMap type="SysUser" id="SysUserResult">
         <id property="userId" column="user_id"/>
+        <result property="identity" column="identity"/>
         <result property="birthday" column="birthday"/>
         <result property="deptId" column="dept_id"/>
         <result property="userName" column="user_name"/>
@@ -115,6 +116,7 @@
         SELECT
             u.user_id,
             u.name,
+            u.identity,
             u.birthday,
             u.phonenumber,
             u.coupon_type

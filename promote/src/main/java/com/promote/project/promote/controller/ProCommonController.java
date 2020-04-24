@@ -5,10 +5,7 @@ import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.service.ICommonService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 
@@ -18,7 +15,7 @@ import javax.mail.MessagingException;
  * @description 通用功能模塊
  */
 @RestController
-@RequestMapping("/common")
+@RequestMapping
 public class ProCommonController extends BaseController {
 
     @Autowired
@@ -44,7 +41,7 @@ public class ProCommonController extends BaseController {
      * @param newPwd 新密碼
      * @param checkNewPwd 確認新密碼
      */
-    @GetMapping("/forgetPwd")
+    @PostMapping("/forgetPwd")
     public AjaxResult forgetPwd(String code, String username, String newPwd, String checkNewPwd) {
 
         if (!newPwd.equals(checkNewPwd)) {

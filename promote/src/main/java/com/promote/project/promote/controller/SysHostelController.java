@@ -36,14 +36,14 @@ public class SysHostelController extends BaseController {
      * 旅宿業者註冊
      */
     @PostMapping("/regist")
-    public AjaxResult regist(String username, String oldPwd, String newPwd) {
+    public AjaxResult regist(String username, String oriPwd, String newPwd) {
 
-        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(oldPwd)
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(oriPwd)
                 || StringUtils.isEmpty(newPwd)) {
             return AjaxResult.error("帳號or舊密碼or新密碼 未輸入值");
         }
 
-        hostelService.regist(username, oldPwd, newPwd);
+        hostelService.regist(username, oriPwd, newPwd);
 
         return AjaxResult.success();
     }
