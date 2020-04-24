@@ -5,6 +5,7 @@ import com.promote.common.exception.CustomException;
 import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
+import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
 import com.promote.project.promote.service.IProStoreService;
@@ -15,6 +16,7 @@ import com.promote.project.system.mapper.SysUserRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,4 +83,7 @@ public class ProStoreServiceImpl implements IProStoreService {
         proWhitelist.setUpdateTime(DateUtils.getNowDate());
         proWhitelistMapper.updateProWhitelist(proWhitelist);
     }
+
+
+
 }

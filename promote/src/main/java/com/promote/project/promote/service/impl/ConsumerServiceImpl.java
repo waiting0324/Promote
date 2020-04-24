@@ -41,6 +41,17 @@ public class ConsumerServiceImpl implements IConsumerService {
         return sysUser;
     }
 
+
+    /**
+     * 消費者註冊
+     *
+     * @param userName 帳號
+     * @param password 密碼
+     * @param name 姓名
+     * @param identity 身分證/居留證/統一編號
+     * @param phonenumber 手機號碼
+     * @param birthday 生日
+     */
     @Override
     public void regist(String userName, String password, String name, String identity, String phonenumber, String birthday) {
         if (StringUtils.isNotNull(userMapper.selectUserByUsername(userName))) {

@@ -6,6 +6,8 @@ import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.common.utils.ip.IpUtils;
 import com.promote.framework.redis.RedisCache;
+import com.promote.framework.security.LoginUser;
+import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.monitor.service.ISysOperLogService;
@@ -40,6 +42,9 @@ public class ProStoreController extends BaseController {
 
     @Autowired
     private IProStoreService storeService;
+
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 店家白名單檢核
@@ -114,6 +119,33 @@ public class ProStoreController extends BaseController {
         storeService.regist(user, whitelistId);
 
         return AjaxResult.success();
+    }
+
+    /**
+     * 取得店家基本資料
+     */
+    @GetMapping("/getStoreInfo")
+    public AjaxResult getStoreInfo() {
+        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        if (loginUser != null) {
+            SysUser user = loginUser.getUser();
+            if (user != null) {
+                user.setPassword(null);
+                return AjaxResult.success(user);
+            }
+            return AjaxResult.error("查無此店家");
+        }
+        return AjaxResult.error("非法登入");
+    }
+
+    /**
+     * 修改店家基本資料
+     */
+    @PutMapping("/updateStoreInfo")
+    public AjaxResult updateStoreInfo(@RequestBody SysUser sysUser) {
+        if(sysUser != null){
+        }
+        return AjaxResult.error("請輸入資料");
     }
 
 }
