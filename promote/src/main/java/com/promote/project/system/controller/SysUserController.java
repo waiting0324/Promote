@@ -114,17 +114,17 @@ public class SysUserController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysUser user)
     {
-        if (UserConstants.NOT_UNIQUE.equals(userService.checkUserNameUnique(user.getUserName())))
+        if (UserConstants.NOT_UNIQUE.equals(userService.checkUserNameUnique(user.getUsername())))
         {
-            return AjaxResult.error("新增使用者'" + user.getUserName() + "'失敗，登入帳號已存在");
+            return AjaxResult.error("新增使用者'" + user.getUsername() + "'失敗，登入帳號已存在");
         }
         else if (UserConstants.NOT_UNIQUE.equals(userService.checkPhoneUnique(user)))
         {
-            return AjaxResult.error("新增使用者'" + user.getUserName() + "'失敗，手機號碼已存在");
+            return AjaxResult.error("新增使用者'" + user.getUsername() + "'失敗，手機號碼已存在");
         }
         else if (UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user)))
         {
-            return AjaxResult.error("新增使用者'" + user.getUserName() + "'失敗，郵箱帳號已存在");
+            return AjaxResult.error("新增使用者'" + user.getUsername() + "'失敗，郵箱帳號已存在");
         }
         user.setCreateBy(SecurityUtils.getUsername());
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
@@ -142,11 +142,11 @@ public class SysUserController extends BaseController
         userService.checkUserAllowed(user);
         if (UserConstants.NOT_UNIQUE.equals(userService.checkPhoneUnique(user)))
         {
-            return AjaxResult.error("修改使用者'" + user.getUserName() + "'失敗，手機號碼已存在");
+            return AjaxResult.error("修改使用者'" + user.getUsername() + "'失敗，手機號碼已存在");
         }
         else if (UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user)))
         {
-            return AjaxResult.error("修改使用者'" + user.getUserName() + "'失敗，郵箱帳號已存在");
+            return AjaxResult.error("修改使用者'" + user.getUsername() + "'失敗，郵箱帳號已存在");
         }
         user.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(userService.updateUser(user));

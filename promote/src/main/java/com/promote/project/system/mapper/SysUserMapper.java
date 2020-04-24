@@ -26,7 +26,7 @@ public interface SysUserMapper {
      * @param userName 使用者名稱
      * @return 使用者物件資訊
      */
-    public SysUser selectUserByUserName(String userName);
+    public SysUser selectUserByUsername(String username);
 
     /**
      * 通過使用者ID查詢使用者
@@ -55,20 +55,20 @@ public interface SysUserMapper {
     /**
      * 修改使用者頭像
      *
-     * @param userName 使用者名稱
+     * @param username 使用者名稱
      * @param avatar   頭像地址
      * @return 結果
      */
-    public int updateUserAvatar(@Param("userName") String userName, @Param("avatar") String avatar);
+    public int updateUserAvatar(@Param("username") String username, @Param("avatar") String avatar);
 
     /**
      * 重置使用者密碼
      *
-     * @param userName 使用者名稱
+     * @param username 使用者名稱
      * @param password 密碼
      * @return 結果
      */
-    public int resetUserPwd(@Param("userName") String userName, @Param("password") String password);
+    public int resetUserPwd(@Param("username") String username, @Param("password") String password);
 
     /**
      * 通過使用者ID刪除使用者
@@ -89,10 +89,10 @@ public interface SysUserMapper {
     /**
      * 校驗使用者名稱是否唯一
      *
-     * @param userName 使用者名稱
+     * @param username 使用者名稱
      * @return 結果
      */
-    public int checkUserNameUnique(String userName);
+    public int checkUsernameUnique(String username);
 
     /**
      * 校驗手機號碼是否唯一

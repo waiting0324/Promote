@@ -5,7 +5,6 @@ import com.promote.common.constant.Constants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.exception.user.CaptchaExpireException;
-import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.EmailUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
@@ -18,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -147,7 +144,7 @@ public class CommonServiceImpl implements ICommonService {
         String msg = StrUtil.format(template, verifyCode);
 
         // 取得使用者資訊
-        SysUser user = userMapper.selectUserByUserName(username);
+        SysUser user = userMapper.selectUserByUsername(username);
         if (StringUtils.isNull(user)) {
             throw new CustomException("該帳號找不到對應的使用者");
         }

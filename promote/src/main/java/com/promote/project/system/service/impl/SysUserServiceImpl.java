@@ -2,7 +2,6 @@ package com.promote.project.system.service.impl;
 
 import com.promote.common.constant.UserConstants;
 import com.promote.common.exception.CustomException;
-import com.promote.common.utils.EmailUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.aspectj.lang.annotation.DataScope;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +65,7 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public SysUser selectUserByUserName(String userName) {
-        return userMapper.selectUserByUserName(userName);
+        return userMapper.selectUserByUsername(userName);
     }
 
     /**
@@ -127,7 +125,7 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public String checkUserNameUnique(String userName) {
-        int count = userMapper.checkUserNameUnique(userName);
+        int count = userMapper.checkUsernameUnique(userName);
         if (count > 0) {
             return UserConstants.NOT_UNIQUE;
         }
@@ -365,25 +363,25 @@ public class SysUserServiceImpl implements ISysUserService {
         for (SysUser user : userList) {
             try {
                 // 驗證是否存在這個使用者
-                SysUser u = userMapper.selectUserByUserName(user.getUserName());
+                SysUser u = userMapper.selectUserByUsername(user.getUsername());
                 if (StringUtils.isNull(u)) {
                     user.setPassword(SecurityUtils.encryptPassword(password));
                     user.setCreateBy(operName);
                     this.insertUser(user);
                     successNum++;
-                    successMsg.append("<br/>" + successNum + "、帳號 " + user.getUserName() + " 匯入成功");
+                    successMsg.append("<br/>" + successNum + "、帳號 " + user.getUsername() + " 匯入成功");
                 } else if (isUpdateSupport) {
                     user.setUpdateBy(operName);
                     this.updateUser(user);
                     successNum++;
-                    successMsg.append("<br/>" + successNum + "、帳號 " + user.getUserName() + " 更新成功");
+                    successMsg.append("<br/>" + successNum + "、帳號 " + user.getUsername() + " 更新成功");
                 } else {
                     failureNum++;
-                    failureMsg.append("<br/>" + failureNum + "、帳號 " + user.getUserName() + " 已存在");
+                    failureMsg.append("<br/>" + failureNum + "、帳號 " + user.getUsername() + " 已存在");
                 }
             } catch (Exception e) {
                 failureNum++;
-                String msg = "<br/>" + failureNum + "、帳號 " + user.getUserName() + " 匯入失敗：";
+                String msg = "<br/>" + failureNum + "、帳號 " + user.getUsername() + " 匯入失敗：";
                 failureMsg.append(msg + e.getMessage());
                 log.error(msg, e);
             }
