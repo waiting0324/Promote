@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 旅宿業者 服務層實現
+ * 店家 服務層實現
  *
  * @author ruoyi
  */
@@ -37,6 +37,11 @@ public class ProStoreServiceImpl implements IProStoreService {
     private SysUserRoleMapper userRoleMapper;
 
 
+    /**
+     * 店家註冊
+     * @param user 商家基本資訊
+     * @param whitelistId 白名單ID
+     */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void regist(SysUser user, String whitelistId) {
@@ -89,6 +94,12 @@ public class ProStoreServiceImpl implements IProStoreService {
         proWhitelistMapper.updateProWhitelist(white);
     }
 
+    /**
+     * 修改店家基本資料
+     *
+     * @param sysUser 使用者資料
+     * @return 結果
+     */
     @Override
     public int updateStoreInfo(SysUser sysUser) {
         return userMapper.updateUser(sysUser);

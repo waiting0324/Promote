@@ -28,4 +28,5 @@ public interface IConsumerService {
      * @param birthday 生日
      */
     public void regist(String userName, String password, String name, String identity, String phonenumber, String birthday);
+
 }

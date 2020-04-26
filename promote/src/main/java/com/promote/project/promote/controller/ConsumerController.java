@@ -1,6 +1,7 @@
 package com.promote.project.promote.controller;
 
 import com.promote.common.constant.Constants;
+import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
@@ -11,6 +12,8 @@ import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * @author 6550 劉威廷
@@ -43,22 +46,40 @@ public class ConsumerController extends BaseController {
      * 消費者註冊
      */
     @PostMapping("/regist")
-    public AjaxResult regist(String agreeTermsFlg, String isFromApp, String uuid, String code, String userName, String password, String name, String identity, String phonenumber, String birthday) {
-        if (StringUtils.isEmpty(agreeTermsFlg) || !("1".equals(agreeTermsFlg))) {
-            return AjaxResult.error("請勾選註冊條款");
+    public AjaxResult regist(@RequestBody SysUser user) {
+        if (StringUtils.isEmpty(user.getIsAgreeTerms()) || !("1".equals(user.getIsAgreeTerms()))) {
+            return AjaxResult.error("消費者需勾選註冊條款");
         }
-        if (StringUtils.isEmpty(isFromApp)) {
+        // 必填欄位檢核
+        String userName = user.getUsername();
+        String password = user.getPassword();
+        String name = user.getName();
+        String identity = user.getIdentity();
+        String phonenumber = user.getPhonenumber();
+        String birthday = user.getBirthday();
+        if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(password) ||
+                StringUtils.isEmpty(name) || StringUtils.isEmpty(identity) ||
+                StringUtils.isEmpty(phonenumber) || StringUtils.isEmpty(birthday)) {
+            return AjaxResult.error("所有欄位皆為必輸欄位");
+        }
+
+        Map<String, Object> params = user.getParams();
+        String isFromApp = (String) params.get("isFromApp");
+        if ("0".equals(isFromApp)) {
             //web
-            String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
+            String uuid = (String) params.get("uuid");
+            String verifyKey = Constants.CAPTCHA_CODE_KEY + (StringUtils.isNotEmpty(uuid) ? uuid : "");
             String captcha = redisCache.getCacheObject(verifyKey);
+            String code = (String) params.get("code");
+            if (StringUtils.isEmpty(code)) {
+                throw new CustomException("未輸入驗證碼");
+            }
             if (!code.equalsIgnoreCase(captcha)) {
                 throw new CaptchaException();
             }
         }
-        if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(password) || StringUtils.isEmpty(name) || StringUtils.isEmpty(identity) || StringUtils.isEmpty(phonenumber) || StringUtils.isEmpty(birthday)) {
-            return AjaxResult.error("所有欄位皆為必輸欄位");
-        }
-        consumerService.regist(userName, password, name , identity, phonenumber, birthday);
+
+        consumerService.regist(userName, password, name, identity, phonenumber, birthday);
         return AjaxResult.success();
     }
 

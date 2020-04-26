@@ -2,6 +2,7 @@ package com.promote.project.promote.controller;
 
 import com.promote.common.constant.Constants;
 import com.promote.common.constant.RoleConstants;
+import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.ServletUtils;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 店家 控制層
@@ -91,8 +93,7 @@ public class ProStoreController extends BaseController {
      * 店家註冊
      */
     @PostMapping("/regist")
-    public AjaxResult regist(SysUser user, String isFromApp, String uuid, String code, String whitelistId) {
-
+    public AjaxResult regist(@RequestBody SysUser user) {
         // 註冊條款校驗
         if (StringUtils.isEmpty(user.getIsAgreeTerms()) || !("1".equals(user.getIsAgreeTerms()))) {
             return AjaxResult.error("商家需勾選註冊條款");
@@ -108,18 +109,25 @@ public class ProStoreController extends BaseController {
         }
 
         // 圖形驗證碼校驗
-        if (StringUtils.isEmpty(isFromApp)) {
+        Map<String, Object> params = user.getParams();
+        String isFromApp = (String) params.get("isFromApp");
+        if ("0".equals(isFromApp)) {
             //web
-            String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
+            String uuid = (String) params.get("uuid");
+            String verifyKey = Constants.CAPTCHA_CODE_KEY + (StringUtils.isNotEmpty(uuid) ? uuid : "");
             String captcha = redisCache.getCacheObject(verifyKey);
+            String code = (String) params.get("code");
+            if (StringUtils.isEmpty(code)) {
+                throw new CustomException("未輸入驗證碼");
+            }
             if (!code.equalsIgnoreCase(captcha)) {
                 throw new CaptchaException();
             }
         }
 
         // 進行註冊
+        String whitelistId = (String) params.get("whitelistId");
         storeService.regist(user, whitelistId);
-
         return AjaxResult.success();
     }
 
@@ -128,7 +136,7 @@ public class ProStoreController extends BaseController {
      */
     @GetMapping("/getStoreInfo")
     public AjaxResult getStoreInfo() {
-        AjaxResult ajax =new AjaxResult();
+        AjaxResult ajax = new AjaxResult();
         //取得登入者
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         if (loginUser != null) {
@@ -138,12 +146,12 @@ public class ProStoreController extends BaseController {
                 user.setPassword(null);
                 //取得角色
                 List<SysRole> sysRoles = user.getRoles();
-                for(SysRole sysRole : sysRoles){
-                    if(RoleConstants.STORE_ROLE_ID.equals(sysRole.getRoleId())){
-                        ajax.put("role","店家");
+                for (SysRole sysRole : sysRoles) {
+                    if (RoleConstants.STORE_ROLE_ID.equals(sysRole.getRoleId())) {
+                        ajax.put("role", "店家");
                     }
                 }
-                ajax.put("user",user);
+                ajax.put("user", user);
                 return ajax;
             }
             return AjaxResult.error("查無此店家");
@@ -156,11 +164,11 @@ public class ProStoreController extends BaseController {
      */
     @PutMapping("/updateStoreInfo")
     public AjaxResult updateStoreInfo(@RequestBody SysUser sysUser) {
-        if(sysUser != null){
-            if(sysUser.getUserId() == null){
+        if (sysUser != null) {
+            if (sysUser.getUserId() == null) {
                 return AjaxResult.error("userId需有值");
             }
-            if(storeService.updateStoreInfo(sysUser) > 0){
+            if (storeService.updateStoreInfo(sysUser) > 0) {
                 return AjaxResult.success();
             }
             return AjaxResult.error("修改店家基本資料失敗，請聯絡管理員");
