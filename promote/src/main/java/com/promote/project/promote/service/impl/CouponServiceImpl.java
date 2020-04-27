@@ -24,12 +24,12 @@ import java.util.UUID;
 
 /**
  * 抵用券Service業務層處理
- * 
+ *
  * @author 6550 劉威廷
  * @date 2020-04-22
  */
 @Service
-public class CouponServiceImpl implements ICouponService 
+public class CouponServiceImpl implements ICouponService
 {
     @Autowired
     private CouponMapper couponMapper;
@@ -42,7 +42,7 @@ public class CouponServiceImpl implements ICouponService
 
     /**
      * 查詢抵用券
-     * 
+     *
      * @param sn 抵用券ID
      * @return 抵用券
      */
@@ -54,7 +54,7 @@ public class CouponServiceImpl implements ICouponService
 
     /**
      * 查詢抵用券列表
-     * 
+     *
      * @param coupon 抵用券
      * @return 抵用券
      */
@@ -66,7 +66,7 @@ public class CouponServiceImpl implements ICouponService
 
     /**
      * 新增抵用券
-     * 
+     *
      * @param coupon 抵用券
      * @return 結果
      */
@@ -79,7 +79,7 @@ public class CouponServiceImpl implements ICouponService
 
     /**
      * 修改抵用券
-     * 
+     *
      * @param coupon 抵用券
      * @return 結果
      */
@@ -91,7 +91,7 @@ public class CouponServiceImpl implements ICouponService
 
     /**
      * 批量刪除抵用券
-     * 
+     *
      * @param sns 需要刪除的抵用券ID
      * @return 結果
      */
@@ -103,7 +103,7 @@ public class CouponServiceImpl implements ICouponService
 
     /**
      * 刪除抵用券資訊
-     * 
+     *
      * @param sn 抵用券ID
      * @return 結果
      */

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.promote.project.promote.mapper.DailyConsumeMapper">
+
+    <resultMap type="DailyConsume" id="DailyConsumeResult">
+        <result property="id"    column="id"    />
+        <result property="consumeTime"    column="consume_time"    />
+        <result property="fundType"    column="fund_type"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="consumeAmount"    column="consume_amount"    />
+        <result property="storeType"    column="store_type"    />
+        <result property="couponAmount"    column="coupon_amount"    />
+    </resultMap>
+
+    <sql id="selectDailyConsumeVo">
+        select id, consume_time, fund_type, store_id, consume_amount, store_type, coupon_amount from pro_daily_consume
+    </sql>
+
+    <select id="selectDailyConsumeList" parameterType="DailyConsume" resultMap="DailyConsumeResult">
+        <include refid="selectDailyConsumeVo"/>
+        <where>
+            <if test="consumeTime != null "> and consume_time = #{consumeTime}</if>
+            <if test="fundType != null  and fundType != ''"> and fund_type = #{fundType}</if>
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="consumeAmount != null "> and consume_amount = #{consumeAmount}</if>
+            <if test="storeType != null  and storeType != ''"> and store_type = #{storeType}</if>
+            <if test="couponAmount != null "> and coupon_amount = #{couponAmount}</if>
+        </where>
+    </select>
+
+    <select id="selectDailyConsumeById" parameterType="Long" resultMap="DailyConsumeResult">
+        <include refid="selectDailyConsumeVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDailyConsume" parameterType="DailyConsume">
+        insert into pro_daily_consume
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null ">id,</if>
+            <if test="consumeTime != null ">consume_time,</if>
+            <if test="fundType != null  and fundType != ''">fund_type,</if>
+            <if test="storeId != null ">store_id,</if>
+            <if test="consumeAmount != null ">consume_amount,</if>
+            <if test="storeType != null  and storeType != ''">store_type,</if>
+            <if test="couponAmount != null ">coupon_amount,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null ">#{id},</if>
+            <if test="consumeTime != null ">#{consumeTime},</if>
+            <if test="fundType != null  and fundType != ''">#{fundType},</if>
+            <if test="storeId != null ">#{storeId},</if>
+            <if test="consumeAmount != null ">#{consumeAmount},</if>
+            <if test="storeType != null  and storeType != ''">#{storeType},</if>
+            <if test="couponAmount != null ">#{couponAmount},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDailyConsume" parameterType="DailyConsume">
+        update pro_daily_consume
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="consumeTime != null ">consume_time = #{consumeTime},</if>
+            <if test="fundType != null  and fundType != ''">fund_type = #{fundType},</if>
+            <if test="storeId != null ">store_id = #{storeId},</if>
+            <if test="consumeAmount != null ">consume_amount = #{consumeAmount},</if>
+            <if test="storeType != null  and storeType != ''">store_type = #{storeType},</if>
+            <if test="couponAmount != null ">coupon_amount = #{couponAmount},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDailyConsumeById" parameterType="Long">
+        delete from pro_daily_consume where id = #{id}
+    </delete>
+
+    <delete id="deleteDailyConsumeByIds" parameterType="String">
+        delete from pro_daily_consume where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

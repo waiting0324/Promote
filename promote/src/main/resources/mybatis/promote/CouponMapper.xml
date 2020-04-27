@@ -1,102 +1,98 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.promote.project.promote.mapper.CouponMapper">
-    
+
     <resultMap type="Coupon" id="CouponResult">
-        <result property="sn"    column="sn"    />
-        <result property="storeType"    column="store_type"    />
+        <result property="id"    column="id"    />
+        <result property="fundType"    column="fund_type"    />
         <result property="userId"    column="user_id"    />
-        <result property="hostelId"    column="hostel_id"    />
         <result property="isUsed"    column="is_used"    />
-        <result property="storeId"    column="store_id"    />
-        <result property="consumeTime"    column="consume_time"    />
+        <result property="issueDate"    column="issue_date"    />
+        <result property="status"    column="status"    />
+        <result property="storeType"    column="store_type"    />
+        <result property="amount"    column="amount"    />
         <result property="noticeTime"    column="notice_time"    />
         <result property="createTime"    column="create_time"    />
     </resultMap>
 
     <sql id="selectCouponVo">
-        select sn, store_type, user_id, hostel_id, is_used, store_id, consume_time, notice_time, create_time from pro_coupon
+        select id, fund_type, user_id, is_used, issue_date, status, store_type, amount, notice_time, create_time from pro_coupon
     </sql>
 
     <select id="selectCouponList" parameterType="Coupon" resultMap="CouponResult">
         <include refid="selectCouponVo"/>
-        <where>  
-            <if test="storeType != null  and storeType != ''"> and store_type = #{storeType}</if>
+        <where>
+            <if test="fundType != null  and fundType != ''"> and fund_type = #{fundType}</if>
             <if test="userId != null "> and user_id = #{userId}</if>
-            <if test="hostelId != null "> and hostel_id = #{hostelId}</if>
             <if test="isUsed != null  and isUsed != ''"> and is_used = #{isUsed}</if>
-            <if test="storeId != null "> and store_id = #{storeId}</if>
-            <if test="consumeTime != null "> and consume_time = #{consumeTime}</if>
+            <if test="issueDate != null "> and issue_date = #{issueDate}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="storeType != null  and storeType != ''"> and store_type = #{storeType}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
             <if test="noticeTime != null "> and notice_time = #{noticeTime}</if>
         </where>
     </select>
-    
+
     <select id="selectCouponById" parameterType="String" resultMap="CouponResult">
         <include refid="selectCouponVo"/>
-        where sn = #{sn}
+        where id = #{id}
     </select>
-        
+
     <insert id="insertCoupon" parameterType="Coupon">
         insert into pro_coupon
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="sn != null  and sn != ''">sn,</if>
-            <if test="storeType != null  and storeType != ''">store_type,</if>
+            <if test="id != null  and id != ''">id,</if>
+            <if test="fundType != null  and fundType != ''">fund_type,</if>
             <if test="userId != null ">user_id,</if>
-            <if test="hostelId != null ">hostel_id,</if>
             <if test="isUsed != null  and isUsed != ''">is_used,</if>
-            <if test="storeId != null ">store_id,</if>
-            <if test="consumeTime != null ">consume_time,</if>
+            <if test="issueDate != null ">issue_date,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="storeType != null  and storeType != ''">store_type,</if>
+            <if test="amount != null ">amount,</if>
             <if test="noticeTime != null ">notice_time,</if>
             <if test="createTime != null ">create_time,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="sn != null  and sn != ''">#{sn},</if>
-            <if test="storeType != null  and storeType != ''">#{storeType},</if>
+            <if test="id != null  and id != ''">#{id},</if>
+            <if test="fundType != null  and fundType != ''">#{fundType},</if>
             <if test="userId != null ">#{userId},</if>
-            <if test="hostelId != null ">#{hostelId},</if>
             <if test="isUsed != null  and isUsed != ''">#{isUsed},</if>
-            <if test="storeId != null ">#{storeId},</if>
-            <if test="consumeTime != null ">#{consumeTime},</if>
+            <if test="issueDate != null ">#{issueDate},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="storeType != null  and storeType != ''">#{storeType},</if>
+            <if test="amount != null ">#{amount},</if>
             <if test="noticeTime != null ">#{noticeTime},</if>
             <if test="createTime != null ">#{createTime},</if>
-         </trim>
-    </insert>
-
-    <insert id="insertCouponList" parameterType="java.util.List">
-        insert into pro_coupon (sn, store_type, user_id, hostel_id, is_used, store_id,
-        consume_time,notice_time,create_time) values
-        <foreach item="item" collection="list" separator=",">
-        (#{item.sn}, #{item.storeType}, #{item.userId}, #{item.hostelId}, #{item.isUsed}, #{item.storeId},
-        #{item.consumeTime},#{item.noticeTime},sysdate())
-        </foreach>
+        </trim>
     </insert>
 
     <update id="updateCoupon" parameterType="Coupon">
         update pro_coupon
         <trim prefix="SET" suffixOverrides=",">
-            <if test="storeType != null  and storeType != ''">store_type = #{storeType},</if>
+            <if test="fundType != null  and fundType != ''">fund_type = #{fundType},</if>
             <if test="userId != null ">user_id = #{userId},</if>
-            <if test="hostelId != null ">hostel_id = #{hostelId},</if>
             <if test="isUsed != null  and isUsed != ''">is_used = #{isUsed},</if>
-            <if test="storeId != null ">store_id = #{storeId},</if>
-            <if test="consumeTime != null ">consume_time = #{consumeTime},</if>
+            <if test="issueDate != null ">issue_date = #{issueDate},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="storeType != null  and storeType != ''">store_type = #{storeType},</if>
+            <if test="amount != null ">amount = #{amount},</if>
             <if test="noticeTime != null ">notice_time = #{noticeTime},</if>
             <if test="createTime != null ">create_time = #{createTime},</if>
         </trim>
-        where sn = #{sn}
+        where id = #{id}
     </update>
 
     <delete id="deleteCouponById" parameterType="String">
-        delete from pro_coupon where sn = #{sn}
+        delete from pro_coupon where id = #{id}
     </delete>
 
     <delete id="deleteCouponByIds" parameterType="String">
-        delete from pro_coupon where sn in 
-        <foreach item="sn" collection="array" open="(" separator="," close=")">
-            #{sn}
+        delete from pro_coupon where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
         </foreach>
     </delete>
-    
+
 </mapper>

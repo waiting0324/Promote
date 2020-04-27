@@ -7,15 +7,15 @@ import java.util.List;
 
 /**
  * 抵用券Service介面
- * 
+ *
  * @author 6550 劉威廷
  * @date 2020-04-22
  */
-public interface ICouponService 
+public interface ICouponService
 {
     /**
      * 查詢抵用券
-     * 
+     *
      * @param sn 抵用券ID
      * @return 抵用券
      */
@@ -23,7 +23,7 @@ public interface ICouponService
 
     /**
      * 查詢抵用券列表
-     * 
+     *
      * @param coupon 抵用券
      * @return 抵用券集合
      */
@@ -31,7 +31,7 @@ public interface ICouponService
 
     /**
      * 新增抵用券
-     * 
+     *
      * @param coupon 抵用券
      * @return 結果
      */
@@ -39,7 +39,7 @@ public interface ICouponService
 
     /**
      * 修改抵用券
-     * 
+     *
      * @param coupon 抵用券
      * @return 結果
      */
@@ -47,7 +47,7 @@ public interface ICouponService
 
     /**
      * 批量刪除抵用券
-     * 
+     *
      * @param sns 需要刪除的抵用券ID
      * @return 結果
      */
@@ -55,7 +55,7 @@ public interface ICouponService
 
     /**
      * 刪除抵用券資訊
-     * 
+     *
      * @param sn 抵用券ID
      * @return 結果
      */

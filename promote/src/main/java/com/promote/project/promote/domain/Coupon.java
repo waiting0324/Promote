@@ -8,115 +8,130 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.util.Date;
 
 /**
- * 抵用券物件 pro_coupon
- * 
+ * 抵用券發放記錄檔物件 pro_coupon
+ *
  * @author 6550 劉威廷
- * @date 2020-04-22
+ * @date 2020-04-27
  */
 public class Coupon extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** 抵用券序號 */
-    private String sn;
+    private String id;
 
-    /** 抵用券類型( 0夜市 1餐廳 2商圈 3藝文) */
-    @Excel(name = "抵用券類型( 0夜市 1餐廳 2商圈 3藝文)")
-    private String storeType;
+    /** 補助機構 (S:中企
+     T:中辦
+     B:商業司
+     C:文化部) */
+    private String fundType;
 
-    /** 使用者ID */
-    @Excel(name = "使用者ID")
+    /** 消費者的user_id */
+    @Excel(name = "消費者的user_id")
     private Long userId;
-
-    /** 發放此抵用券的旅宿業者ID */
-    @Excel(name = "發放此抵用券的旅宿業者ID")
-    private Long hostelId;
 
     /** 是否已使用 ( 0未使用 1已使用 ) */
     @Excel(name = "是否已使用 ( 0未使用 1已使用 )")
     private String isUsed;
 
-    /** 消費的商家ID */
-    @Excel(name = "消費的商家ID")
-    private Long storeId;
+    /** 核發時間 */
+    @Excel(name = "核發時間", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date issueDate;
 
-    /** 消費時間 */
-    @Excel(name = "消費時間", width = 30, dateFormat = "yyyy-MM-dd")
-    private Date consumeTime;
+    /** 0未印,1已印,16張都為1才能將consumer.coupon_print_type押成1 */
+    @Excel(name = "0未印,1已印,16張都為1才能將consumer.coupon_print_type押成1")
+    private String status;
+
+    /** 抵用券類型( 0夜市 1餐廳 2商圈 3藝文) */
+    @Excel(name = "抵用券類型( 0夜市 1餐廳 2商圈 3藝文)")
+    private String storeType;
+
+    /** 抵用券金額 */
+    @Excel(name = "抵用券金額")
+    private Long amount;
 
     /** 提醒到期已推送時間 */
     @Excel(name = "提醒到期已推送時間", width = 30, dateFormat = "yyyy-MM-dd")
     private Date noticeTime;
 
-    public void setSn(String sn) 
+    public void setId(String id)
     {
-        this.sn = sn;
+        this.id = id;
     }
 
-    public String getSn() 
+    public String getId()
     {
-        return sn;
+        return id;
     }
-    public void setStoreType(String storeType) 
+    public void setFundType(String fundType)
     {
-        this.storeType = storeType;
+        this.fundType = fundType;
     }
 
-    public String getStoreType() 
+    public String getFundType()
     {
-        return storeType;
+        return fundType;
     }
-    public void setUserId(Long userId) 
+    public void setUserId(Long userId)
     {
         this.userId = userId;
     }
 
-    public Long getUserId() 
+    public Long getUserId()
     {
         return userId;
     }
-    public void setHostelId(Long hostelId) 
-    {
-        this.hostelId = hostelId;
-    }
-
-    public Long getHostelId() 
-    {
-        return hostelId;
-    }
-    public void setIsUsed(String isUsed) 
+    public void setIsUsed(String isUsed)
     {
         this.isUsed = isUsed;
     }
 
-    public String getIsUsed() 
+    public String getIsUsed()
     {
         return isUsed;
     }
-    public void setStoreId(Long storeId) 
+    public void setIssueDate(Date issueDate)
     {
-        this.storeId = storeId;
+        this.issueDate = issueDate;
     }
 
-    public Long getStoreId() 
+    public Date getIssueDate()
     {
-        return storeId;
+        return issueDate;
     }
-    public void setConsumeTime(Date consumeTime) 
+    public void setStatus(String status)
     {
-        this.consumeTime = consumeTime;
+        this.status = status;
     }
 
-    public Date getConsumeTime() 
+    public String getStatus()
     {
-        return consumeTime;
+        return status;
     }
-    public void setNoticeTime(Date noticeTime) 
+    public void setStoreType(String storeType)
+    {
+        this.storeType = storeType;
+    }
+
+    public String getStoreType()
+    {
+        return storeType;
+    }
+    public void setAmount(Long amount)
+    {
+        this.amount = amount;
+    }
+
+    public Long getAmount()
+    {
+        return amount;
+    }
+    public void setNoticeTime(Date noticeTime)
     {
         this.noticeTime = noticeTime;
     }
 
-    public Date getNoticeTime() 
+    public Date getNoticeTime()
     {
         return noticeTime;
     }
@@ -124,15 +139,16 @@ public class Coupon extends BaseEntity
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-            .append("sn", getSn())
-            .append("storeType", getStoreType())
-            .append("userId", getUserId())
-            .append("hostelId", getHostelId())
-            .append("isUsed", getIsUsed())
-            .append("storeId", getStoreId())
-            .append("consumeTime", getConsumeTime())
-            .append("noticeTime", getNoticeTime())
-            .append("createTime", getCreateTime())
-            .toString();
+                .append("id", getId())
+                .append("fundType", getFundType())
+                .append("userId", getUserId())
+                .append("isUsed", getIsUsed())
+                .append("issueDate", getIssueDate())
+                .append("status", getStatus())
+                .append("storeType", getStoreType())
+                .append("amount", getAmount())
+                .append("noticeTime", getNoticeTime())
+                .append("createTime", getCreateTime())
+                .toString();
     }
 }
