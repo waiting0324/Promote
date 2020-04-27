@@ -3,6 +3,7 @@ package com.promote.project.promote.controller;
 import com.promote.common.constant.Constants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
+import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
 import com.promote.framework.web.controller.BaseController;
@@ -48,7 +49,7 @@ public class ConsumerController extends BaseController {
     @PostMapping("/regist")
     public AjaxResult regist(@RequestBody SysUser user) {
         if (StringUtils.isEmpty(user.getIsAgreeTerms()) || !("1".equals(user.getIsAgreeTerms()))) {
-            return AjaxResult.error("消費者需勾選註冊條款");
+            return AjaxResult.error(MessageUtils.message("pro.err.terms.not.check"));
         }
         // 必填欄位檢核
         String userName = user.getUsername();
@@ -60,7 +61,7 @@ public class ConsumerController extends BaseController {
         if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(password) ||
                 StringUtils.isEmpty(name) || StringUtils.isEmpty(identity) ||
                 StringUtils.isEmpty(phonenumber) || StringUtils.isEmpty(birthday)) {
-            return AjaxResult.error("所有欄位皆為必輸欄位");
+            return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
 
         Map<String, Object> params = user.getParams();
@@ -72,7 +73,7 @@ public class ConsumerController extends BaseController {
             String captcha = redisCache.getCacheObject(verifyKey);
             String code = (String) params.get("code");
             if (StringUtils.isEmpty(code)) {
-                throw new CustomException("未輸入驗證碼");
+                throw new CustomException(MessageUtils.message("user.jcaptcha.not.exist"));
             }
             if (!code.equalsIgnoreCase(captcha)) {
                 throw new CaptchaException();

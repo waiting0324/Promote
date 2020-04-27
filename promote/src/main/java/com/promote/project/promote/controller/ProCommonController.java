@@ -1,13 +1,17 @@
 package com.promote.project.promote.controller;
 
 import com.promote.common.constant.Constants;
+import com.promote.common.utils.MessageUtils;
+import com.promote.common.utils.StringUtils;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.service.ICommonService;
+import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import java.util.Map;
 
 /**
  * @author 6550 劉威廷
@@ -23,27 +27,43 @@ public class ProCommonController extends BaseController {
 
     /**
      * 發送驗證碼
-     * @param username 帳號
-     * @param type 驗證類型 ( 1:Email 2:簡訊OTP )
+     *
+     * @param sysUser 使用者資料
      */
     @PostMapping("/captcha")
-    public AjaxResult captcha(String username, String type) throws MessagingException {
-        AjaxResult ajax = AjaxResult.success();
+    public AjaxResult captcha(@RequestBody SysUser sysUser) throws MessagingException {
+        //帳號
+        String username = sysUser.getUsername();
+        Map<String, Object> params = sysUser.getParams();
+        //驗證類型(1:Email,2:手機)
+        String type = (String) params.get("type");
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(type)) {
+            return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
+        }
         commonService.sendCaptcha(username, type);
-        return ajax;
+        return AjaxResult.success();
     }
 
 
     /**
      * 忘記密碼，驗證並更新密碼
-     * @param code 驗證碼
-     * @param username 帳號
-     * @param newPwd 新密碼
-     * @param checkNewPwd 確認新密碼
+     *
+     * @param sysUser 使用者資料
+     * @return 結果
      */
     @PostMapping("/forgetPwd")
-    public AjaxResult forgetPwd(String code, String username, String newPwd, String checkNewPwd) {
-
+    public AjaxResult forgetPwd(@RequestBody SysUser sysUser) {
+        String username = (String) sysUser.getUsername();
+        Map<String, Object> params = sysUser.getParams();
+        //新密碼
+        String newPwd = (String) params.get("newPwd");
+        //確認新密碼
+        String checkNewPwd = (String) params.get("checkNewPwd");
+        //驗證碼
+        String code = (String) params.get("code");
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(newPwd) || StringUtils.isEmpty(checkNewPwd) || StringUtils.isEmpty(code)) {
+            return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
+        }
         if (!newPwd.equals(checkNewPwd)) {
             AjaxResult.error("兩次輸入的密碼不一致");
         }

@@ -4,6 +4,7 @@ import com.promote.common.constant.Constants;
 import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
+import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
@@ -52,6 +53,9 @@ public class ProStoreController extends BaseController {
 
     /**
      * 店家白名單檢核
+     *
+     * @param taxNo 統編/身分證字號
+     * @return 結果
      */
     @GetMapping("/checkWhitelist")
     public AjaxResult checkWhitelist(@NotBlank String taxNo) {
@@ -60,10 +64,10 @@ public class ProStoreController extends BaseController {
             if (proWhitelist != null && proWhitelist.size() > 0) {
                 return AjaxResult.success(proWhitelist);
             }
-            operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".checkWhitelist(String taxNo)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, "白名單內查無資料");
-            return AjaxResult.error("白名單內查無資料");
+            operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".checkWhitelist(String taxNo)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, MessageUtils.message("pro.err.data.not.find"));
+            return AjaxResult.error(MessageUtils.message("pro.err.data.not.find"));
         }
-        return AjaxResult.error("未輸入任何值");
+        return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
     }
 
     /**
@@ -91,12 +95,15 @@ public class ProStoreController extends BaseController {
 
     /**
      * 店家註冊
+     *
+     * @param user 使用者資料
+     * @return 結果
      */
     @PostMapping("/regist")
     public AjaxResult regist(@RequestBody SysUser user) {
         // 註冊條款校驗
         if (StringUtils.isEmpty(user.getIsAgreeTerms()) || !("1".equals(user.getIsAgreeTerms()))) {
-            return AjaxResult.error("商家需勾選註冊條款");
+            return AjaxResult.error(MessageUtils.message("pro.err.terms.not.check"));
         }
 
         // 必填欄位檢核
@@ -105,11 +112,12 @@ public class ProStoreController extends BaseController {
                 StringUtils.isEmpty(user.getPhonenumber()) || StringUtils.isEmpty(user.getStoreName()) ||
                 StringUtils.isEmpty(user.getAddress()) || StringUtils.isEmpty(user.getBankAccount()) ||
                 StringUtils.isEmpty(user.getBankAccountName())) {
-            return AjaxResult.error("所有欄位皆為必輸欄位");
+            return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
 
         // 圖形驗證碼校驗
         Map<String, Object> params = user.getParams();
+        //是否從App訪問
         String isFromApp = (String) params.get("isFromApp");
         if ("0".equals(isFromApp)) {
             //web
@@ -118,7 +126,7 @@ public class ProStoreController extends BaseController {
             String captcha = redisCache.getCacheObject(verifyKey);
             String code = (String) params.get("code");
             if (StringUtils.isEmpty(code)) {
-                throw new CustomException("未輸入驗證碼");
+                throw new CustomException(MessageUtils.message("user.jcaptcha.not.exist"));
             }
             if (!code.equalsIgnoreCase(captcha)) {
                 throw new CaptchaException();
@@ -126,6 +134,7 @@ public class ProStoreController extends BaseController {
         }
 
         // 進行註冊
+        //白名單id
         String whitelistId = (String) params.get("whitelistId");
         storeService.regist(user, whitelistId);
         return AjaxResult.success();
@@ -154,7 +163,7 @@ public class ProStoreController extends BaseController {
                 ajax.put("user", user);
                 return ajax;
             }
-            return AjaxResult.error("查無此店家");
+            return AjaxResult.error(MessageUtils.message("pro.err.data.not.find"));
         }
         return AjaxResult.error("非法登入");
     }
@@ -164,7 +173,6 @@ public class ProStoreController extends BaseController {
      */
     @PutMapping("/updateStoreInfo")
     public AjaxResult updateStoreInfo(@RequestBody SysUser sysUser) {
-        if (sysUser != null) {
             if (sysUser.getUserId() == null) {
                 return AjaxResult.error("userId需有值");
             }
@@ -172,8 +180,5 @@ public class ProStoreController extends BaseController {
                 return AjaxResult.success();
             }
             return AjaxResult.error("修改店家基本資料失敗，請聯絡管理員");
-        }
-        return AjaxResult.error("請輸入資料");
     }
-
 }
