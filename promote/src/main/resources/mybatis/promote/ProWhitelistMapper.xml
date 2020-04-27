@@ -72,8 +72,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="username != null  and username != ''">username,</if>
             <if test="password != null  and password != ''">password,</if>
             <if test="address != null  and address != ''">address,</if>
-            <if test="latitude != null  and latitude != ''">latitude,</if>
-            <if test="longitude != null  and longitude != ''">longitude,</if>
+            <if test="latitude != null">latitude,</if>
+            <if test="longitude != null">longitude,</if>
             <if test="phonenumber != null  and phonenumber != ''">phonenumber,</if>
             <if test="email != null  and email != ''">email,</if>
             <if test="type != null  and type != ''">type,</if>
@@ -93,8 +93,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="username != null  and username != ''">#{username},</if>
             <if test="password != null  and password != ''">#{password},</if>
             <if test="address != null  and address != ''">#{address},</if>
-            <if test="latitude != null  and latitude != ''">#{latitude},</if>
-            <if test="longitude != null  and longitude != ''">#{longitude},</if>
+            <if test="latitude != null">#{latitude},</if>
+            <if test="longitude != null">#{longitude},</if>
             <if test="phonenumber != null  and phonenumber != ''">#{phonenumber},</if>
             <if test="email != null  and email != ''">#{email},</if>
             <if test="type != null  and type != ''">#{type},</if>
@@ -117,8 +117,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="username != null  and username != ''">username = #{username},</if>
             <if test="password != null  and password != ''">password = #{password},</if>
             <if test="address != null  and address != ''">address = #{address},</if>
-            <if test="latitude != null  and latitude != ''">latitude = #{latitude},</if>
-            <if test="longitude != null  and longitude != ''">longitude = #{longitude},</if>
+            <if test="latitude != null">latitude = #{latitude},</if>
+            <if test="longitude != null">longitude = #{longitude},</if>
             <if test="phonenumber != null  and phonenumber != ''">phonenumber = #{phonenumber},</if>
             <if test="email != null  and email != ''">email = #{email},</if>
             <if test="isAgreeTerms != null and isAgreeTerms != ''">is_agree_terms = #{isAgreeTerms},</if>

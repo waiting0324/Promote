@@ -106,7 +106,7 @@ public class PromoteTask {
         if (StringUtils.isNotEmpty(path)) {
             Map<String, Integer> pair = new HashMap<String, Integer>();
             //白名單Field與白名單Excel映射關係
-            boolean isHostel = false;  //TODO 待確認檔名規則
+            boolean isHostel = true;  //TODO 待確認檔名規則
             if (isHostel) {
                 //旅宿
                 pair.put("id", 0);
@@ -118,6 +118,8 @@ public class PromoteTask {
                 pair.put("phonenumber", 6);
                 pair.put("email", 27);
                 pair.put("type", 1);
+                pair.put("latitude", 11);
+                pair.put("longitude", 10);
             } else {
                 //店家
                 pair.put("id", 0);

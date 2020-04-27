@@ -30,11 +30,11 @@ public class HostelInfo extends BaseEntity
 
     /** 緯度 */
     @Excel(name = "緯度")
-    private Float latitude;
+    private Double latitude;
 
     /** 經度 */
     @Excel(name = "經度")
-    private Float longitude;
+    private Double longitude;
 
     /** 是否協助發放抵用券( 0不協助 1協助 ) */
     @Excel(name = "是否協助發放抵用券( 0不協助 1協助 )")
@@ -84,19 +84,20 @@ public class HostelInfo extends BaseEntity
         this.isSupportCoupon = isSupportCoupon;
     }
 
-    public Float getLatitude() {
+
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Float latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public Float getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Float longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
