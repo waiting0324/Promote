@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.promote.project.promote.mapper.ProNewsMapper">
+    
+    <resultMap type="ProNews" id="ProNewsResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="subject"    column="subject"    />
+        <result property="content"    column="content"    />
+        <result property="clickCount"    column="click_count"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectProNewsVo">
+        select id, type, subject, content, click_count, create_by, create_time, update_by, update_time from pro_news
+    </sql>
+
+    <select id="selectProNewsList" parameterType="ProNews" resultMap="ProNewsResult">
+        <include refid="selectProNewsVo"/>
+        <where>  
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="subject != null  and subject != ''"> and subject = #{subject}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="clickCount != null "> and click_count = #{clickCount}</if>
+        </where>
+    </select>
+    
+    <select id="selectProNewsById" parameterType="Long" resultMap="ProNewsResult">
+        <include refid="selectProNewsVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertProNews" parameterType="ProNews" useGeneratedKeys="true" keyProperty="id">
+        insert into pro_news
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="type != null  and type != ''">type,</if>
+            <if test="subject != null  and subject != ''">subject,</if>
+            <if test="content != null  and content != ''">content,</if>
+            <if test="clickCount != null ">click_count,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="type != null  and type != ''">#{type},</if>
+            <if test="subject != null  and subject != ''">#{subject},</if>
+            <if test="content != null  and content != ''">#{content},</if>
+            <if test="clickCount != null ">#{clickCount},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProNews" parameterType="ProNews">
+        update pro_news
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null  and type != ''">type = #{type},</if>
+            <if test="subject != null  and subject != ''">subject = #{subject},</if>
+            <if test="content != null  and content != ''">content = #{content},</if>
+            <if test="clickCount != null ">click_count = #{clickCount},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProNewsById" parameterType="Long">
+        delete from pro_news where id = #{id}
+    </delete>
+
+    <delete id="deleteProNewsByIds" parameterType="String">
+        delete from pro_news where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>
