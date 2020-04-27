@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.promote.project.promote.mapper.CouponConsumeMapper">
+
+    <resultMap type="CouponConsume" id="CouponConsumeResult">
+        <result property="couponId"    column="coupon_id"    />
+        <result property="fundType"    column="fund_type"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="storeType"    column="store_type"    />
+        <result property="consumeTime"    column="consume_time"    />
+        <result property="amount"    column="amount"    />
+    </resultMap>
+
+    <sql id="selectCouponConsumeVo">
+        select coupon_id, fund_type, store_id, store_type, consume_time, amount from pro_coupon_consume
+    </sql>
+
+    <select id="selectCouponConsumeList" parameterType="CouponConsume" resultMap="CouponConsumeResult">
+        <include refid="selectCouponConsumeVo"/>
+        <where>
+            <if test="fundType != null  and fundType != ''"> and fund_type = #{fundType}</if>
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="storeType != null  and storeType != ''"> and store_type = #{storeType}</if>
+            <if test="consumeTime != null "> and consume_time = #{consumeTime}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+        </where>
+    </select>
+
+    <select id="selectCouponConsumeById" parameterType="String" resultMap="CouponConsumeResult">
+        <include refid="selectCouponConsumeVo"/>
+        where coupon_id = #{couponId}
+    </select>
+
+    <insert id="insertCouponConsume" parameterType="CouponConsume">
+        insert into pro_coupon_consume
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="couponId != null  and couponId != ''">coupon_id,</if>
+            <if test="fundType != null  and fundType != ''">fund_type,</if>
+            <if test="storeId != null ">store_id,</if>
+            <if test="storeType != null  and storeType != ''">store_type,</if>
+            <if test="consumeTime != null ">consume_time,</if>
+            <if test="amount != null ">amount,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="couponId != null  and couponId != ''">#{couponId},</if>
+            <if test="fundType != null  and fundType != ''">#{fundType},</if>
+            <if test="storeId != null ">#{storeId},</if>
+            <if test="storeType != null  and storeType != ''">#{storeType},</if>
+            <if test="consumeTime != null ">#{consumeTime},</if>
+            <if test="amount != null ">#{amount},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCouponConsume" parameterType="CouponConsume">
+        update pro_coupon_consume
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fundType != null  and fundType != ''">fund_type = #{fundType},</if>
+            <if test="storeId != null ">store_id = #{storeId},</if>
+            <if test="storeType != null  and storeType != ''">store_type = #{storeType},</if>
+            <if test="consumeTime != null ">consume_time = #{consumeTime},</if>
+            <if test="amount != null ">amount = #{amount},</if>
+        </trim>
+        where coupon_id = #{couponId}
+    </update>
+
+    <delete id="deleteCouponConsumeById" parameterType="String">
+        delete from pro_coupon_consume where coupon_id = #{couponId}
+    </delete>
+
+    <delete id="deleteCouponConsumeByIds" parameterType="String">
+        delete from pro_coupon_consume where coupon_id in
+        <foreach item="couponId" collection="array" open="(" separator="," close=")">
+            #{couponId}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -7,28 +7,10 @@
     <resultMap type="SysUser" id="SysUserResult">
         <id property="userId" column="user_id"/>
         <result property="identity" column="identity"/>
-        <result property="birthday" column="birthday"/>
         <result property="deptId" column="dept_id"/>
-        <result property="username" column="user_name"/>
+        <result property="username" column="username"/>
         <result property="password" column="password"/>
-        <result property="name" column="name"/>
-        <result property="couponType" column="coupon_type"/>
-        <result property="couponPrintCode" column="coupon_print_code"/>
-        <result property="couponPrintType" column="coupon_print_type"/>
-        <result property="couponProvideType" column="coupon_provide_type"/>
-        <result property="couponProvideTime" column="coupon_provide_time"/>
-        <result property="email" column="email"/>
-        <result property="phonenumber" column="phonenumber"/>
-        <result property="bankAccount" column="bank_account"/>
-        <result property="bankAccountName" column="bank_account_name"/>
-        <result property="sex" column="sex"/>
-        <result property="avatar" column="avatar"/>
-        <result property="storeName" column="store_name"/>
-        <result property="address" column="address"/>
-        <result property="latitude" column="latitude"/>
-        <result property="longitude" column="longitude"/>
-        <result property="isSupportCoupon" column="is_support_coupon"/>
-        <result property="isAgreeTerms" column="is_agree_terms"/>
+        <result property="userType" column="user_type"/>
         <result property="status" column="status"/>
         <result property="delFlag" column="del_flag"/>
         <result property="loginIp" column="login_ip"/>
@@ -61,9 +43,7 @@
     </resultMap>
 
     <sql id="selectUserVo">
-        select u.user_id, u.birthday, u.dept_id, u.user_name, u.password, u.name, u.coupon_type,
-         u.coupon_print_type, u.coupon_provide_type, u.coupon_provide_time, u.address, u.latitude,
-         u.longitude, u.is_support_coupon, u.is_agree_terms,u.email, u.avatar, u.phonenumber, u.bank_account, u.sex,
+        select u.user_id, u.dept_id, u.username, u.password,
          u.status, u.del_flag, u.login_ip, u.login_date,u.create_by, u.create_time, u.remark,
         d.dept_id, d.parent_id, d.dept_name, d.order_num, d.leader, d.status as dept_status,
         r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
@@ -74,13 +54,13 @@
     </sql>
 
     <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult">
-        select u.user_id, u.dept_id, u.name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status,
+        select u.user_id, u.dept_id, u.username, u.password, u.status,
         u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, d.dept_name, d.leader from sys_user
         u
         left join sys_dept d on u.dept_id = d.dept_id
         where u.del_flag = '0'
         <if test="username != null and username != ''">
-            AND u.user_name like concat('%', #{username}, '%')
+            AND u.username like concat('%', #{username}, '%')
         </if>
         <if test="status != null and status != ''">
             AND u.status = #{status}
@@ -104,7 +84,7 @@
 
     <select id="selectUserByUsername" parameterType="String" resultMap="SysUserResult">
         <include refid="selectUserVo"/>
-        where u.user_name = #{username}
+        where u.username = #{username}
     </select>
 
     <select id="selectUserById" parameterType="Long" resultMap="SysUserResult">
@@ -115,11 +95,7 @@
     <select id="selectConsumerByIdentity" parameterType="String" resultMap="SysUserResult">
         SELECT
             u.user_id,
-            u.name,
             u.identity,
-            u.birthday,
-            u.phonenumber,
-            u.coupon_type
         FROM
             sys_user u
             LEFT JOIN sys_user_role ur ON u.user_id = ur.user_id
@@ -128,7 +104,7 @@
     </select>
 
     <select id="checkUsernameUnique" parameterType="String" resultType="int">
-		select count(1) from sys_user where user_name = #{username}
+		select count(1) from sys_user where username = #{username}
 	</select>
 
     <select id="checkPhoneUnique" parameterType="String" resultMap="SysUserResult">
@@ -143,56 +119,20 @@
         insert into sys_user(
         <if test="userId != null and userId != 0">user_id,</if>
         <if test="identity != null and identity != ''">identity,</if>
-        <if test="birthday != null and birthday != 0">birthday,</if>
         <if test="deptId != null and deptId != 0">dept_id,</if>
-        <if test="username != null and username != ''">user_name,</if>
-        <if test="name != null  and name != ''">name,</if>
-        <if test="couponType != null  and couponType != ''">coupon_type,</if>
-        <if test="couponPrintCode != null  and couponPrintCode != ''">coupon_print_code,</if>
-        <if test="couponPrintType != null  and couponPrintType != ''">coupon_print_type,</if>
-        <if test="couponProvideType != null  and couponProvideType != ''">coupon_provide_type,</if>
-        <if test="couponProvideTime != null ">coupon_provide_time,</if>
-        <if test="latitude != null ">latitude,</if>
-        <if test="longitude != null ">longitude,</if>
-        <if test="address != null and address != ''">address,</if>
-        <if test="email != null and email != ''">email,</if>
-        <if test="avatar != null and avatar != ''">avatar,</if>
-        <if test="storeName != null and storeName != ''">store_name,</if>
-        <if test="phonenumber != null and phonenumber != ''">phonenumber,</if>
-        <if test="bankAccount != null and bankAccount != ''">bank_account,</if>
-        <if test="bankAccountName != null and bankAccountName != ''">bank_account_name,</if>
-        <if test="sex != null and sex != ''">sex,</if>
+        <if test="username != null and username != ''">username,</if>
         <if test="password != null and password != ''">password,</if>
         <if test="status != null and status != ''">status,</if>
-        <if test="isAgreeTerms != null and isAgreeTerms != ''">is_agree_terms,</if>
         <if test="createBy != null and createBy != ''">create_by,</if>
         <if test="remark != null and remark != ''">remark,</if>
         create_time
         )values(
         <if test="userId != null and userId != ''">#{userId},</if>
         <if test="identity != null and identity != ''">#{identity},</if>
-        <if test="birthday != null and birthday != ''">#{birthday},</if>
         <if test="deptId != null and deptId != ''">#{deptId},</if>
         <if test="username != null and username != ''">#{username},</if>
-        <if test="name != null  and name != ''">#{name},</if>
-        <if test="couponType != null  and couponType != ''">#{couponType},</if>
-        <if test="couponPrintCode != null  and couponPrintCode != ''">#{couponPrintCode},</if>
-        <if test="couponPrintType != null  and couponPrintType != ''">#{couponPrintType},</if>
-        <if test="couponProvideType != null  and couponProvideType != ''">#{couponProvideType},</if>
-        <if test="couponProvideTime != null ">#{couponProvideTime},</if>
-        <if test="latitude != null ">#{latitude},</if>
-        <if test="longitude != null ">#{longitude},</if>
-        <if test="address != null and address != ''">#{address},</if>
-        <if test="email != null and email != ''">#{email},</if>
-        <if test="avatar != null and avatar != ''">#{avatar},</if>
-        <if test="storeName != null and storeName != ''">#{storeName},</if>
-        <if test="phonenumber != null and phonenumber != ''">#{phonenumber},</if>
-        <if test="bankAccount != null and bankAccount != ''">#{bankAccount},</if>
-        <if test="bankAccountName != null and bankAccountName != ''">#{bankAccountName},</if>
-        <if test="sex != null and sex != ''">#{sex},</if>
         <if test="password != null and password != ''">#{password},</if>
         <if test="status != null and status != ''">#{status},</if>
-        <if test="isAgreeTerms != null and isAgreeTerms != ''">#{isAgreeTerms},</if>
         <if test="createBy != null and createBy != ''">#{createBy},</if>
         <if test="remark != null and remark != ''">#{remark},</if>
         sysdate()
@@ -203,24 +143,8 @@
         update sys_user
         <set>
             <if test="deptId != null and deptId != 0">dept_id = #{deptId},</if>
-            <if test="username != null and username != ''">user_name = #{username},</if>
+            <if test="username != null and username != ''">username = #{username},</if>
             <if test="password != null and password != ''">password = #{password},</if>
-            <if test="name != null  and name != ''">name = #{name},</if>
-            <if test="couponType != null  and couponType != ''">coupon_type = #{couponType},</if>
-            <if test="couponPrintCode != null  and couponPrintCode != ''">coupon_print_code = #{couponPrintCode},</if>
-            <if test="couponPrintType != null  and couponPrintType != ''">coupon_print_type = #{couponPrintType},</if>
-            <if test="couponProvideType != null  and couponProvideType != ''">coupon_provide_type =
-                #{couponProvideType},
-            </if>
-            <if test="couponProvideTime != null ">coupon_provide_time = #{couponProvideTime},</if>
-            <if test="email != null and email != ''">email = #{email},</if>
-            <if test="phonenumber != null and phonenumber != ''">phonenumber = #{phonenumber},</if>
-            <if test="sex != null and sex != ''">sex = #{sex},</if>
-            <if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
-            <if test="storeName != null and storeName != ''">store_name = #{storeName},</if>
-            <if test="latitude != null">latitude = #{latitude},</if>
-            <if test="longitude != null">longitude = #{longitude},</if>
-            <if test="address != null and address != ''">address = #{address},</if>
             <if test="status != null and status != ''">status = #{status},</if>
             <if test="loginIp != null and loginIp != ''">login_ip = #{loginIp},</if>
             <if test="loginDate != null">login_date = #{loginDate},</if>
@@ -236,11 +160,11 @@
 	</update>
 
     <update id="updateUserAvatar" parameterType="SysUser">
- 		update sys_user set avatar = #{avatar} where user_name = #{username}
+ 		update sys_user set avatar = #{avatar} where username = #{username}
 	</update>
 
     <update id="resetUserPwd" parameterType="SysUser">
- 		update sys_user set password = #{password} where user_name = #{username}
+ 		update sys_user set password = #{password} where username = #{username}
 	</update>
 
     <delete id="deleteUserById" parameterType="Long">
@@ -257,7 +181,7 @@
     <insert id="insertUserByProWhitelist" parameterType="ProWhitelist" useGeneratedKeys="true" keyProperty="userId">
         insert into sys_user(
         <if test="whitelistTaxIdNo != null and whitelistTaxIdNo != ''">user_id,</if>
-        <if test="whitelistAcct != null and whitelistAcct != ''">user_name,</if>
+        <if test="whitelistAcct != null and whitelistAcct != ''">username,</if>
         <if test="whitelistPwd != null and whitelistPwd != ''">password,</if>
         <if test="whitelistName != null and whitelistName != ''">name,</if>
         <if test="whitelistPhone != null and whitelistPhone != ''">phonenumber,</if>
@@ -290,4 +214,4 @@
     </select>
 
 
-</mapper> 
+</mapper>

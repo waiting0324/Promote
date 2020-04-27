@@ -1,10 +1,8 @@
 package com.promote.project.promote.service.impl;
 
 import com.promote.common.constant.CouponConstants;
-import com.promote.common.constant.StoreTypeConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.utils.DateUtils;
-import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
 import com.promote.project.promote.domain.Coupon;
@@ -16,20 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * 抵用券Service業務層處理
- * 
+ *
  * @author 6550 劉威廷
  * @date 2020-04-22
  */
 @Service
-public class CouponServiceImpl implements ICouponService 
+public class CouponServiceImpl implements ICouponService
 {
     @Autowired
     private CouponMapper couponMapper;
@@ -42,7 +36,7 @@ public class CouponServiceImpl implements ICouponService
 
     /**
      * 查詢抵用券
-     * 
+     *
      * @param sn 抵用券ID
      * @return 抵用券
      */
@@ -54,7 +48,7 @@ public class CouponServiceImpl implements ICouponService
 
     /**
      * 查詢抵用券列表
-     * 
+     *
      * @param coupon 抵用券
      * @return 抵用券
      */
@@ -66,7 +60,7 @@ public class CouponServiceImpl implements ICouponService
 
     /**
      * 新增抵用券
-     * 
+     *
      * @param coupon 抵用券
      * @return 結果
      */
@@ -79,7 +73,7 @@ public class CouponServiceImpl implements ICouponService
 
     /**
      * 修改抵用券
-     * 
+     *
      * @param coupon 抵用券
      * @return 結果
      */
@@ -91,7 +85,7 @@ public class CouponServiceImpl implements ICouponService
 
     /**
      * 批量刪除抵用券
-     * 
+     *
      * @param sns 需要刪除的抵用券ID
      * @return 結果
      */
@@ -103,7 +97,7 @@ public class CouponServiceImpl implements ICouponService
 
     /**
      * 刪除抵用券資訊
-     * 
+     *
      * @param sn 抵用券ID
      * @return 結果
      */
@@ -146,7 +140,7 @@ public class CouponServiceImpl implements ICouponService
         if (CouponConstants.COUPON_TYPE_VIRTUAL.equals(user.getCouponType())) {
 
             // 設定抵用券資料，發送抵用券
-            List<Coupon> couponList = new ArrayList<>();
+            /*List<Coupon> couponList = new ArrayList<>();
             for (int i = 0; i < 16; i++) {
 
                 // 設定抵用券的基本資料
@@ -178,7 +172,7 @@ public class CouponServiceImpl implements ICouponService
 
             // 寫入抵用券表
             couponMapper.insertCouponList(couponList);
-
+*/
         }
         // 消費者選擇使用紙本方式發放抵用券
         else if (CouponConstants.COUPON_TYPE_PAPER.equals(user.getCouponType())) {

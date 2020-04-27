@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.promote.project.promote.mapper.WeeklySettlementDetailMapper">
+
+    <resultMap type="WeeklySettlementDetail" id="WeeklySettlementDetailResult">
+        <result property="couponId"    column="coupon_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="consumeTime"    column="consume_time"    />
+        <result property="storeType"    column="store_type"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="mainId"    column="main_id"    />
+    </resultMap>
+
+    <sql id="selectWeeklySettlementDetailVo">
+        select coupon_id, user_id, store_id, consume_time, store_type, create_time, main_id from pro_weekly_settlement_detail
+    </sql>
+
+    <select id="selectWeeklySettlementDetailList" parameterType="WeeklySettlementDetail" resultMap="WeeklySettlementDetailResult">
+        <include refid="selectWeeklySettlementDetailVo"/>
+        <where>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="consumeTime != null "> and consume_time = #{consumeTime}</if>
+            <if test="storeType != null  and storeType != ''"> and store_type = #{storeType}</if>
+            <if test="mainId != null "> and main_id = #{mainId}</if>
+        </where>
+    </select>
+
+    <select id="selectWeeklySettlementDetailById" parameterType="String" resultMap="WeeklySettlementDetailResult">
+        <include refid="selectWeeklySettlementDetailVo"/>
+        where coupon_id = #{couponId}
+    </select>
+
+    <insert id="insertWeeklySettlementDetail" parameterType="WeeklySettlementDetail">
+        insert into pro_weekly_settlement_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="couponId != null  and couponId != ''">coupon_id,</if>
+            <if test="userId != null ">user_id,</if>
+            <if test="storeId != null ">store_id,</if>
+            <if test="consumeTime != null ">consume_time,</if>
+            <if test="storeType != null  and storeType != ''">store_type,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="mainId != null ">main_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="couponId != null  and couponId != ''">#{couponId},</if>
+            <if test="userId != null ">#{userId},</if>
+            <if test="storeId != null ">#{storeId},</if>
+            <if test="consumeTime != null ">#{consumeTime},</if>
+            <if test="storeType != null  and storeType != ''">#{storeType},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="mainId != null ">#{mainId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateWeeklySettlementDetail" parameterType="WeeklySettlementDetail">
+        update pro_weekly_settlement_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null ">user_id = #{userId},</if>
+            <if test="storeId != null ">store_id = #{storeId},</if>
+            <if test="consumeTime != null ">consume_time = #{consumeTime},</if>
+            <if test="storeType != null  and storeType != ''">store_type = #{storeType},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="mainId != null ">main_id = #{mainId},</if>
+        </trim>
+        where coupon_id = #{couponId}
+    </update>
+
+    <delete id="deleteWeeklySettlementDetailById" parameterType="String">
+        delete from pro_weekly_settlement_detail where coupon_id = #{couponId}
+    </delete>
+
+    <delete id="deleteWeeklySettlementDetailByIds" parameterType="String">
+        delete from pro_weekly_settlement_detail where coupon_id in
+        <foreach item="couponId" collection="array" open="(" separator="," close=")">
+            #{couponId}
+        </foreach>
+    </delete>
+
+</mapper>

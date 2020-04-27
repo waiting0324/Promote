@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.promote.project.promote.mapper.WeeklySettlementMapper">
+
+    <resultMap type="WeeklySettlement" id="WeeklySettlementResult">
+        <result property="id"    column="id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="weekStart"    column="week_start"    />
+        <result property="weekEnd"    column="week_end"    />
+        <result property="amount"    column="amount"    />
+        <result property="isConfirm"    column="is_confirm"    />
+        <result property="isBatch"    column="is_batch"    />
+        <result property="batchStatus"    column="batch_status"    />
+        <result property="batchTime"    column="batch_time"    />
+        <result property="paymentStatus"    column="payment_status"    />
+    </resultMap>
+
+    <sql id="selectWeeklySettlementVo">
+        select id, store_id, week_start, week_end, amount, is_confirm, is_batch, batch_status, batch_time, payment_status from pro_weekly_settlement
+    </sql>
+
+    <select id="selectWeeklySettlementList" parameterType="WeeklySettlement" resultMap="WeeklySettlementResult">
+        <include refid="selectWeeklySettlementVo"/>
+        <where>
+            <if test="storeId != null "> and store_id = #{storeId}</if>
+            <if test="weekStart != null "> and week_start = #{weekStart}</if>
+            <if test="weekEnd != null "> and week_end = #{weekEnd}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="isConfirm != null  and isConfirm != ''"> and is_confirm = #{isConfirm}</if>
+            <if test="isBatch != null  and isBatch != ''"> and is_batch = #{isBatch}</if>
+            <if test="batchStatus != null  and batchStatus != ''"> and batch_status = #{batchStatus}</if>
+            <if test="batchTime != null "> and batch_time = #{batchTime}</if>
+            <if test="paymentStatus != null  and paymentStatus != ''"> and payment_status = #{paymentStatus}</if>
+        </where>
+    </select>
+
+    <select id="selectWeeklySettlementById" parameterType="Long" resultMap="WeeklySettlementResult">
+        <include refid="selectWeeklySettlementVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertWeeklySettlement" parameterType="WeeklySettlement">
+        insert into pro_weekly_settlement
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null ">id,</if>
+            <if test="storeId != null ">store_id,</if>
+            <if test="weekStart != null ">week_start,</if>
+            <if test="weekEnd != null ">week_end,</if>
+            <if test="amount != null ">amount,</if>
+            <if test="isConfirm != null  and isConfirm != ''">is_confirm,</if>
+            <if test="isBatch != null  and isBatch != ''">is_batch,</if>
+            <if test="batchStatus != null  and batchStatus != ''">batch_status,</if>
+            <if test="batchTime != null ">batch_time,</if>
+            <if test="paymentStatus != null  and paymentStatus != ''">payment_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null ">#{id},</if>
+            <if test="storeId != null ">#{storeId},</if>
+            <if test="weekStart != null ">#{weekStart},</if>
+            <if test="weekEnd != null ">#{weekEnd},</if>
+            <if test="amount != null ">#{amount},</if>
+            <if test="isConfirm != null  and isConfirm != ''">#{isConfirm},</if>
+            <if test="isBatch != null  and isBatch != ''">#{isBatch},</if>
+            <if test="batchStatus != null  and batchStatus != ''">#{batchStatus},</if>
+            <if test="batchTime != null ">#{batchTime},</if>
+            <if test="paymentStatus != null  and paymentStatus != ''">#{paymentStatus},</if>
+        </trim>
+    </insert>
+
+    <update id="updateWeeklySettlement" parameterType="WeeklySettlement">
+        update pro_weekly_settlement
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeId != null ">store_id = #{storeId},</if>
+            <if test="weekStart != null ">week_start = #{weekStart},</if>
+            <if test="weekEnd != null ">week_end = #{weekEnd},</if>
+            <if test="amount != null ">amount = #{amount},</if>
+            <if test="isConfirm != null  and isConfirm != ''">is_confirm = #{isConfirm},</if>
+            <if test="isBatch != null  and isBatch != ''">is_batch = #{isBatch},</if>
+            <if test="batchStatus != null  and batchStatus != ''">batch_status = #{batchStatus},</if>
+            <if test="batchTime != null ">batch_time = #{batchTime},</if>
+            <if test="paymentStatus != null  and paymentStatus != ''">payment_status = #{paymentStatus},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWeeklySettlementById" parameterType="Long">
+        delete from pro_weekly_settlement where id = #{id}
+    </delete>
+
+    <delete id="deleteWeeklySettlementByIds" parameterType="String">
+        delete from pro_weekly_settlement where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

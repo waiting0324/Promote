@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.promote.project.promote.mapper.FundAmountMapper">
+
+    <resultMap type="FundAmount" id="FundAmountResult">
+        <result property="id"    column="id"    />
+        <result property="fundType"    column="fund_type"    />
+        <result property="perFund"    column="per_fund"    />
+        <result property="minUseAmount"    column="min_use_amount"    />
+        <result property="useDeadline"    column="use_deadline"    />
+        <result property="fundAmount"    column="fund_amount"    />
+        <result property="balance"    column="balance"    />
+        <result property="startDate"    column="start_date"    />
+        <result property="endDate"    column="end_date"    />
+        <result property="storeType"    column="store_type"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectFundAmountVo">
+        select id, fund_type, per_fund, min_use_amount, use_deadline, fund_amount, balance, start_date, end_date, store_type, update_time from pro_fund_amount
+    </sql>
+
+    <select id="selectFundAmountList" parameterType="FundAmount" resultMap="FundAmountResult">
+        <include refid="selectFundAmountVo"/>
+        <where>
+            <if test="fundType != null  and fundType != ''"> and fund_type = #{fundType}</if>
+            <if test="perFund != null "> and per_fund = #{perFund}</if>
+            <if test="minUseAmount != null "> and min_use_amount = #{minUseAmount}</if>
+            <if test="useDeadline != null "> and use_deadline = #{useDeadline}</if>
+            <if test="fundAmount != null "> and fund_amount = #{fundAmount}</if>
+            <if test="balance != null "> and balance = #{balance}</if>
+            <if test="startDate != null "> and start_date = #{startDate}</if>
+            <if test="endDate != null "> and end_date = #{endDate}</if>
+            <if test="storeType != null  and storeType != ''"> and store_type = #{storeType}</if>
+        </where>
+    </select>
+
+    <select id="selectFundAmountById" parameterType="Long" resultMap="FundAmountResult">
+        <include refid="selectFundAmountVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertFundAmount" parameterType="FundAmount" useGeneratedKeys="true" keyProperty="id">
+        insert into pro_fund_amount
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fundType != null  and fundType != ''">fund_type,</if>
+            <if test="perFund != null ">per_fund,</if>
+            <if test="minUseAmount != null ">min_use_amount,</if>
+            <if test="useDeadline != null ">use_deadline,</if>
+            <if test="fundAmount != null ">fund_amount,</if>
+            <if test="balance != null ">balance,</if>
+            <if test="startDate != null ">start_date,</if>
+            <if test="endDate != null ">end_date,</if>
+            <if test="storeType != null  and storeType != ''">store_type,</if>
+            <if test="updateTime != null ">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fundType != null  and fundType != ''">#{fundType},</if>
+            <if test="perFund != null ">#{perFund},</if>
+            <if test="minUseAmount != null ">#{minUseAmount},</if>
+            <if test="useDeadline != null ">#{useDeadline},</if>
+            <if test="fundAmount != null ">#{fundAmount},</if>
+            <if test="balance != null ">#{balance},</if>
+            <if test="startDate != null ">#{startDate},</if>
+            <if test="endDate != null ">#{endDate},</if>
+            <if test="storeType != null  and storeType != ''">#{storeType},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateFundAmount" parameterType="FundAmount">
+        update pro_fund_amount
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fundType != null  and fundType != ''">fund_type = #{fundType},</if>
+            <if test="perFund != null ">per_fund = #{perFund},</if>
+            <if test="minUseAmount != null ">min_use_amount = #{minUseAmount},</if>
+            <if test="useDeadline != null ">use_deadline = #{useDeadline},</if>
+            <if test="fundAmount != null ">fund_amount = #{fundAmount},</if>
+            <if test="balance != null ">balance = #{balance},</if>
+            <if test="startDate != null ">start_date = #{startDate},</if>
+            <if test="endDate != null ">end_date = #{endDate},</if>
+            <if test="storeType != null  and storeType != ''">store_type = #{storeType},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteFundAmountById" parameterType="Long">
+        delete from pro_fund_amount where id = #{id}
+    </delete>
+
+    <delete id="deleteFundAmountByIds" parameterType="String">
+        delete from pro_fund_amount where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.promote.project.promote.mapper.HostelInfoMapper">
+
+    <resultMap type="HostelInfo" id="HostelInfoResult">
+        <result property="userId"    column="user_id"    />
+        <result property="name"    column="name"    />
+        <result property="address"    column="address"    />
+        <result property="latitude"    column="latitude"    />
+        <result property="longitude"    column="longitude"    />
+        <result property="isSupportCoupon"    column="is_support_coupon"    />
+        <result property="agreeTime"    column="agree_time"    />
+        <result property="isAgreeTerms"    column="is_agree_terms"    />
+        <result property="pwNeedReset"    column="pw_need_reset"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectHostelInfoVo">
+        select user_id, name, address, latitude, longitude, is_support_coupon, agree_time, is_agree_terms, pw_need_reset, update_time, create_time from pro_hostel_info
+    </sql>
+
+    <select id="selectHostelInfoList" parameterType="HostelInfo" resultMap="HostelInfoResult">
+        <include refid="selectHostelInfoVo"/>
+        <where>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="latitude != null "> and latitude = #{latitude}</if>
+            <if test="longitude != null "> and longitude = #{longitude}</if>
+            <if test="isSupportCoupon != null  and isSupportCoupon != ''"> and is_support_coupon = #{isSupportCoupon}</if>
+            <if test="agreeTime != null "> and agree_time = #{agreeTime}</if>
+            <if test="isAgreeTerms != null  and isAgreeTerms != ''"> and is_agree_terms = #{isAgreeTerms}</if>
+            <if test="pwNeedReset != null  and pwNeedReset != ''"> and pw_need_reset = #{pwNeedReset}</if>
+        </where>
+    </select>
+
+    <select id="selectHostelInfoById" parameterType="Long" resultMap="HostelInfoResult">
+        <include refid="selectHostelInfoVo"/>
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insertHostelInfo" parameterType="HostelInfo">
+        insert into pro_hostel_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">user_id,</if>
+            <if test="name != null  and name != ''">name,</if>
+            <if test="address != null  and address != ''">address,</if>
+            <if test="latitude != null ">latitude,</if>
+            <if test="longitude != null ">longitude,</if>
+            <if test="isSupportCoupon != null  and isSupportCoupon != ''">is_support_coupon,</if>
+            <if test="agreeTime != null ">agree_time,</if>
+            <if test="isAgreeTerms != null  and isAgreeTerms != ''">is_agree_terms,</if>
+            <if test="pwNeedReset != null  and pwNeedReset != ''">pw_need_reset,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="createTime != null ">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">#{userId},</if>
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="address != null  and address != ''">#{address},</if>
+            <if test="latitude != null ">#{latitude},</if>
+            <if test="longitude != null ">#{longitude},</if>
+            <if test="isSupportCoupon != null  and isSupportCoupon != ''">#{isSupportCoupon},</if>
+            <if test="agreeTime != null ">#{agreeTime},</if>
+            <if test="isAgreeTerms != null  and isAgreeTerms != ''">#{isAgreeTerms},</if>
+            <if test="pwNeedReset != null  and pwNeedReset != ''">#{pwNeedReset},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="createTime != null ">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateHostelInfo" parameterType="HostelInfo">
+        update pro_hostel_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="address != null  and address != ''">address = #{address},</if>
+            <if test="latitude != null ">latitude = #{latitude},</if>
+            <if test="longitude != null ">longitude = #{longitude},</if>
+            <if test="isSupportCoupon != null  and isSupportCoupon != ''">is_support_coupon = #{isSupportCoupon},</if>
+            <if test="agreeTime != null ">agree_time = #{agreeTime},</if>
+            <if test="isAgreeTerms != null  and isAgreeTerms != ''">is_agree_terms = #{isAgreeTerms},</if>
+            <if test="pwNeedReset != null  and pwNeedReset != ''">pw_need_reset = #{pwNeedReset},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteHostelInfoById" parameterType="Long">
+        delete from pro_hostel_info where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteHostelInfoByIds" parameterType="String">
+        delete from pro_hostel_info where user_id in
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+</mapper>
