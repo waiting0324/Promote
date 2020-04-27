@@ -12,6 +12,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="username"    column="username"    />
         <result property="password"    column="password"    />
         <result property="address"    column="address"    />
+        <result property="latitude"    column="latitude"    />
+        <result property="longitude"    column="longitude"    />
         <result property="phonenumber"    column="phonenumber"    />
         <result property="email"    column="email"    />
         <result property="isAgreeTerms"    column="is_agree_terms"    />
@@ -27,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectProWhitelistVo">
-        select id, owner, name, tax_no, username, password, address, phonenumber, email, is_agree_terms, is_registed, type, is_n_market, is_t_market, is_foodbeverage, is_culture, is_sightseeing, update_time, create_time from pro_whitelist
+        select id, owner, name, tax_no, username, password, address, latitude, longitude, phonenumber, email, is_agree_terms, is_registed, type, is_n_market, is_t_market, is_foodbeverage, is_culture, is_sightseeing, update_time, create_time from pro_whitelist
     </sql>
 
     <select id="selectProWhitelistList" parameterType="ProWhitelist" resultMap="ProWhitelistResult">
@@ -70,6 +72,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="username != null  and username != ''">username,</if>
             <if test="password != null  and password != ''">password,</if>
             <if test="address != null  and address != ''">address,</if>
+            <if test="latitude != null  and latitude != ''">latitude,</if>
+            <if test="longitude != null  and longitude != ''">longitude,</if>
             <if test="phonenumber != null  and phonenumber != ''">phonenumber,</if>
             <if test="email != null  and email != ''">email,</if>
             <if test="type != null  and type != ''">type,</if>
@@ -89,6 +93,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="username != null  and username != ''">#{username},</if>
             <if test="password != null  and password != ''">#{password},</if>
             <if test="address != null  and address != ''">#{address},</if>
+            <if test="latitude != null  and latitude != ''">#{latitude},</if>
+            <if test="longitude != null  and longitude != ''">#{longitude},</if>
             <if test="phonenumber != null  and phonenumber != ''">#{phonenumber},</if>
             <if test="email != null  and email != ''">#{email},</if>
             <if test="type != null  and type != ''">#{type},</if>
@@ -111,6 +117,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="username != null  and username != ''">username = #{username},</if>
             <if test="password != null  and password != ''">password = #{password},</if>
             <if test="address != null  and address != ''">address = #{address},</if>
+            <if test="latitude != null  and latitude != ''">latitude = #{latitude},</if>
+            <if test="longitude != null  and longitude != ''">longitude = #{longitude},</if>
             <if test="phonenumber != null  and phonenumber != ''">phonenumber = #{phonenumber},</if>
             <if test="email != null  and email != ''">email = #{email},</if>
             <if test="isAgreeTerms != null and isAgreeTerms != ''">is_agree_terms = #{isAgreeTerms},</if>

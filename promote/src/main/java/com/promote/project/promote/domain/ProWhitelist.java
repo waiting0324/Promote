@@ -42,6 +42,12 @@ public class ProWhitelist extends BaseEntity
     @Excel(name = "地址 (帶上郵遞區號)")
     private String address;
 
+    /** 緯度 */
+    private Float latitude;
+
+    /** 經度 */
+    private Float longitude;
+
     /** 電話 */
     @Excel(name = "電話")
     private String phonenumber;
@@ -229,6 +235,22 @@ public class ProWhitelist extends BaseEntity
 
     public void setIsRegisted(String isRegisted) {
         this.isRegisted = isRegisted;
+    }
+
+    public Float getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Float latitude) {
+        this.latitude = latitude;
+    }
+
+    public Float getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Float longitude) {
+        this.longitude = longitude;
     }
 
     @Override

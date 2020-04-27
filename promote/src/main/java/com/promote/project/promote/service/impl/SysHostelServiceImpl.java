@@ -2,11 +2,13 @@ package com.promote.project.promote.service.impl;
 
 import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
-import com.promote.common.utils.EmailUtils;
+import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.security.service.SysLoginService;
+import com.promote.project.promote.domain.HostelInfo;
 import com.promote.project.promote.domain.ProWhitelist;
+import com.promote.project.promote.mapper.HostelInfoMapper;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
 import com.promote.project.promote.service.ISysHostelService;
 import com.promote.project.system.domain.SysUser;
@@ -17,8 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +41,9 @@ public class SysHostelServiceImpl implements ISysHostelService {
     private SysUserRoleMapper userRoleMapper;
 
     @Autowired
+    private HostelInfoMapper hostelInfoMapper;
+
+    @Autowired
     private SysLoginService loginService;
 
     /**
@@ -50,7 +55,10 @@ public class SysHostelServiceImpl implements ISysHostelService {
      * @return 結果
      */
     @Override
+    @Transactional
     public void regist(String username, String oldPwd, String newPwd) {
+
+        Date nowDate = DateUtils.getNowDate();
 
         // 用預設帳號密碼從白名單中取出資料
         ProWhitelist white = proWhitelistMapper.selectProWhitelistByUsernameAndPwd(username, oldPwd);
@@ -76,15 +84,26 @@ public class SysHostelServiceImpl implements ISysHostelService {
         user.setUsername(username);
         user.setIdentity(white.getTaxNo());
         user.setPassword(SecurityUtils.encryptPassword(newPwd));
-       /* user.setName(white.getName());
-        user.setBirthday("20200101");
-        user.setAddress(white.getAddress());
-        user.setPhonenumber(white.getPhonenumber().replace("-", ""));
         user.setEmail(white.getEmail());
-        user.setIsAgreeTerms(white.getIsAgreeTerms());*/
+        user.setMobile(white.getPhonenumber().replace("-", ""));
 
         // 插入User表
         userMapper.insertUser(user);
+
+        HostelInfo hostelInfo = new HostelInfo();
+        hostelInfo.setUserId(user.getUserId());
+        hostelInfo.setName(white.getName());
+        hostelInfo.setAddress(white.getAddress());
+        hostelInfo.setLatitude(white.getLatitude());
+        hostelInfo.setLongitude(white.getLongitude());
+        hostelInfo.setAgreeTime(nowDate);
+        hostelInfo.setPwNeedReset("0");
+        // TODO isSupportCoupon
+        // TODO isAgreeTerms
+
+        // 插入旅宿業者資訊表
+        hostelInfoMapper.insertHostelInfo(hostelInfo);
+
 
         // 處理角色問題
         List<SysUserRole> userRoleList = new ArrayList<>();

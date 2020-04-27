@@ -51,7 +51,15 @@ public class SysUser extends BaseEntity {
      */
     private String password;
 
+    /**
+     * 電子信箱
+     */
+    private String email;
 
+    /**
+     * 手機號碼
+     */
+    private String mobile;
 
     /**
      * 鹽加密
@@ -138,6 +146,21 @@ public class SysUser extends BaseEntity {
         this.deptId = deptId;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
 
     @NotBlank(message = "使用者帳號不能為空")
     @Size(min = 0, max = 30, message = "使用者帳號長度不能超過30個字元")

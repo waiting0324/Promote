@@ -54,7 +54,7 @@
             <if test="isAgreeTerms != null  and isAgreeTerms != ''">is_agree_terms,</if>
             <if test="pwNeedReset != null  and pwNeedReset != ''">pw_need_reset,</if>
             <if test="updateTime != null ">update_time,</if>
-            <if test="createTime != null ">create_time,</if>
+            create_time
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null ">#{userId},</if>
@@ -67,7 +67,7 @@
             <if test="isAgreeTerms != null  and isAgreeTerms != ''">#{isAgreeTerms},</if>
             <if test="pwNeedReset != null  and pwNeedReset != ''">#{pwNeedReset},</if>
             <if test="updateTime != null ">#{updateTime},</if>
-            <if test="createTime != null ">#{createTime},</if>
+            sysdate()
         </trim>
     </insert>
 
