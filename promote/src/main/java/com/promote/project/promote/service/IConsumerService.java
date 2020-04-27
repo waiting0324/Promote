@@ -1,7 +1,6 @@
 package com.promote.project.promote.service;
 
 import com.promote.project.system.domain.SysUser;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author 6550 劉威廷
@@ -19,14 +18,7 @@ public interface IConsumerService {
 
     /**
      * 消費者註冊
-     *
-     * @param userName 帳號
-     * @param password 密碼
-     * @param name 姓名
-     * @param identity 身分證/居留證/統一編號
-     * @param phonenumber 手機號碼
-     * @param birthday 生日
      */
-    public void regist(String userName, String password, String name, String identity, String phonenumber, String birthday);
+    public void regist(SysUser user, String identity, String birthday);
 
 }

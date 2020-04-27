@@ -4,6 +4,8 @@ import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
+import com.promote.project.promote.domain.ConsumerInfo;
+import com.promote.project.promote.mapper.ConsumerInfoMapper;
 import com.promote.project.promote.service.IConsumerService;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.domain.SysUserRole;
@@ -11,6 +13,7 @@ import com.promote.project.system.mapper.SysUserMapper;
 import com.promote.project.system.mapper.SysUserRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +25,12 @@ import java.util.List;
  */
 @Service
 public class ConsumerServiceImpl implements IConsumerService {
+
     @Autowired
     private SysUserRoleMapper userRoleMapper;
+
+    @Autowired
+    private ConsumerInfoMapper consumerInfoMapper;
 
     @Autowired
     SysUserMapper userMapper;
@@ -45,32 +52,50 @@ public class ConsumerServiceImpl implements IConsumerService {
     /**
      * 消費者註冊
      *
-     * @param userName 帳號
-     * @param password 密碼
      * @param name 姓名
-     * @param identity 身分證/居留證/統一編號
-     * @param phonenumber 手機號碼
      * @param birthday 生日
      */
     @Override
-    public void regist(String userName, String password, String name, String identity, String phonenumber, String birthday) {
-        if (StringUtils.isNotNull(userMapper.selectUserByUsername(userName))) {
+    @Transactional
+    public void regist(SysUser user, String name, String birthday) {
+
+
+        if (StringUtils.isNotNull(userMapper.selectUserByUsername(user.getUsername()))) {
             throw new CustomException("該帳號已被使用");
         }
-        SysUser user = new SysUser();
-        user.setUsername(userName);
-        user.setPassword(SecurityUtils.encryptPassword(password));
-        /*user.setName(name);
-        user.setIdentity(identity);
-        user.setPhonenumber(phonenumber.replace("-", ""));
-        user.setBirthday(birthday);
-        user.setIsAgreeTerms("1");*/
+
+        // 設定使用者資訊
+        SysUser insertUser = new SysUser();
+        insertUser.setUsername(user.getUsername());
+        insertUser.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
+        insertUser.setMobile(user.getMobile().replace("-", ""));
+        insertUser.setIdentity(user.getIdentity());
 
         // 插入User表
         int result = userMapper.insertUser(user);
         if(result < 0){
             throw new CustomException("註冊失敗，請聯絡管理員");
         }
+
+
+        // 設定消費者基本資訊
+        ConsumerInfo consumerInfo = new ConsumerInfo();
+        consumerInfo.setUserId(user.getUserId());
+        consumerInfo.setName(name);
+        consumerInfo.setIdentity(user.getIdentity());
+        consumerInfo.setBirthday(birthday);
+        // 狀態設為註冊
+        consumerInfo.setConsumerStat("1");
+        // 默認紙本列印抵用券
+        consumerInfo.setCouponType("P");
+        // 未列印
+        consumerInfo.setCouponPrintType("0");
+
+        // 插入消費者資訊表
+        consumerInfoMapper.insertConsumerInfo(consumerInfo);
+
+
+
         // 處理角色問題
         List<SysUserRole> userRoleList = new ArrayList<>();
         SysUserRole ur = new SysUserRole();
@@ -81,5 +106,7 @@ public class ConsumerServiceImpl implements IConsumerService {
         if(result < 0){
             throw new CustomException("註冊失敗，請聯絡管理員");
         }
+
+
     }
 }
