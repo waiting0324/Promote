@@ -1,5 +1,7 @@
 package com.promote.project.promote.controller;
 
+import com.promote.common.utils.MessageUtils;
+import com.promote.common.utils.StringUtils;
 import com.promote.common.utils.poi.ExcelUtil;
 import com.promote.framework.aspectj.lang.annotation.Log;
 import com.promote.framework.aspectj.lang.enums.BusinessType;
@@ -14,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 抵用券Controller
@@ -101,7 +104,12 @@ public class CouponController extends BaseController
      */
     @PreAuthorize("@ss.hasRole('hostel')")
     @PostMapping("/send")
-    public AjaxResult sendCoupon(SysUser user, String code) {
-        return toAjax(couponService.sendCoupon(user, code));
+    public AjaxResult sendCoupon(@RequestBody SysUser user) {
+        Map<String, Object> params = user.getParams();
+        String code = (String)params.get("code");
+        if (StringUtils.isNotEmpty(code)){
+            return toAjax(couponService.sendCoupon(user, code));
+        }
+        return AjaxResult.error(MessageUtils.message("user.jcaptcha.not.exist"));
     }
 }
