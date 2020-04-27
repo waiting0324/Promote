@@ -98,9 +98,14 @@
         SELECT
             u.user_id,
             u.identity,
+            u.mobile,
+            c.birthday,
+            c.name,
+            c.coupon_type
         FROM
             sys_user u
             LEFT JOIN sys_user_role ur ON u.user_id = ur.user_id
+            LEFT JOIN pro_consumer_info c ON u.user_id = c.user_id
         WHERE
             u.identity = #{identity} and ur.role_id = 5
     </select>

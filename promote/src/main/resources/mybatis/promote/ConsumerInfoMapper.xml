@@ -66,7 +66,7 @@
             <if test="issueDate != null ">issue_date,</if>
             <if test="receiveDate != null ">receive_date,</if>
             <if test="updateTime != null ">update_time,</if>
-            <if test="createTime != null ">create_time,</if>
+            create_time
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null ">#{userId},</if>
@@ -83,7 +83,7 @@
             <if test="issueDate != null ">#{issueDate},</if>
             <if test="receiveDate != null ">#{receiveDate},</if>
             <if test="updateTime != null ">#{updateTime},</if>
-            <if test="createTime != null ">#{createTime},</if>
+            sysdate()
         </trim>
     </insert>
 
