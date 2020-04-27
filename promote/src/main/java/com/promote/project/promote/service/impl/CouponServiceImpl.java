@@ -1,6 +1,5 @@
 package com.promote.project.promote.service.impl;
 
-import com.promote.common.constant.CouponConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.StringUtils;
@@ -117,9 +116,9 @@ public class CouponServiceImpl implements ICouponService
         }
 
         // 查詢該消費者是否已經發過抵用券
-        if (CouponConstants.IS_PROVIDE.equals(userMapper.selectUserById(user.getUserId()).getCouponProvideType())) {
+        /*if (CouponConstants.IS_PROVIDE.equals(userMapper.selectUserById(user.getUserId()).getCouponProvideType())) {
             throw new CustomException("該消費者已經領過抵用券");
-        }
+        }*/
 
         // 驗證OTP驗證碼
         // 從Redis中取出驗證碼
@@ -137,10 +136,10 @@ public class CouponServiceImpl implements ICouponService
         }*/
 
         // 消費者選擇使用電子(虛擬)方式發放抵用券
-        if (CouponConstants.COUPON_TYPE_VIRTUAL.equals(user.getCouponType())) {
+        /*if (CouponConstants.COUPON_TYPE_VIRTUAL.equals(user.getCouponType())) {
 
             // 設定抵用券資料，發送抵用券
-            /*List<Coupon> couponList = new ArrayList<>();
+            List<Coupon> couponList = new ArrayList<>();
             for (int i = 0; i < 16; i++) {
 
                 // 設定抵用券的基本資料
@@ -172,25 +171,25 @@ public class CouponServiceImpl implements ICouponService
 
             // 寫入抵用券表
             couponMapper.insertCouponList(couponList);
-*/
+
         }
         // 消費者選擇使用紙本方式發放抵用券
         else if (CouponConstants.COUPON_TYPE_PAPER.equals(user.getCouponType())) {
             // TODO 連接KIOSK
         } else {
             throw new CustomException("消費者選擇發放抵用券的方式不正確");
-        }
+        }*/
 
 
         // 處理要更新的消費者資料
         SysUser updateUser = new SysUser();
         updateUser.setUserId(user.getUserId());
         // 電子或紙本
-        updateUser.setCouponType(user.getCouponType());
+        /*updateUser.setCouponType(user.getCouponType());
         updateUser.setPhonenumber(user.getPhonenumber());
         // 是否已發送
         updateUser.setCouponProvideType(CouponConstants.IS_PROVIDE);
-        updateUser.setCouponProvideTime(DateUtils.getNowDate());
+        updateUser.setCouponProvideTime(DateUtils.getNowDate());*/
 
         // 更新消費者資料
         return userMapper.updateUser(updateUser);

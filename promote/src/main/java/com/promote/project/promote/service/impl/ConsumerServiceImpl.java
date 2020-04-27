@@ -60,11 +60,11 @@ public class ConsumerServiceImpl implements IConsumerService {
         SysUser user = new SysUser();
         user.setUsername(userName);
         user.setPassword(SecurityUtils.encryptPassword(password));
-        user.setName(name);
+        /*user.setName(name);
         user.setIdentity(identity);
         user.setPhonenumber(phonenumber.replace("-", ""));
         user.setBirthday(birthday);
-        user.setIsAgreeTerms("1");
+        user.setIsAgreeTerms("1");*/
 
         // 插入User表
         int result = userMapper.insertUser(user);

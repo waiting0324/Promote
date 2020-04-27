@@ -9,7 +9,6 @@ import com.promote.framework.web.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -34,10 +33,6 @@ public class SysUser extends BaseEntity {
      */
     private String identity;
 
-    /**
-     * 使用者生日
-     */
-    private String birthday;
 
     /**
      * 部門ID
@@ -56,100 +51,7 @@ public class SysUser extends BaseEntity {
      */
     private String password;
 
-    /**
-     * 使用者 姓名 or 商店名稱
-     */
-    @Excel(name = "使用者名稱")
-    private String name;
 
-    /**
-     * 抵用券領用類型
-     */
-    @Excel(name = "抵用券領用類型", readConverterExp = "0=電子,1=紙本")
-    private String couponType;
-
-    /**
-     * 抵用券 列印兌換碼
-     */
-    private String couponPrintCode;
-
-    /**
-     * 抵用券 列印狀態
-     */
-    private String couponPrintType;
-
-    /**
-     * 抵用券 發放狀態
-     */
-    private String couponProvideType;
-
-    /**
-     * 抵用券 發放時間
-     */
-    private Date couponProvideTime;
-
-    /**
-     * 使用者郵箱
-     */
-    @Excel(name = "使用者郵箱")
-    private String email;
-
-    /**
-     * 手機號碼
-     */
-    @Excel(name = "手機號碼")
-    private String phonenumber;
-
-    /**
-     * 銀行帳戶
-     */
-    private String bankAccount;
-
-    /**
-     * 銀行戶名
-     */
-    private String bankAccountName;
-
-    /**
-     * 使用者性別
-     */
-    @Excel(name = "使用者性別", readConverterExp = "0=男,1=女,2=未知")
-    private String sex;
-
-    /**
-     * 使用者頭像
-     */
-    private String avatar;
-
-    /**
-     * 商家實際店名
-     */
-    private String storeName;
-
-    /**
-     * 商家緯度
-     */
-    private Double latitude;
-
-    /**
-     * 商家經度
-     */
-    private Double longitude;
-
-    /**
-     * 商家地址
-     */
-    private String address;
-
-    /**
-     * 旅宿業者是否協助發放抵用券 ( 0不協助 1協助)
-     */
-    private String isSupportCoupon;
-
-    /**
-     * 是否同意註冊條款 (0 不同意 1同意 )
-     */
-    private String isAgreeTerms;
 
     /**
      * 鹽加密
@@ -208,79 +110,6 @@ public class SysUser extends BaseEntity {
     }
 
 
-    @NotBlank(message = "使用者生日不能為空")
-    public String getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(String birthday) {
-        this.birthday = birthday;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCouponType() {
-        return couponType;
-    }
-
-    public void setCouponType(String couponType) {
-        this.couponType = couponType;
-    }
-
-    public String getCouponPrintCode() {
-        return couponPrintCode;
-    }
-
-    public void setCouponPrintCode(String couponPrintCode) {
-        this.couponPrintCode = couponPrintCode;
-    }
-
-    public String getCouponPrintType() {
-        return couponPrintType;
-    }
-
-    public void setCouponPrintType(String couponPrintType) {
-        this.couponPrintType = couponPrintType;
-    }
-
-    public String getCouponProvideType() {
-        return couponProvideType;
-    }
-
-    public void setCouponProvideType(String couponProvideType) {
-        this.couponProvideType = couponProvideType;
-    }
-
-    public Date getCouponProvideTime() {
-        return couponProvideTime;
-    }
-
-    public void setCouponProvideTime(Date couponProvideTime) {
-        this.couponProvideTime = couponProvideTime;
-    }
-
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
     public SysUser(Long userId) {
         this.userId = userId;
     }
@@ -318,41 +147,6 @@ public class SysUser extends BaseEntity {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    @Email(message = "郵箱格式不正確")
-    @Size(min = 0, max = 50, message = "郵箱長度不能超過50個字元")
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @Size(min = 0, max = 10, message = "手機號碼長度不能超過10個字元")
-    public String getPhonenumber() {
-        return phonenumber;
-    }
-
-    public void setPhonenumber(String phonenumber) {
-        this.phonenumber = phonenumber;
-    }
-
-    public String getSex() {
-        return sex;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
     }
 
     @JsonProperty
@@ -436,37 +230,6 @@ public class SysUser extends BaseEntity {
         this.postIds = postIds;
     }
 
-    public String getBankAccount() {
-        return bankAccount;
-    }
-
-    public void setBankAccount(String bankAccount) {
-        this.bankAccount = bankAccount;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getIsSupportCoupon() {
-        return isSupportCoupon;
-    }
-
-    public void setIsSupportCoupon(String isSupportCoupon) {
-        this.isSupportCoupon = isSupportCoupon;
-    }
-
-    public String getIsAgreeTerms() {
-        return isAgreeTerms;
-    }
-
-    public void setIsAgreeTerms(String isAgreeTerms) {
-        this.isAgreeTerms = isAgreeTerms;
-    }
 
     public String getIdentity() {
         return identity;
@@ -476,21 +239,6 @@ public class SysUser extends BaseEntity {
         this.identity = identity;
     }
 
-    public String getBankAccountName() {
-        return bankAccountName;
-    }
-
-    public void setBankAccountName(String bankAccountName) {
-        this.bankAccountName = bankAccountName;
-    }
-
-    public String getStoreName() {
-        return storeName;
-    }
-
-    public void setStoreName(String storeName) {
-        this.storeName = storeName;
-    }
 
     @Override
     public String toString() {
@@ -498,10 +246,6 @@ public class SysUser extends BaseEntity {
                 .append("userId", getUserId())
                 .append("deptId", getDeptId())
                 .append("userName", getUsername())
-                .append("email", getEmail())
-                .append("phonenumber", getPhonenumber())
-                .append("sex", getSex())
-                .append("avatar", getAvatar())
                 .append("password", getPassword())
                 .append("salt", getSalt())
                 .append("status", getStatus())

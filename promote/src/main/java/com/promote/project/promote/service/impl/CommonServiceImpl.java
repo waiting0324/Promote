@@ -151,10 +151,10 @@ public class CommonServiceImpl implements ICommonService {
 
         // 使用Email方式驗證
         if (Constants.VERI_CODE_TYPE_EMAIL.equals(type)) {
-            if (StringUtils.isEmpty(user.getEmail())) {
+            /*if (StringUtils.isEmpty(user.getEmail())) {
                 throw new CustomException("您尚未設定Email，故不能使用Email進行重設密碼操作");
             }
-            EmailUtils.sendEmail(user.getEmail(), "振興券 - 重設密碼", msg);
+            EmailUtils.sendEmail(user.getEmail(), "振興券 - 重設密碼", msg);*/
 
             String verifyKey = Constants.VERIFICATION_CODE_KEY + username;
             redisCache.setCacheObject(verifyKey, verifyCode, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);

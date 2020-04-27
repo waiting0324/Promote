@@ -1,15 +1,5 @@
 package com.promote.project.system.controller;
 
-import java.io.IOException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.file.FileUploadUtils;
@@ -22,6 +12,11 @@ import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.service.ISysUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 /**
  * 個人資訊 業務處理
@@ -63,10 +58,10 @@ public class SysProfileController extends BaseController
         {
             LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
             // 更新快取使用者資訊
-            loginUser.getUser().setName(user.getName());
+           /* loginUser.getUser().setName(user.getName());
             loginUser.getUser().setPhonenumber(user.getPhonenumber());
             loginUser.getUser().setEmail(user.getEmail());
-            loginUser.getUser().setSex(user.getSex());
+            loginUser.getUser().setSex(user.getSex());*/
             tokenService.setLoginUser(loginUser);
             return AjaxResult.success();
         }
@@ -117,7 +112,7 @@ public class SysProfileController extends BaseController
                 AjaxResult ajax = AjaxResult.success();
                 ajax.put("imgUrl", avatar);
                 // 更新快取使用者頭像
-                loginUser.getUser().setAvatar(avatar);
+                //loginUser.getUser().setAvatar(avatar);
                 tokenService.setLoginUser(loginUser);
                 return ajax;
             }

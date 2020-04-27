@@ -48,13 +48,13 @@ public class ConsumerController extends BaseController {
      */
     @PostMapping("/regist")
     public AjaxResult regist(@RequestBody SysUser user) {
-        if (StringUtils.isEmpty(user.getIsAgreeTerms()) || !("1".equals(user.getIsAgreeTerms()))) {
+       /* if (StringUtils.isEmpty(user.getIsAgreeTerms()) || !("1".equals(user.getIsAgreeTerms()))) {
             return AjaxResult.error(MessageUtils.message("pro.err.terms.not.check"));
-        }
+        }*/
         // 必填欄位檢核
         String userName = user.getUsername();
         String password = user.getPassword();
-        String name = user.getName();
+        /*String name = user.getName();
         String identity = user.getIdentity();
         String phonenumber = user.getPhonenumber();
         String birthday = user.getBirthday();
@@ -62,7 +62,7 @@ public class ConsumerController extends BaseController {
                 StringUtils.isEmpty(name) || StringUtils.isEmpty(identity) ||
                 StringUtils.isEmpty(phonenumber) || StringUtils.isEmpty(birthday)) {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
-        }
+        }*/
 
         Map<String, Object> params = user.getParams();
         String isFromApp = (String) params.get("isFromApp");
@@ -80,7 +80,7 @@ public class ConsumerController extends BaseController {
             }
         }
 
-        consumerService.regist(userName, password, name, identity, phonenumber, birthday);
+        //consumerService.regist(userName, password, name, identity, phonenumber, birthday);
         return AjaxResult.success();
     }
 

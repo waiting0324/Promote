@@ -102,7 +102,7 @@ public class ProStoreController extends BaseController {
     @PostMapping("/regist")
     public AjaxResult regist(@RequestBody SysUser user) {
         // 註冊條款校驗
-        if (StringUtils.isEmpty(user.getIsAgreeTerms()) || !("1".equals(user.getIsAgreeTerms()))) {
+        /*if (StringUtils.isEmpty(user.getIsAgreeTerms()) || !("1".equals(user.getIsAgreeTerms()))) {
             return AjaxResult.error(MessageUtils.message("pro.err.terms.not.check"));
         }
 
@@ -113,7 +113,7 @@ public class ProStoreController extends BaseController {
                 StringUtils.isEmpty(user.getAddress()) || StringUtils.isEmpty(user.getBankAccount()) ||
                 StringUtils.isEmpty(user.getBankAccountName())) {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
-        }
+        }*/
 
         // 圖形驗證碼校驗
         Map<String, Object> params = user.getParams();

@@ -62,14 +62,14 @@ public class ProStoreServiceImpl implements IProStoreService {
         SysUser insertUser = new SysUser();
         insertUser.setUsername(user.getUsername());
         insertUser.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
-        insertUser.setName(user.getName());
+        /*insertUser.setName(user.getName());
         insertUser.setIdentity(user.getIdentity());
         insertUser.setPhonenumber(user.getPhonenumber().replace("-", ""));
         insertUser.setStoreName(user.getStoreName());
         insertUser.setAddress(user.getAddress());
         insertUser.setBankAccount(user.getBankAccount());
         insertUser.setBankAccountName(user.getBankAccountName());
-        insertUser.setIsAgreeTerms(user.getIsAgreeTerms());
+        insertUser.setIsAgreeTerms(user.getIsAgreeTerms());*/
 
 
 
