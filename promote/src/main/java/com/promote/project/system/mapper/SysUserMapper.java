@@ -142,5 +142,5 @@ public interface SysUserMapper {
      * @param identity 身分證
      * @return 使用者Bean
      */
-    public SysUser selectConsumerByIdentity(String identity);
+    public List<SysUser> selectConsumerByIdentity(String identity);
 }

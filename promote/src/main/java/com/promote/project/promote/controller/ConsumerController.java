@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,8 +38,8 @@ public class ConsumerController extends BaseController {
     public AjaxResult selectByIdentity(@PathVariable("identity") String identity) {
 
         AjaxResult ajax = AjaxResult.success();
-        SysUser user = consumerService.selectByIdentity(identity);
-        ajax.put("user", user);
+        List<SysUser> users = consumerService.selectByIdentity(identity);
+        ajax.put("user", users);
 
         return ajax;
     }

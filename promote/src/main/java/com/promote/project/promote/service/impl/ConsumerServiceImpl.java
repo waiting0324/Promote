@@ -14,6 +14,7 @@ import com.promote.project.system.mapper.SysUserRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,16 +37,16 @@ public class ConsumerServiceImpl implements IConsumerService {
     SysUserMapper userMapper;
 
     @Override
-    public SysUser selectByIdentity(String identity) {
+    public List<SysUser> selectByIdentity(String identity) {
 
         // 根據身分證查詢消費者
-        SysUser sysUser = userMapper.selectConsumerByIdentity(identity);
+        List<SysUser> sysUsers = userMapper.selectConsumerByIdentity(identity);
 
-        if (StringUtils.isNull(sysUser)) {
+        if (CollectionUtils.isEmpty(sysUsers)) {
             throw new CustomException("該消費者尚未進行註冊");
         }
 
-        return sysUser;
+        return sysUsers;
     }
 
 
