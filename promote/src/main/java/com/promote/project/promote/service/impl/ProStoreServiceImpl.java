@@ -72,6 +72,7 @@ public class ProStoreServiceImpl implements IProStoreService {
         insertUser.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
         insertUser.setIdentity(user.getIdentity());
         insertUser.setMobile(user.getMobile().replace("-", ""));
+        // TODO EMAIL ??
 
         // 插入User表
         userMapper.insertUser(insertUser);
@@ -83,7 +84,6 @@ public class ProStoreServiceImpl implements IProStoreService {
 
         insertStoreInfo.setUserId(insertUser.getUserId());
         insertStoreInfo.setName(storeInfo.getName());
-
         insertStoreInfo.setAddress(storeInfo.getAddress());
         insertStoreInfo.setBankAccountName(storeInfo.getBankAccountName());
         insertStoreInfo.setBankAccount(storeInfo.getBankAccount());
@@ -94,7 +94,6 @@ public class ProStoreServiceImpl implements IProStoreService {
         insertStoreInfo.setStatus(StoreTypeConstants.STATUS_UNVERIFIED);
         // 不強制變更密碼
         insertStoreInfo.setPwNeedReset(StoreTypeConstants.UN_FORCE_CHANGE_PWD);
-        // TODO 經緯度
 
         // 處理商家類型 type
         String type = "";
@@ -115,11 +114,11 @@ public class ProStoreServiceImpl implements IProStoreService {
             type += "3,";
         }
         if (type.endsWith(",")) {
-            //type.su
+            type = type.substring(0, type.length() - 1);
         }
+        insertStoreInfo.setType(type);
 
-
-
+        // TODO 經緯度
 
         // 插入商家資訊表
         storeInfoMapper.insertStoreInfo(insertStoreInfo);
@@ -141,7 +140,6 @@ public class ProStoreServiceImpl implements IProStoreService {
         white.setUpdateTime(DateUtils.getNowDate());
         proWhitelistMapper.updateProWhitelist(white);
 
-        // TODO 更新預算表
     }
 
     /**

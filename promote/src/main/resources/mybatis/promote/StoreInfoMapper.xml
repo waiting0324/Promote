@@ -9,6 +9,7 @@
         <result property="name"    column="name"    />
         <result property="type"    column="type"    />
         <result property="bankAccount"    column="bank_account"    />
+        <result property="bankAccountName"    column="bank_account_name"    />
         <result property="bankAchCode"    column="bank_ach_code"    />
         <result property="address"    column="address"    />
         <result property="latitude"    column="latitude"    />
@@ -22,7 +23,7 @@
     </resultMap>
 
     <sql id="selectStoreInfoVo">
-        select user_id, name, type, bank_account, bank_ach_code, address, latitude, longitude, is_agree_terms, agree_time, status, pw_need_reset, update_time, create_time from pro_store_info
+        select user_id, name, type, bank_account_name, bank_account, bank_ach_code, address, latitude, longitude, is_agree_terms, agree_time, status, pw_need_reset, update_time, create_time from pro_store_info
     </sql>
 
     <select id="selectStoreInfoList" parameterType="StoreInfo" resultMap="StoreInfoResult">
@@ -30,6 +31,7 @@
         <where>
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="bankAccountName != null  and bankAccountName != ''"> and bank_account_name = #{bankAccountName}</if>
             <if test="bankAccount != null  and bankAccount != ''"> and bank_account = #{bankAccount}</if>
             <if test="bankAchCode != null  and bankAchCode != ''"> and bank_ach_code = #{bankAchCode}</if>
             <if test="address != null  and address != ''"> and address = #{address}</if>
@@ -53,6 +55,7 @@
             <if test="userId != null ">user_id,</if>
             <if test="name != null  and name != ''">name,</if>
             <if test="type != null  and type != ''">type,</if>
+            <if test="bankAccountName != null  and bankAccountName != ''">bank_account_name,</if>
             <if test="bankAccount != null  and bankAccount != ''">bank_account,</if>
             <if test="bankAchCode != null  and bankAchCode != ''">bank_ach_code,</if>
             <if test="address != null  and address != ''">address,</if>
@@ -69,6 +72,7 @@
             <if test="userId != null ">#{userId},</if>
             <if test="name != null  and name != ''">#{name},</if>
             <if test="type != null  and type != ''">#{type},</if>
+            <if test="bankAccountName != null  and bankAccountName != ''">#{bankAccountName},</if>
             <if test="bankAccount != null  and bankAccount != ''">#{bankAccount},</if>
             <if test="bankAchCode != null  and bankAchCode != ''">#{bankAchCode},</if>
             <if test="address != null  and address != ''">#{address},</if>
@@ -88,6 +92,7 @@
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null  and name != ''">name = #{name},</if>
             <if test="type != null  and type != ''">name = #{type},</if>
+            <if test="bankAccountName != null  and bankAccountName != ''">bank_account_name = #{bankAccountName},</if>
             <if test="bankAccount != null  and bankAccount != ''">bank_account = #{bankAccount},</if>
             <if test="bankAchCode != null  and bankAchCode != ''">bank_ach_code = #{bankAchCode},</if>
             <if test="address != null  and address != ''">address = #{address},</if>
