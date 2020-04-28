@@ -2,6 +2,7 @@ package com.promote.project.promote.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.promote.common.constant.Constants;
+import com.promote.common.constant.ConsumerConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.exception.user.CaptchaExpireException;
@@ -174,7 +175,15 @@ public class CommonServiceImpl implements ICommonService {
         }
         // 旅宿業者發送抵用券 OTP 方式驗證
         else if (Constants.VERI_CODE_SEND_COUPON.equals(type)) {
-            // TODO 處理OTP
+
+            // 校驗消費者狀態
+            ConsumerInfo consumerInfo = consumerInfoMapper.selectConsumerInfoById(user.getUserId());
+            if (ConsumerConstants.STAT_SEND.equals(consumerInfo.getConsumerStat())
+                    || ConsumerConstants.STAT_PRINT.equals(consumerInfo.getConsumerStat())) {
+                throw new CustomException("此消費者已領過抵用券");
+            }
+
+            // TODO 改為使用OTP
             AsyncManager.me().execute(AsyncFactory.sendEmail(user.getEmail(), "振興券 - 抵用券驗證碼", msg));
 
             // 驗證碼存入Redis
@@ -182,9 +191,8 @@ public class CommonServiceImpl implements ICommonService {
             redisCache.setCacheObject(verifyKey, verifyCode, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
 
             // 更新此消費者狀態
-            ConsumerInfo consumerInfo = consumerInfoMapper.selectConsumerInfoById(user.getUserId());
-            /*consumerInfo.setConsumerStat();*/
-
+            consumerInfo.setConsumerStat(ConsumerConstants.STAT_CONFIRM);
+            consumerInfoMapper.updateConsumerInfo(consumerInfo);
         }
         else {
             throw new CustomException("驗證方式選擇錯誤");
