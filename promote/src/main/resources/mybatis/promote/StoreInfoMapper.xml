@@ -7,6 +7,7 @@
     <resultMap type="StoreInfo" id="StoreInfoResult">
         <result property="userId"    column="user_id"    />
         <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
         <result property="bankAccount"    column="bank_account"    />
         <result property="bankAchCode"    column="bank_ach_code"    />
         <result property="address"    column="address"    />
@@ -21,13 +22,14 @@
     </resultMap>
 
     <sql id="selectStoreInfoVo">
-        select user_id, name, bank_account, bank_ach_code, address, latitude, longitude, is_agree_terms, agree_time, status, pw_need_reset, update_time, create_time from pro_store_info
+        select user_id, name, type, bank_account, bank_ach_code, address, latitude, longitude, is_agree_terms, agree_time, status, pw_need_reset, update_time, create_time from pro_store_info
     </sql>
 
     <select id="selectStoreInfoList" parameterType="StoreInfo" resultMap="StoreInfoResult">
         <include refid="selectStoreInfoVo"/>
         <where>
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
             <if test="bankAccount != null  and bankAccount != ''"> and bank_account = #{bankAccount}</if>
             <if test="bankAchCode != null  and bankAchCode != ''"> and bank_ach_code = #{bankAchCode}</if>
             <if test="address != null  and address != ''"> and address = #{address}</if>
@@ -50,6 +52,7 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null ">user_id,</if>
             <if test="name != null  and name != ''">name,</if>
+            <if test="type != null  and type != ''">type,</if>
             <if test="bankAccount != null  and bankAccount != ''">bank_account,</if>
             <if test="bankAchCode != null  and bankAchCode != ''">bank_ach_code,</if>
             <if test="address != null  and address != ''">address,</if>
@@ -65,6 +68,7 @@
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null ">#{userId},</if>
             <if test="name != null  and name != ''">#{name},</if>
+            <if test="type != null  and type != ''">#{type},</if>
             <if test="bankAccount != null  and bankAccount != ''">#{bankAccount},</if>
             <if test="bankAchCode != null  and bankAchCode != ''">#{bankAchCode},</if>
             <if test="address != null  and address != ''">#{address},</if>
@@ -83,6 +87,7 @@
         update pro_store_info
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="type != null  and type != ''">name = #{type},</if>
             <if test="bankAccount != null  and bankAccount != ''">bank_account = #{bankAccount},</if>
             <if test="bankAchCode != null  and bankAchCode != ''">bank_ach_code = #{bankAchCode},</if>
             <if test="address != null  and address != ''">address = #{address},</if>

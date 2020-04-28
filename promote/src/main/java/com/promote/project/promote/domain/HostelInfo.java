@@ -24,6 +24,9 @@ public class HostelInfo extends BaseEntity
     @Excel(name = "旅宿業者名稱")
     private String name;
 
+    /** 商家類型 ( 0夜市 1餐廳 2商圈 3藝文 ) */
+    private String type;
+
     /** 地址 */
     @Excel(name = "地址")
     private String address;
@@ -131,6 +134,14 @@ public class HostelInfo extends BaseEntity
     public String getPwNeedReset()
     {
         return pwNeedReset;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override
