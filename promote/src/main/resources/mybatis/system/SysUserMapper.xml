@@ -118,6 +118,7 @@
         SELECT
             u.user_id,
             u.identity,
+            u.username,
             u.mobile,
             c.birthday,
             c.name,

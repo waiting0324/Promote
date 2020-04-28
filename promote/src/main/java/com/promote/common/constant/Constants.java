@@ -47,7 +47,12 @@ public class Constants
     /**
      * OTP、Email 驗證碼 redis key
      */
-    public static final String VERIFICATION_CODE_KEY = "verification_codes:";
+    public static final String VERI_CODE_KEY = "veri_codes:";
+
+    /**
+     * 旅宿業者發送抵用券 OTP 驗證碼 redis key
+     */
+    public static final String VERI_COUPON_SEND_CODE_KEY = "veri_coupon_codes:";
 
     /**
      * 登入使用者 redis key
@@ -57,7 +62,7 @@ public class Constants
     /**
      * 驗證碼有效期（分鐘）
      */
-    public static final Integer CAPTCHA_EXPIRATION = 5;
+    public static final Integer CAPTCHA_EXPIRATION = 60;
 
     /**
      * 令牌
@@ -119,4 +124,8 @@ public class Constants
      */
     public static final String VERI_CODE_TYPE_OTP = "2";
 
+    /**
+     * 旅宿業者發送抵用券，使用OTP方式驗證
+     */
+    public static final String VERI_CODE_SEND_COUPON = "3";
 }

@@ -10,14 +10,16 @@ import com.promote.common.utils.StringUtils;
 import com.promote.framework.manager.AsyncManager;
 import com.promote.framework.manager.factory.AsyncFactory;
 import com.promote.framework.redis.RedisCache;
+import com.promote.project.promote.domain.ConsumerInfo;
+import com.promote.project.promote.mapper.ConsumerInfoMapper;
 import com.promote.project.promote.service.ICommonService;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.mapper.SysUserMapper;
 import com.promote.project.system.service.ISysConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -41,13 +43,17 @@ public class CommonServiceImpl implements ICommonService {
     private SysUserMapper userMapper;
 
     @Autowired
+    private ConsumerInfoMapper consumerInfoMapper;
+
+    @Autowired
     private ISysConfigService configService;
+
 
     @Override
     public int forgetPwd(String code, String username, String newPwd) {
 
         // 確認驗證碼是否正確
-        String verifyKey = Constants.VERIFICATION_CODE_KEY + username;
+        String verifyKey = Constants.VERI_CODE_KEY + username;
         String captcha = redisCache.getCacheObject(verifyKey);
         redisCache.deleteObject(verifyKey);
         if (captcha == null) {
@@ -130,10 +136,11 @@ public class CommonServiceImpl implements ICommonService {
     }
 
     @Override
-    public void sendCaptcha(String username, String type) throws MessagingException {
+    @Transactional
+    public void sendCaptcha(String username, String type) {
 
         // 驗證碼
-        String verifyCode = String.format("%06d", new Random().nextInt(999999));
+        String verifyCode = String.format("%04d", new Random().nextInt(9999));
 
         // 驗證碼模板
         String template = configService.selectConfigByKey("common.sendCaptcha.template");
@@ -157,13 +164,29 @@ public class CommonServiceImpl implements ICommonService {
             }
             AsyncManager.me().execute(AsyncFactory.sendEmail(user.getEmail(), "振興券 - 重設密碼", msg));
 
-            String verifyKey = Constants.VERIFICATION_CODE_KEY + username;
+            // 驗證碼存入Redis
+            String verifyKey = Constants.VERI_CODE_KEY + username;
             redisCache.setCacheObject(verifyKey, verifyCode, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
         }
         // 使用OTP方式驗證
         else if (Constants.VERI_CODE_TYPE_OTP.equals(type)) {
             // TODO 處理OTP
-        } else {
+        }
+        // 旅宿業者發送抵用券 OTP 方式驗證
+        else if (Constants.VERI_CODE_SEND_COUPON.equals(type)) {
+            // TODO 處理OTP
+            AsyncManager.me().execute(AsyncFactory.sendEmail(user.getEmail(), "振興券 - 抵用券驗證碼", msg));
+
+            // 驗證碼存入Redis
+            String verifyKey = Constants.VERI_COUPON_SEND_CODE_KEY + username;
+            redisCache.setCacheObject(verifyKey, verifyCode, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
+
+            // 更新此消費者狀態
+            ConsumerInfo consumerInfo = consumerInfoMapper.selectConsumerInfoById(user.getUserId());
+            /*consumerInfo.setConsumerStat();*/
+
+        }
+        else {
             throw new CustomException("驗證方式選擇錯誤");
         }
 

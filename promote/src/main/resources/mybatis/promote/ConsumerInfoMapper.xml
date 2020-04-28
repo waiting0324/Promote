@@ -10,8 +10,6 @@
         <result property="identity"    column="identity"    />
         <result property="birthday"    column="birthday"    />
         <result property="consumerStat"    column="consumer_stat"    />
-        <result property="email"    column="email"    />
-        <result property="mobile"    column="mobile"    />
         <result property="couponType"    column="coupon_type"    />
         <result property="couponPrintType"    column="coupon_print_type"    />
         <result property="printCode"    column="print_code"    />
@@ -23,7 +21,7 @@
     </resultMap>
 
     <sql id="selectConsumerInfoVo">
-        select user_id, name, identity, birthday, consumer_stat, email, mobile, coupon_type, coupon_print_type, print_code, hostel_id, issue_date, receive_date, update_time, create_time from pro_consumer_info
+        select user_id, name, identity, birthday, consumer_stat, coupon_type, coupon_print_type, print_code, hostel_id, issue_date, receive_date, update_time, create_time from pro_consumer_info
     </sql>
 
     <select id="selectConsumerInfoList" parameterType="ConsumerInfo" resultMap="ConsumerInfoResult">
@@ -33,8 +31,6 @@
             <if test="identity != null  and identity != ''"> and identity = #{identity}</if>
             <if test="birthday != null  and birthday != ''"> and birthday = #{birthday}</if>
             <if test="consumerStat != null  and consumerStat != ''"> and consumer_stat = #{consumerStat}</if>
-            <if test="email != null  and email != ''"> and email = #{email}</if>
-            <if test="mobile != null  and mobile != ''"> and mobile = #{mobile}</if>
             <if test="couponType != null  and couponType != ''"> and coupon_type = #{couponType}</if>
             <if test="couponPrintType != null  and couponPrintType != ''"> and coupon_print_type = #{couponPrintType}</if>
             <if test="printCode != null  and printCode != ''"> and print_code = #{printCode}</if>
@@ -57,8 +53,6 @@
             <if test="identity != null  and identity != ''">identity,</if>
             <if test="birthday != null  and birthday != ''">birthday,</if>
             <if test="consumerStat != null  and consumerStat != ''">consumer_stat,</if>
-            <if test="email != null  and email != ''">email,</if>
-            <if test="mobile != null  and mobile != ''">mobile,</if>
             <if test="couponType != null  and couponType != ''">coupon_type,</if>
             <if test="couponPrintType != null  and couponPrintType != ''">coupon_print_type,</if>
             <if test="printCode != null  and printCode != ''">print_code,</if>
@@ -74,8 +68,6 @@
             <if test="identity != null  and identity != ''">#{identity},</if>
             <if test="birthday != null  and birthday != ''">#{birthday},</if>
             <if test="consumerStat != null  and consumerStat != ''">#{consumerStat},</if>
-            <if test="email != null  and email != ''">#{email},</if>
-            <if test="mobile != null  and mobile != ''">#{mobile},</if>
             <if test="couponType != null  and couponType != ''">#{couponType},</if>
             <if test="couponPrintType != null  and couponPrintType != ''">#{couponPrintType},</if>
             <if test="printCode != null  and printCode != ''">#{printCode},</if>
@@ -94,8 +86,6 @@
             <if test="identity != null  and identity != ''">identity = #{identity},</if>
             <if test="birthday != null  and birthday != ''">birthday = #{birthday},</if>
             <if test="consumerStat != null  and consumerStat != ''">consumer_stat = #{consumerStat},</if>
-            <if test="email != null  and email != ''">email = #{email},</if>
-            <if test="mobile != null  and mobile != ''">mobile = #{mobile},</if>
             <if test="couponType != null  and couponType != ''">coupon_type = #{couponType},</if>
             <if test="couponPrintType != null  and couponPrintType != ''">coupon_print_type = #{couponPrintType},</if>
             <if test="printCode != null  and printCode != ''">print_code = #{printCode},</if>
