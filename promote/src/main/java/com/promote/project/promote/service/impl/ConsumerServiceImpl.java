@@ -69,7 +69,7 @@ public class ConsumerServiceImpl implements IConsumerService {
         insertUser.setIdentity(user.getIdentity());
 
         // 插入User表
-        int result = userMapper.insertUser(user);
+        int result = userMapper.insertUser(insertUser);
         if(result < 0){
             throw new CustomException("註冊失敗，請聯絡管理員");
         }
@@ -77,7 +77,7 @@ public class ConsumerServiceImpl implements IConsumerService {
 
         // 設定消費者基本資訊
         ConsumerInfo consumerInfo = new ConsumerInfo();
-        consumerInfo.setUserId(user.getUserId());
+        consumerInfo.setUserId(insertUser.getUserId());
         consumerInfo.setName(user.getConsumerInfo().getName());
         consumerInfo.setIdentity(user.getIdentity());
         consumerInfo.setBirthday(user.getConsumerInfo().getBirthday());
@@ -95,7 +95,7 @@ public class ConsumerServiceImpl implements IConsumerService {
         // 處理角色問題
         List<SysUserRole> userRoleList = new ArrayList<>();
         SysUserRole ur = new SysUserRole();
-        ur.setUserId(user.getUserId());
+        ur.setUserId(insertUser.getUserId());
         ur.setRoleId(RoleConstants.CONSUMER_ROLE_ID);
         userRoleList.add(ur);
         result = userRoleMapper.batchUserRole(userRoleList);
