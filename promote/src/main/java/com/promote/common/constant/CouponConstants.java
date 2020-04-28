@@ -8,6 +8,16 @@ package com.promote.common.constant;
 public class CouponConstants {
 
     /**
+     * 抵用券未發放
+     */
+    public static final String IS_NOT_PROVIDE = "0";
+
+    /**
+     * 抵用券已發放
+     */
+    public static final String IS_PROVIDE = "1";
+
+    /**
      * 抵用券未列印
      */
     public static final String UN_PRINTED = "0";
@@ -27,4 +37,9 @@ public class CouponConstants {
      * 抵用券使用電子(虛擬)方式發放
      */
     public static final String TYPE_ELEC = "E";
+
+    /**
+     * 抵用券金額
+     */
+    public static final Long COUPON_AMOUNT = 50l;
 }
