@@ -7,10 +7,19 @@ package com.promote.common.constant;
  */
 public class RoleConstants {
 
+    /**
+     * 旅宿業者
+     */
     public static final Long HOSTEL_ROLE_ID = 3L;
 
+    /**
+     * 商家
+     */
     public static final Long STORE_ROLE_ID = 4L;
 
+    /**
+     * 消費者
+     */
     public static final Long CONSUMER_ROLE_ID = 5L;
 
 }

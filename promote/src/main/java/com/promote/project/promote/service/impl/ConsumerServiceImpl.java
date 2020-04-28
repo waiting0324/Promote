@@ -1,5 +1,7 @@
 package com.promote.project.promote.service.impl;
 
+import com.promote.common.constant.ConsumerConstants;
+import com.promote.common.constant.CouponConstants;
 import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.utils.SecurityUtils;
@@ -83,11 +85,11 @@ public class ConsumerServiceImpl implements IConsumerService {
         consumerInfo.setIdentity(user.getIdentity());
         consumerInfo.setBirthday(user.getConsumerInfo().getBirthday());
         // 狀態設為註冊
-        consumerInfo.setConsumerStat("1");
+        consumerInfo.setConsumerStat(ConsumerConstants.STAT_REGISTED);
         // 默認紙本列印抵用券
-        consumerInfo.setCouponType("P");
+        consumerInfo.setCouponType(CouponConstants.TYPE_PAPAER);
         // 未列印
-        consumerInfo.setCouponPrintType("0");
+        consumerInfo.setCouponPrintType(CouponConstants.UN_PRINTED);
 
         // 插入消費者資訊表
         consumerInfoMapper.insertConsumerInfo(consumerInfo);

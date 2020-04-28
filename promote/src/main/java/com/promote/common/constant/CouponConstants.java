@@ -17,16 +17,26 @@ public class CouponConstants {
      */
     public static final String IS_PROVIDE = "1";
 
+    /**
+     * 抵用券未列印
+     */
+    public static final String UN_PRINTED = "0";
 
     /**
-     * 抵用券使用電子(虛擬)方式發放
+     * 抵用券已列印
      */
-    public static final String COUPON_TYPE_VIRTUAL = "0";
+    public static final String PRINTED = "1";
+
 
     /**
      * 抵用券使用紙本方式發放
      */
-    public static final String COUPON_TYPE_PAPER = "1";
+    public static final String TYPE_PAPAER = "P";
+
+    /**
+     * 抵用券使用電子(虛擬)方式發放
+     */
+    public static final String TYPE_ELEC = "E";
 
     /**
      * 抵用券金額
