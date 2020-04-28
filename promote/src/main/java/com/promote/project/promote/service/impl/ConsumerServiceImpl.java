@@ -51,13 +51,10 @@ public class ConsumerServiceImpl implements IConsumerService {
 
     /**
      * 消費者註冊
-     *
-     * @param name 姓名
-     * @param birthday 生日
      */
     @Override
     @Transactional
-    public void regist(SysUser user, String name, String birthday) {
+    public void regist(SysUser user) {
 
 
         if (StringUtils.isNotNull(userMapper.selectUserByUsername(user.getUsername()))) {
@@ -81,9 +78,9 @@ public class ConsumerServiceImpl implements IConsumerService {
         // 設定消費者基本資訊
         ConsumerInfo consumerInfo = new ConsumerInfo();
         consumerInfo.setUserId(user.getUserId());
-        consumerInfo.setName(name);
+        consumerInfo.setName(user.getConsumerInfo().getName());
         consumerInfo.setIdentity(user.getIdentity());
-        consumerInfo.setBirthday(birthday);
+        consumerInfo.setBirthday(user.getConsumerInfo().getBirthday());
         // 狀態設為註冊
         consumerInfo.setConsumerStat("1");
         // 默認紙本列印抵用券
@@ -93,7 +90,6 @@ public class ConsumerServiceImpl implements IConsumerService {
 
         // 插入消費者資訊表
         consumerInfoMapper.insertConsumerInfo(consumerInfo);
-
 
 
         // 處理角色問題
@@ -106,7 +102,6 @@ public class ConsumerServiceImpl implements IConsumerService {
         if(result < 0){
             throw new CustomException("註冊失敗，請聯絡管理員");
         }
-
 
     }
 }

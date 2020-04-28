@@ -19,6 +19,6 @@ public interface IConsumerService {
     /**
      * 消費者註冊
      */
-    public void regist(SysUser user, String name, String birthday);
+    public void regist(SysUser user);
 
 }
