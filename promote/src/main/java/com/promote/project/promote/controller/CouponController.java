@@ -113,6 +113,19 @@ public class CouponController extends BaseController {
         return AjaxResult.error(MessageUtils.message("user.jcaptcha.not.exist"));
     }
 
+    /**
+     * 消費者取得可使用的抵用券
+     *
+     * @param storeId 商家的user_id
+     * @return 結果
+     */
+    @GetMapping("/getConsumerCoupon/{storeId}")
+    public AjaxResult getConsumerCoupon(@PathVariable("storeId") Long storeId) {
+        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        //消費者
+        SysUser sysUser = loginUser.getUser();
+        return AjaxResult.success("coupons", couponService.getConsumerCoupon(storeId, sysUser));
+    }
 
     /**
      * 正掃(消費者掃商家)
@@ -125,10 +138,10 @@ public class CouponController extends BaseController {
     public AjaxResult postiveScan(@RequestBody StoreInfo storeInfo) {
         Map<String, Object> params = storeInfo.getParams();
         //抵用券序號
-        String[] couponIds = (String[]) params.get("couponIds");
+        List<String> couponIds = (List<String>) params.get("couponIds");
         //商家的user_id
         Long storeId = storeInfo.getUserId();
-        if (StringUtils.isNull(couponIds) || couponIds.length < 1) {
+        if (StringUtils.isNull(couponIds) || couponIds.size() == 0) {
             return AjaxResult.error("未輸入抵用券");
         }
         if (StringUtils.isNull(storeId)) {
@@ -148,12 +161,13 @@ public class CouponController extends BaseController {
      * @param coupon 抵用券發放記錄檔物件
      * @return 結果
      */
+    @PostMapping("/reverseScan")
     public AjaxResult reverseScan(@RequestBody Coupon coupon) {
         String id = coupon.getId();
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         //店家
         SysUser sysUser = loginUser.getUser();
-        couponService.reverseScan(id,sysUser);
+        couponService.reverseScan(id, sysUser);
         return AjaxResult.success();
     }
 }

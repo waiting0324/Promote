@@ -235,22 +235,45 @@ public class CouponServiceImpl implements ICouponService {
     }
 
     /**
+     * 消費者取得可使用的抵用券
+     *
+     * @param storeId 商家的user_id
+     * @param sysUser 使用者(消費者)資料
+     * @return
+     */
+    @Override
+    public List<Coupon> getConsumerCoupon(Long storeId, SysUser sysUser) {
+        //店家基本資料
+        StoreInfo storeInfo = storeInfoMapper.selectStoreInfoById(storeId);
+        if (StringUtils.isNull(storeInfo)) {
+            throw new CustomException(MessageUtils.message("pro.err.store.not.find"));
+        }
+        //店家類型
+        String[] storeTypes = storeInfo.getType().split(",");
+        List<Coupon> consumerCouponList = couponMapper.getConsumerCoupon(sysUser.getUserId(), "0", storeTypes);
+        if (StringUtils.isNull(consumerCouponList) || consumerCouponList.size() == 0) {
+            throw new CustomException("無可使用的抵用券");
+        }
+        return consumerCouponList;
+    }
+
+    /**
      * 正掃(消費者掃商家)
      *
      * @param couponIds 抵用券序號
      * @param storeId   商家的user_id
-     * @param sysUser      使用者資料
+     * @param sysUser   使用者資料
      */
     @Override
     @Transactional
-    public void postiveScan(String[] couponIds, Long storeId, SysUser sysUser) {
+    public void postiveScan(List<String> couponIds, Long storeId, SysUser sysUser) {
         Long userId = sysUser.getUserId();
         for (String couponId : couponIds) {
             Coupon coupon = couponMapper.selectCouponById(couponId);
             if (StringUtils.isNull(coupon)) {
                 throw new CustomException(MessageUtils.message("pro.err.coupon.not.exist"));
             }
-            if (!coupon.getUserId().equals(userId.toString())) {
+            if (coupon.getUserId() != userId) {
                 throw new CustomException("該抵用券不屬於當前消費者");
             }
             if ("1".equals(coupon.getIsUsed())) {
@@ -258,21 +281,21 @@ public class CouponServiceImpl implements ICouponService {
             }
             //店家基本資料
             StoreInfo storeInfo = storeInfoMapper.selectStoreInfoById(storeId);
-            if(StringUtils.isNull(storeInfo)){
+            if (StringUtils.isNull(storeInfo)) {
                 throw new CustomException(MessageUtils.message("pro.err.store.not.find"));
             }
             //店家基本資料-商家類型
             String storeTypes = storeInfo.getType();
             //抵用券發放記錄檔-類別
             String storeType = coupon.getStoreType();
-            if(storeTypes.indexOf(storeType) == -1){
+            if (storeTypes.indexOf(storeType) == -1) {
                 throw new CustomException(MessageUtils.message("pro.err.coupon.not.match"));
             }
             //抵用券發放記錄檔設為已使用
             coupon.setIsUsed("1");
             //更新抵用券發放記錄檔
             int result = updateCoupon(coupon);
-            if(result < 0){
+            if (result < 0) {
                 throw new CustomException("更新抵用券發放記錄檔失敗，請聯絡管理員");
             }
             //建立消費記錄檔
@@ -284,7 +307,7 @@ public class CouponServiceImpl implements ICouponService {
             couponConsume.setStoreType(storeType);
             couponConsume.setAmount(CouponConstants.COUPON_AMOUNT);
             result = couponConsumeMapper.insertCouponConsume(couponConsume);
-            if(result < 0){
+            if (result < 0) {
                 throw new CustomException("新增消費記錄檔失敗，請聯絡管理員");
             }
         }
@@ -293,34 +316,35 @@ public class CouponServiceImpl implements ICouponService {
     /**
      * 反掃(商家掃消費者)
      *
-     * @param id 組抵用券序號
+     * @param id      組抵用券序號
      * @param sysUser 使用者資料(店家)
      */
     @Override
+    @Transactional
     public void reverseScan(String id, SysUser sysUser) {
         Coupon coupon = couponMapper.selectCouponById(id);
-        if(StringUtils.isNull(coupon)){
+        if (StringUtils.isNull(coupon)) {
             throw new CustomException(MessageUtils.message("pro.err.coupon.not.exist"));
         }
         if ("1".equals(coupon.getIsUsed())) {
             throw new CustomException(MessageUtils.message("pro.err.coupon.used"));
         }
         StoreInfo storeInfo = sysUser.getStoreInfo();
-        if(StringUtils.isNull(storeInfo)){
+        if (StringUtils.isNull(storeInfo)) {
             throw new CustomException(MessageUtils.message("pro.err.store.not.find"));
         }
         //店家基本資料-商家類型
         String storeTypes = storeInfo.getType();
         //抵用券發放記錄檔-類別
         String storeType = coupon.getStoreType();
-        if(storeTypes.indexOf(storeType) == -1){
+        if (storeTypes.indexOf(storeType) == -1) {
             throw new CustomException(MessageUtils.message("pro.err.coupon.not.match"));
         }
         //抵用券發放記錄檔設為已使用
         coupon.setIsUsed("1");
         //更新抵用券發放記錄檔
         int result = updateCoupon(coupon);
-        if(result < 0){
+        if (result < 0) {
             throw new CustomException("更新抵用券發放記錄檔失敗，請聯絡管理員");
         }
         //建立消費記錄檔
@@ -332,9 +356,8 @@ public class CouponServiceImpl implements ICouponService {
         couponConsume.setStoreType(storeType);
         couponConsume.setAmount(CouponConstants.COUPON_AMOUNT);
         result = couponConsumeMapper.insertCouponConsume(couponConsume);
-        if(result < 0){
+        if (result < 0) {
             throw new CustomException("新增消費記錄檔失敗，請聯絡管理員");
         }
-
     }
 }

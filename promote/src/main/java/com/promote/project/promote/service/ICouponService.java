@@ -11,8 +11,7 @@ import java.util.List;
  * @author 6550 劉威廷
  * @date 2020-04-22
  */
-public interface ICouponService
-{
+public interface ICouponService {
     /**
      * 查詢抵用券
      *
@@ -63,6 +62,7 @@ public interface ICouponService
 
     /**
      * 旅宿業者發送抵用券給消費者
+     *
      * @param user 要發放抵用券的使用者
      * @param code 簡訊驗證碼
      * @return
@@ -70,19 +70,28 @@ public interface ICouponService
     int sendCoupon(SysUser user, String code);
 
     /**
-     *正掃(消費者掃商家)
+     * 消費者取得可使用的抵用券
+     *
+     * @param storeId 商家的user_id
+     * @param sysUser 使用者(消費者)資料
+     * @return
+     */
+    List<Coupon> getConsumerCoupon(Long storeId, SysUser sysUser);
+
+    /**
+     * 正掃(消費者掃商家)
      *
      * @param couponIds 抵用券序號
-     * @param type 商家類型
-     * @param sysUser 使用者資料(消費者)
+     * @param type      商家類型
+     * @param sysUser   使用者資料(消費者)
      */
-    void postiveScan(String[] couponIds,Long type,SysUser sysUser);
+    void postiveScan(List<String> couponIds, Long type, SysUser sysUser);
 
     /**
      * 反掃(商家掃消費者)
      *
-     * @param id 組抵用券序號
+     * @param id      組抵用券序號
      * @param sysUser 使用者資料(店家)
      */
-    void reverseScan(String id,SysUser sysUser);
+    void reverseScan(String id, SysUser sysUser);
 }
