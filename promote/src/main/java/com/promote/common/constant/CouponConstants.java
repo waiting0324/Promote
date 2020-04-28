@@ -27,4 +27,9 @@ public class CouponConstants {
      * 抵用券使用紙本方式發放
      */
     public static final String COUPON_TYPE_PAPER = "1";
+
+    /**
+     * 抵用券金額
+     */
+    public static final Long COUPON_AMOUNT = 50l;
 }
