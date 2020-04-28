@@ -42,4 +42,25 @@ public class CouponConstants {
      * 抵用券金額
      */
     public static final Long COUPON_AMOUNT = 50l;
+
+
+    /**
+     * 補助機構: 中小企業處
+     */
+    public static final String FUND_TYPE_SME = "S";
+
+    /**
+     * 補助機構: 中部辦公室
+     */
+    public static final String FUND_TYPE_CENTER_OFFICE = "T";
+
+    /**
+     * 補助機構: 商業司
+     */
+    public static final String FUND_TYPE_BUSINESS_DEPARTMENT = "B";
+
+    /**
+     * 補助機構: 商業司
+     */
+    public static final String FUND_TYPE_MINISTRY_CULTURE = "C";
 }

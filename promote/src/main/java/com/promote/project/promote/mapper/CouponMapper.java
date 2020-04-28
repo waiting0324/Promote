@@ -37,6 +37,13 @@ public interface CouponMapper
     public int insertCoupon(Coupon coupon);
 
     /**
+     * 批量新增抵用券
+     * @param couponList
+     * @return
+     */
+    public int insertCouponList(List<Coupon> couponList);
+
+    /**
      * 修改抵用券發放記錄檔
      *
      * @param coupon 抵用券發放記錄檔

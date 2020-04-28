@@ -68,6 +68,15 @@
         </trim>
     </insert>
 
+    <insert id="insertCouponList" parameterType="java.util.List">
+        insert into pro_coupon (id, fund_type, user_id, is_used, issue_date,
+            store_type, amount, create_time) values
+        <foreach item="item" collection="list" separator=",">
+            (#{item.id}, #{item.fundType}, #{item.userId}, #{item.isUsed}, #{item.issueDate},
+            #{item.storeType},#{item.amount},sysdate())
+        </foreach>
+    </insert>
+
     <update id="updateCoupon" parameterType="Coupon">
         update pro_coupon
         <trim prefix="SET" suffixOverrides=",">

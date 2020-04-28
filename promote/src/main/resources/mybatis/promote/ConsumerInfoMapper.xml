@@ -92,8 +92,7 @@
             <if test="hostelId != null ">hostel_id = #{hostelId},</if>
             <if test="issueDate != null ">issue_date = #{issueDate},</if>
             <if test="receiveDate != null ">receive_date = #{receiveDate},</if>
-            <if test="updateTime != null ">update_time = #{updateTime},</if>
-            <if test="createTime != null ">create_time = #{createTime},</if>
+            update_time = sysdate()
         </trim>
         where user_id = #{userId}
     </update>
