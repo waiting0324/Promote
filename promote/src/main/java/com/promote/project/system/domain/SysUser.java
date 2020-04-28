@@ -6,6 +6,9 @@ import com.promote.framework.aspectj.lang.annotation.Excel.ColumnType;
 import com.promote.framework.aspectj.lang.annotation.Excel.Type;
 import com.promote.framework.aspectj.lang.annotation.Excels;
 import com.promote.framework.web.domain.BaseEntity;
+import com.promote.project.promote.domain.ConsumerInfo;
+import com.promote.project.promote.domain.HostelInfo;
+import com.promote.project.promote.domain.StoreInfo;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -117,6 +120,44 @@ public class SysUser extends BaseEntity {
 
     }
 
+    /**
+     * 消費者資訊
+     */
+    private ConsumerInfo consumerInfo;
+
+    /**
+     * 旅宿資訊
+     */
+    private HostelInfo hostelInfo;
+
+    /**
+     * 商家資訊
+     */
+    private StoreInfo storeInfo;
+
+    public ConsumerInfo getConsumerInfo() {
+        return consumerInfo;
+    }
+
+    public void setConsumerInfo(ConsumerInfo consumerInfo) {
+        this.consumerInfo = consumerInfo;
+    }
+
+    public HostelInfo getHostelInfo() {
+        return hostelInfo;
+    }
+
+    public void setHostelInfo(HostelInfo hostelInfo) {
+        this.hostelInfo = hostelInfo;
+    }
+
+    public StoreInfo getStoreInfo() {
+        return storeInfo;
+    }
+
+    public void setStoreInfo(StoreInfo storeInfo) {
+        this.storeInfo = storeInfo;
+    }
 
     public SysUser(Long userId) {
         this.userId = userId;
