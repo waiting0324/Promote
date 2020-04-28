@@ -6,9 +6,11 @@ import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
+import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.promote.domain.Coupon;
 import com.promote.project.promote.domain.CouponConsume;
 import com.promote.project.promote.domain.StoreInfo;
+import com.promote.project.promote.mapper.ConsumerInfoMapper;
 import com.promote.project.promote.mapper.CouponConsumeMapper;
 import com.promote.project.promote.mapper.CouponMapper;
 import com.promote.project.promote.mapper.StoreInfoMapper;
@@ -36,6 +38,9 @@ public class CouponServiceImpl implements ICouponService {
     private SysUserMapper userMapper;
 
     @Autowired
+    private ConsumerInfoMapper consumerInfoMapper;
+
+    @Autowired
     private RedisCache redisCache;
 
     @Autowired
@@ -43,6 +48,7 @@ public class CouponServiceImpl implements ICouponService {
 
     @Autowired
     private CouponConsumeMapper couponConsumeMapper;
+
 
     /**
      * 查詢抵用券
@@ -120,6 +126,8 @@ public class CouponServiceImpl implements ICouponService {
         if (StringUtils.isNull(user.getUserId())) {
             throw new CustomException("未指定消費者ID");
         }
+
+        ConsumerInfo consumerInfo = consumerInfoMapper.selectConsumerInfoById(user.getUserId());
 
         // 查詢該消費者是否已經發過抵用券
         /*if (CouponConstants.IS_PROVIDE.equals(userMapper.selectUserById(user.getUserId()).getCouponProvideType())) {

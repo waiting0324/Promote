@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,8 +38,8 @@ public class ConsumerController extends BaseController {
     public AjaxResult selectByIdentity(@PathVariable("identity") String identity) {
 
         AjaxResult ajax = AjaxResult.success();
-        SysUser user = consumerService.selectByIdentity(identity);
-        ajax.put("user", user);
+        List<SysUser> users = consumerService.selectByIdentity(identity);
+        ajax.put("user", users);
 
         return ajax;
     }
@@ -47,32 +49,30 @@ public class ConsumerController extends BaseController {
      * 消費者註冊
      */
     @PostMapping("/regist")
-    public AjaxResult regist(@RequestBody SysUser user) {
+    public AjaxResult regist(@RequestBody SysUser user, HttpServletRequest request) {
 
-        String isAgreeTerms = (String) user.getParams().get("isAgreeTerms");
+        Map<String, Object> params = user.getParams();
 
+        // 校驗同意條款
+        String isAgreeTerms = (String) params.get("isAgreeTerms");
         if (StringUtils.isEmpty(isAgreeTerms) || !("1".equals(isAgreeTerms))) {
             return AjaxResult.error(MessageUtils.message("pro.err.terms.not.check"));
         }
 
-        String identity = user.getIdentity();
-        String mobile = user.getMobile();
-        String name = (String) user.getParams().get("name");
-        String birthday = (String) user.getParams().get("birthday");
-
         // 必填欄位檢核
-        String userName = user.getUsername();
-        String password = user.getPassword();
-        if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(password) ||
-                StringUtils.isEmpty(name) || StringUtils.isEmpty(identity) ||
-                StringUtils.isEmpty(mobile) || StringUtils.isEmpty(birthday)) {
+        if (StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(user.getPassword()) ||
+                StringUtils.isEmpty(user.getConsumerInfo().getName()) || StringUtils.isEmpty(user.getIdentity()) ||
+                StringUtils.isEmpty(user.getMobile()) || StringUtils.isEmpty(user.getConsumerInfo().getBirthday())) {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
 
-        Map<String, Object> params = user.getParams();
-        String isFromApp = (String) params.get("isFromApp");
-        if ("0".equals(isFromApp)) {
-            //web
+        String userAgent = request.getHeader("User-Agent");
+        // User-Agent不以 Mozilla 開頭，則代表是從APP發來的請求
+        Boolean isFromApp = !userAgent.startsWith("Mozilla");
+
+        // 圖形驗證碼校驗
+        // 不是從APP訪問則需要圖形驗證碼
+        if (!isFromApp) {
             String uuid = (String) params.get("uuid");
             String verifyKey = Constants.CAPTCHA_CODE_KEY + (StringUtils.isNotEmpty(uuid) ? uuid : "");
             String captcha = redisCache.getCacheObject(verifyKey);
@@ -85,7 +85,7 @@ public class ConsumerController extends BaseController {
             }
         }
 
-        consumerService.regist(user, name, birthday);
+        consumerService.regist(user);
         return AjaxResult.success();
     }
 

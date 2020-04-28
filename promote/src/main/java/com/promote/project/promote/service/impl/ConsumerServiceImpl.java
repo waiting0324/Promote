@@ -14,6 +14,7 @@ import com.promote.project.system.mapper.SysUserRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,28 +37,25 @@ public class ConsumerServiceImpl implements IConsumerService {
     SysUserMapper userMapper;
 
     @Override
-    public SysUser selectByIdentity(String identity) {
+    public List<SysUser> selectByIdentity(String identity) {
 
         // 根據身分證查詢消費者
-        SysUser sysUser = userMapper.selectConsumerByIdentity(identity);
+        List<SysUser> sysUsers = userMapper.selectConsumerByIdentity(identity);
 
-        if (StringUtils.isNull(sysUser)) {
+        if (CollectionUtils.isEmpty(sysUsers)) {
             throw new CustomException("該消費者尚未進行註冊");
         }
 
-        return sysUser;
+        return sysUsers;
     }
 
 
     /**
      * 消費者註冊
-     *
-     * @param name 姓名
-     * @param birthday 生日
      */
     @Override
     @Transactional
-    public void regist(SysUser user, String name, String birthday) {
+    public void regist(SysUser user) {
 
 
         if (StringUtils.isNotNull(userMapper.selectUserByUsername(user.getUsername()))) {
@@ -72,7 +70,7 @@ public class ConsumerServiceImpl implements IConsumerService {
         insertUser.setIdentity(user.getIdentity());
 
         // 插入User表
-        int result = userMapper.insertUser(user);
+        int result = userMapper.insertUser(insertUser);
         if(result < 0){
             throw new CustomException("註冊失敗，請聯絡管理員");
         }
@@ -80,10 +78,10 @@ public class ConsumerServiceImpl implements IConsumerService {
 
         // 設定消費者基本資訊
         ConsumerInfo consumerInfo = new ConsumerInfo();
-        consumerInfo.setUserId(user.getUserId());
-        consumerInfo.setName(name);
+        consumerInfo.setUserId(insertUser.getUserId());
+        consumerInfo.setName(user.getConsumerInfo().getName());
         consumerInfo.setIdentity(user.getIdentity());
-        consumerInfo.setBirthday(birthday);
+        consumerInfo.setBirthday(user.getConsumerInfo().getBirthday());
         // 狀態設為註冊
         consumerInfo.setConsumerStat("1");
         // 默認紙本列印抵用券
@@ -95,18 +93,16 @@ public class ConsumerServiceImpl implements IConsumerService {
         consumerInfoMapper.insertConsumerInfo(consumerInfo);
 
 
-
         // 處理角色問題
         List<SysUserRole> userRoleList = new ArrayList<>();
         SysUserRole ur = new SysUserRole();
-        ur.setUserId(user.getUserId());
+        ur.setUserId(insertUser.getUserId());
         ur.setRoleId(RoleConstants.CONSUMER_ROLE_ID);
         userRoleList.add(ur);
         result = userRoleMapper.batchUserRole(userRoleList);
         if(result < 0){
             throw new CustomException("註冊失敗，請聯絡管理員");
         }
-
 
     }
 }

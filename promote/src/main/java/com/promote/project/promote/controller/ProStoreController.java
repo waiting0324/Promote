@@ -120,7 +120,6 @@ public class ProStoreController extends BaseController {
         }
 
         String userAgent = request.getHeader("User-Agent");
-        System.out.println(userAgent);
         // User-Agent不以 Mozilla 開頭，則代表是從APP發來的請求
         Boolean isFromApp = !userAgent.startsWith("Mozilla");
 

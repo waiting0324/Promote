@@ -2,6 +2,8 @@ package com.promote.project.promote.service;
 
 import com.promote.project.system.domain.SysUser;
 
+import java.util.List;
+
 /**
  * @author 6550 劉威廷
  * @date 2020/4/22 下午 02:38
@@ -14,11 +16,11 @@ public interface IConsumerService {
      * @param identity 身分證
      * @return 使用者Bean
      */
-    SysUser selectByIdentity(String identity);
+    List<SysUser> selectByIdentity(String identity);
 
     /**
      * 消費者註冊
      */
-    public void regist(SysUser user, String name, String birthday);
+    public void regist(SysUser user);
 
 }
