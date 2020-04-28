@@ -113,6 +113,19 @@ public class CouponController extends BaseController {
         return AjaxResult.error(MessageUtils.message("user.jcaptcha.not.exist"));
     }
 
+    /**
+     * 消費者取得可使用的抵用券
+     *
+     * @param storeId 商家的user_id
+     * @return 結果
+     */
+    @GetMapping("/getConsumerCoupon/{storeId}")
+    public AjaxResult getConsumerCoupon(@PathVariable("storeId") Long storeId) {
+        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        //消費者
+        SysUser sysUser = loginUser.getUser();
+        return AjaxResult.success("coupons", couponService.getConsumerCoupon(storeId, sysUser));
+    }
 
     /**
      * 正掃(消費者掃商家)
@@ -153,7 +166,7 @@ public class CouponController extends BaseController {
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         //店家
         SysUser sysUser = loginUser.getUser();
-        couponService.reverseScan(id,sysUser);
+        couponService.reverseScan(id, sysUser);
         return AjaxResult.success();
     }
 }

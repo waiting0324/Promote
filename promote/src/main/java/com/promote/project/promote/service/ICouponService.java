@@ -70,6 +70,15 @@ public interface ICouponService
     int sendCoupon(SysUser user, String code);
 
     /**
+     * 消費者取得可使用的抵用券
+     *
+     * @param storeId 商家的user_id
+     * @param sysUser 使用者(消費者)資料
+     * @return
+     */
+    List<Coupon> getConsumerCoupon(Long storeId,SysUser sysUser);
+
+    /**
      *正掃(消費者掃商家)
      *
      * @param couponIds 抵用券序號

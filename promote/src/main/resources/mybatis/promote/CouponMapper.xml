@@ -95,4 +95,13 @@
         </foreach>
     </delete>
 
+    <select id="getConsumerCoupon" resultMap="CouponResult">
+        <include refid="selectCouponVo"/>
+        where user_id = #{userId} and is_used = #{isUsed} and
+        store_type in
+        <foreach item="type" collection="storeTypes" open="(" separator="," close=")">
+            #{type}
+        </foreach>
+    </select>
+
 </mapper>

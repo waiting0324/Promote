@@ -1,6 +1,7 @@
 package com.promote.project.promote.mapper;
 
 import com.promote.project.promote.domain.Coupon;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -59,4 +60,14 @@ public interface CouponMapper
      * @return 結果
      */
     public int deleteCouponByIds(String[] ids);
+
+    /**
+     * 消費者取得可使用的抵用券
+     *
+     * @param userId 消費者的user_id
+     * @param isUsed 抵用券是否已被使用( 0未使用 1已使用 )
+     * @param storeTypes 店家類型
+     * @return
+     */
+    public List<Coupon> getConsumerCoupon(@Param("userId") Long userId,@Param("userId") String isUsed,@Param("storeTypes") String[] storeTypes);
 }
