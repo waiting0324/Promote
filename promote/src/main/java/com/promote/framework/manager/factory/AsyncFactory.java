@@ -1,9 +1,7 @@
 package com.promote.framework.manager.factory;
 
-import java.util.TimerTask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.promote.common.constant.Constants;
+import com.promote.common.utils.EmailUtils;
 import com.promote.common.utils.LogUtils;
 import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.ip.AddressUtils;
@@ -14,6 +12,11 @@ import com.promote.project.monitor.domain.SysOperLog;
 import com.promote.project.monitor.service.ISysLogininforService;
 import com.promote.project.monitor.service.ISysOperLogService;
 import eu.bitwalker.useragentutils.UserAgent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.mail.MessagingException;
+import java.util.TimerTask;
 
 /**
  * 非同步工廠（產生任務用）
@@ -95,6 +98,27 @@ public class AsyncFactory
                 // 遠端查詢操作地點
                 operLog.setOperLocation(AddressUtils.getRealAddressByIP(operLog.getOperIp()));
                 SpringUtils.getBean(ISysOperLogService.class).insertOperlog(operLog);
+            }
+        };
+    }
+
+    /**
+     * 發送電子信件
+     *
+     * @return 任務task
+     */
+    public static TimerTask sendEmail(final String toMail, final String title, final String msg)
+    {
+        return new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                try {
+                    EmailUtils.sendEmail(toMail, title, msg);
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
             }
         };
     }
