@@ -18,4 +18,21 @@ public class StoreTypeConstants {
 
     /** 藝文 */
     public static final String ART = "3";
+
+
+    /** 帳號狀態 正常 */
+    public static final String STATUS_NORMAL = "0";
+
+    /** 帳號狀態 停用 */
+    public static final String STATUS_DISABLE = "1";
+
+    /** 帳號狀態 未驗證 */
+    public static final String STATUS_UNVERIFIED = "2";
+
+
+    /** 不強制變更密碼 */
+    public static final String UN_FORCE_CHANGE_PWD = "0";
+
+    /** 強制變更密碼 */
+    public static final String FORCE_CHANGE_PWD = "1";
 }

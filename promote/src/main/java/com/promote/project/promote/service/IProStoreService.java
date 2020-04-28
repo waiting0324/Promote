@@ -14,9 +14,10 @@ public interface IProStoreService {
     /**
      * 商家註冊
      * @param user 商家基本資訊
+     * @param isAgreeTerms 是否同意註冊條款
      * @param whitelistId 白名單ID
      */
-    public void regist(SysUser user, String whitelistId);
+    public void regist(SysUser user, String isAgreeTerms, String whitelistId);
 
 
     /**

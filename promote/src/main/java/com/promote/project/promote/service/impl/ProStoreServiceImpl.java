@@ -1,12 +1,15 @@
 package com.promote.project.promote.service.impl;
 
 import com.promote.common.constant.RoleConstants;
+import com.promote.common.constant.StoreTypeConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.project.promote.domain.ProWhitelist;
+import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
+import com.promote.project.promote.mapper.StoreInfoMapper;
 import com.promote.project.promote.service.IProStoreService;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.domain.SysUserRole;
@@ -36,15 +39,19 @@ public class ProStoreServiceImpl implements IProStoreService {
     @Autowired
     private SysUserRoleMapper userRoleMapper;
 
+    @Autowired
+    private StoreInfoMapper storeInfoMapper;
+
 
     /**
      * 店家註冊
      * @param user 商家基本資訊
+     * @param isAgreeTerms
      * @param whitelistId 白名單ID
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     @Override
-    public void regist(SysUser user, String whitelistId) {
+    public void regist(SysUser user, String isAgreeTerms, String whitelistId) {
 
         if (StringUtils.isNotNull(userMapper.selectUserByUsername(user.getUsername()))) {
             throw new CustomException("該帳號已被使用");
@@ -59,23 +66,64 @@ public class ProStoreServiceImpl implements IProStoreService {
             throw new CustomException("填寫的統編與白名單資料不一致");
         }
 
+        // 處理使用者資訊
         SysUser insertUser = new SysUser();
         insertUser.setUsername(user.getUsername());
         insertUser.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
-        /*insertUser.setName(user.getName());
         insertUser.setIdentity(user.getIdentity());
-        insertUser.setPhonenumber(user.getPhonenumber().replace("-", ""));
-        insertUser.setStoreName(user.getStoreName());
-        insertUser.setAddress(user.getAddress());
-        insertUser.setBankAccount(user.getBankAccount());
-        insertUser.setBankAccountName(user.getBankAccountName());
-        insertUser.setIsAgreeTerms(user.getIsAgreeTerms());*/
+        insertUser.setMobile(user.getMobile().replace("-", ""));
 
-
-
-        // insertUser.setBirthday("20200101"); //TODO FIX
         // 插入User表
         userMapper.insertUser(insertUser);
+
+
+        // 處理商家基本資訊
+        StoreInfo storeInfo = user.getStoreInfo();
+        StoreInfo insertStoreInfo = new StoreInfo();
+
+        insertStoreInfo.setUserId(insertUser.getUserId());
+        insertStoreInfo.setName(storeInfo.getName());
+
+        insertStoreInfo.setAddress(storeInfo.getAddress());
+        insertStoreInfo.setBankAccountName(storeInfo.getBankAccountName());
+        insertStoreInfo.setBankAccount(storeInfo.getBankAccount());
+        insertStoreInfo.setAddress(storeInfo.getAddress());
+        insertStoreInfo.setIsAgreeTerms(isAgreeTerms);
+        insertStoreInfo.setAgreeTime(DateUtils.getNowDate());
+        // 狀態 待驗證
+        insertStoreInfo.setStatus(StoreTypeConstants.STATUS_UNVERIFIED);
+        // 不強制變更密碼
+        insertStoreInfo.setPwNeedReset(StoreTypeConstants.UN_FORCE_CHANGE_PWD);
+        // TODO 經緯度
+
+        // 處理商家類型 type
+        String type = "";
+        // 夜市
+        if ("1".equals(white.getIsNMarket())) {
+            type += "0,";
+        }
+        // 餐廳
+        if ("1".equals(white.getIsFoodbeverage())) {
+            type += "1,";
+        }
+        // 商圈
+        if ("1".equals(white.getIsSightseeing()) || "1".equals(white.getIsTMarket())) {
+            type += "2,";
+        }
+        // 藝文
+        if ("1".equals(white.getIsCulture())) {
+            type += "3,";
+        }
+        if (type.endsWith(",")) {
+            //type.su
+        }
+
+
+
+
+        // 插入商家資訊表
+        storeInfoMapper.insertStoreInfo(insertStoreInfo);
+
 
         // 處理角色問題
         List<SysUserRole> userRoleList = new ArrayList<>();
@@ -92,6 +140,8 @@ public class ProStoreServiceImpl implements IProStoreService {
         white.setIsRegisted("1");
         white.setUpdateTime(DateUtils.getNowDate());
         proWhitelistMapper.updateProWhitelist(white);
+
+        // TODO 更新預算表
     }
 
     /**

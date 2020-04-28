@@ -5,7 +5,6 @@ import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.utils.MessageUtils;
-import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.common.utils.ip.IpUtils;
@@ -23,6 +22,7 @@ import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Map;
@@ -100,27 +100,33 @@ public class ProStoreController extends BaseController {
      * @return 結果
      */
     @PostMapping("/regist")
-    public AjaxResult regist(@RequestBody SysUser user) {
+    public AjaxResult regist(@RequestBody SysUser user, HttpServletRequest request) {
+
+        Map<String, Object> params = user.getParams();
+
         // 註冊條款校驗
-        /*if (StringUtils.isEmpty(user.getIsAgreeTerms()) || !("1".equals(user.getIsAgreeTerms()))) {
+        String isAgreeTerms = (String) params.get("isAgreeTerms");
+        if (StringUtils.isEmpty(isAgreeTerms) || !("1".equals(isAgreeTerms))) {
             return AjaxResult.error(MessageUtils.message("pro.err.terms.not.check"));
         }
 
         // 必填欄位檢核
         if (StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(user.getPassword()) ||
-                StringUtils.isEmpty(user.getName()) || StringUtils.isEmpty(user.getIdentity()) ||
-                StringUtils.isEmpty(user.getPhonenumber()) || StringUtils.isEmpty(user.getStoreName()) ||
-                StringUtils.isEmpty(user.getAddress()) || StringUtils.isEmpty(user.getBankAccount()) ||
-                StringUtils.isEmpty(user.getBankAccountName())) {
+                StringUtils.isEmpty(user.getStoreInfo().getName()) || StringUtils.isEmpty(user.getIdentity()) ||
+                StringUtils.isEmpty(user.getMobile()) || StringUtils.isEmpty(user.getStoreInfo().getName()) ||
+                StringUtils.isEmpty(user.getStoreInfo().getAddress()) || StringUtils.isEmpty(user.getStoreInfo().getBankAccount()) ||
+                StringUtils.isEmpty(user.getStoreInfo().getBankAccountName())) {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
-        }*/
+        }
+
+        String userAgent = request.getHeader("User-Agent");
+        System.out.println(userAgent);
+        // User-Agent不以 Mozilla 開頭，則代表是從APP發來的請求
+        Boolean isFromApp = !userAgent.startsWith("Mozilla");
 
         // 圖形驗證碼校驗
-        Map<String, Object> params = user.getParams();
-        //是否從App訪問
-        String isFromApp = (String) params.get("isFromApp");
-        if ("0".equals(isFromApp)) {
-            //web
+        // 不是從APP訪問則需要圖形驗證碼
+        if (!isFromApp) {
             String uuid = (String) params.get("uuid");
             String verifyKey = Constants.CAPTCHA_CODE_KEY + (StringUtils.isNotEmpty(uuid) ? uuid : "");
             String captcha = redisCache.getCacheObject(verifyKey);
@@ -133,10 +139,13 @@ public class ProStoreController extends BaseController {
             }
         }
 
-        // 進行註冊
         //白名單id
         String whitelistId = (String) params.get("whitelistId");
-        storeService.regist(user, whitelistId);
+
+        // 進行註冊
+        storeService.regist(user, isAgreeTerms, whitelistId);
+
+
         return AjaxResult.success();
     }
 

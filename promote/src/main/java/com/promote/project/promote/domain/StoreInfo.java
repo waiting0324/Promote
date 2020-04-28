@@ -28,6 +28,17 @@ public class StoreInfo extends BaseEntity {
     private String name;
 
     /**
+     * 商家類型  ( 0夜市 1餐廳 2商圈 3藝文 )
+     */
+    private String type;
+
+    /**
+     * 銀行戶名
+     */
+    @Excel(name = "銀行戶名")
+    private String bankAccountName;
+
+    /**
      * 銀行帳戶
      */
     @Excel(name = "銀行帳戶")
@@ -55,7 +66,7 @@ public class StoreInfo extends BaseEntity {
      * 商家緯度
      */
     @Excel(name = "商家緯度")
-    private Double longtitude;
+    private Double longitude;
 
     /**
      * 是否同意註冊條款 ( 0不同意 1同意 )
@@ -97,6 +108,14 @@ public class StoreInfo extends BaseEntity {
         return name;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public void setBankAccount(String bankAccount) {
         this.bankAccount = bankAccount;
     }
@@ -129,12 +148,12 @@ public class StoreInfo extends BaseEntity {
         this.latitude = latitude;
     }
 
-    public Double getLongtitude() {
-        return longtitude;
+    public Double getLongitude() {
+        return longitude;
     }
 
-    public void setLongtitude(Double longtitude) {
-        this.longtitude = longtitude;
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     public void setIsAgreeTerms(String isAgreeTerms) {
@@ -169,6 +188,14 @@ public class StoreInfo extends BaseEntity {
         return pwNeedReset;
     }
 
+    public String getBankAccountName() {
+        return bankAccountName;
+    }
+
+    public void setBankAccountName(String bankAccountName) {
+        this.bankAccountName = bankAccountName;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -178,7 +205,7 @@ public class StoreInfo extends BaseEntity {
                 .append("bankAchCode", getBankAchCode())
                 .append("address", getAddress())
                 .append("latitude", getLatitude())
-                .append("longtitude", getLongtitude())
+                .append("longitude", getLongitude())
                 .append("isAgreeTerms", getIsAgreeTerms())
                 .append("agreeTime", getAgreeTime())
                 .append("status", getStatus())
