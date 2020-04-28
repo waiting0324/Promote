@@ -138,10 +138,10 @@ public class CouponController extends BaseController {
     public AjaxResult postiveScan(@RequestBody StoreInfo storeInfo) {
         Map<String, Object> params = storeInfo.getParams();
         //抵用券序號
-        String[] couponIds = (String[]) params.get("couponIds");
+        List<String> couponIds = (List<String>) params.get("couponIds");
         //商家的user_id
         Long storeId = storeInfo.getUserId();
-        if (StringUtils.isNull(couponIds) || couponIds.length < 1) {
+        if (StringUtils.isNull(couponIds) || couponIds.size() == 0) {
             return AjaxResult.error("未輸入抵用券");
         }
         if (StringUtils.isNull(storeId)) {
@@ -161,6 +161,7 @@ public class CouponController extends BaseController {
      * @param coupon 抵用券發放記錄檔物件
      * @return 結果
      */
+    @PostMapping("/reverseScan")
     public AjaxResult reverseScan(@RequestBody Coupon coupon) {
         String id = coupon.getId();
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());

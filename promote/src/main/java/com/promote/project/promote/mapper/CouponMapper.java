@@ -69,5 +69,5 @@ public interface CouponMapper
      * @param storeTypes 店家類型
      * @return
      */
-    public List<Coupon> getConsumerCoupon(@Param("userId") Long userId,@Param("userId") String isUsed,@Param("storeTypes") String[] storeTypes);
+    public List<Coupon> getConsumerCoupon(@Param("userId") Long userId,@Param("isUsed") String isUsed,@Param("storeTypes") String[] storeTypes);
 }
