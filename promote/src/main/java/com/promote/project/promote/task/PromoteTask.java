@@ -174,6 +174,9 @@ public class PromoteTask {
         }
     }
 
+    public static void main(String[] s){
+        System.out.println(String.class.getName());
+    }
 
     private RowHandler createRowHandler(Map<String, Integer> pair) {
         return new RowHandler() {
@@ -213,15 +216,24 @@ public class PromoteTask {
                                 String columnName = columnNameList.get(i);
                                 String methodName = new StringBuilder("set").append(columnName.substring(0, 1).toUpperCase()).append(columnName.substring(1)).toString();
                                 //取得白名單Model的setter方法
-                                Method method = c.getMethod(methodName, columnTypeList.get(i));
+                                Class typeClass = columnTypeList.get(i);
+                                Method method = c.getMethod(methodName, typeClass);
                                 if (method != null) {
                                     Integer index = pair.get(columnName);
                                     if (index == null) {
                                         continue;
                                     }
-                                    Object value = rowlist.get(index);
+                                    Object tempValue = rowlist.get(index);
                                     //設定Excel的值到白名單Model
-                                    method.invoke(proWhitelist, StringUtils.isNotNull(value) ? value.toString().trim().replaceAll("\\u00A0+", "") : null);
+                                    String value = StringUtils.isNotNull(tempValue) ? tempValue.toString().trim().replaceAll("\\u00A0+", "") : null;
+                                    switch (typeClass.getName()){
+                                        case "java.lang.Double":
+                                            method.invoke(proWhitelist, StringUtils.isNotNull(value) ? Double.parseDouble(value) : null);
+                                            break;
+                                        case "java.lang.String":
+                                            method.invoke(proWhitelist, value);
+                                            break;
+                                    }
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
