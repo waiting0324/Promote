@@ -8,14 +8,14 @@ package com.promote.common.constant;
 public class CouponConstants {
 
     /**
-     * 抵用券未發放
+     * 抵用券未使用
      */
-    public static final String IS_NOT_PROVIDE = "0";
+    public static final String UN_USED = "0";
 
     /**
-     * 抵用券已發放
+     * 抵用券已使用
      */
-    public static final String IS_PROVIDE = "1";
+    public static final String USED = "1";
 
     /**
      * 抵用券未列印

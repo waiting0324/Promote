@@ -12,6 +12,7 @@ import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
+import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.promote.domain.Coupon;
 import com.promote.project.promote.domain.CouponConsume;
@@ -29,10 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * 抵用券Service業務層處理
@@ -375,5 +373,62 @@ public class CouponServiceImpl implements ICouponService {
         List<CouponConsume> list = couponConsumeMapper.selectConsumptionList(SecurityUtils.getLoginUser().getUser().getUserId());
 
         return list;
+    }
+
+    @Override
+    public AjaxResult overviewCoupons() {
+
+        AjaxResult ajax = AjaxResult.success();
+
+        // 可用總餘額
+        int balance = 0;
+        // 已消費總金額
+        int consumed = 0;
+
+        Long consumerId = SecurityUtils.getLoginUser().getUser().getUserId();
+        List<Coupon> couponList = couponMapper.overviewCoupons(consumerId);
+
+        if (couponList.isEmpty()) {
+            throw new CustomException("您尚未擁有振興券");
+        }
+
+        // 初始化返回結果
+        List<Map<String, Integer>> result = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            Map<String, Integer> map = new HashMap<>();
+            map.put("consumed", 0);
+            map.put("balance", 0);
+            result.add(map);
+        }
+
+
+        // 統計抵用券相關訊息
+        for (Coupon coupon : couponList) {
+            // 抵用券類型
+            Integer storeType = Integer.parseInt(coupon.getStoreType());
+            // storeType 類型的抵用券紀錄
+            Map<String, Integer> map = result.get(storeType);
+            // 抵用券已使用
+            if (CouponConstants.USED.equals(coupon.getIsUsed())) {
+                // 已消費總金額
+                consumed += coupon.getAmount();
+                // storeType 類型的抵用券已消費金額
+                map.put("consumed", (int) (map.get("consumed") + coupon.getAmount()));
+            }
+            // 抵用券未使用
+            else {
+                // 可用總餘額
+                balance += coupon.getAmount();
+                // storeType 類型的抵用券總餘額
+                map.put("balance", (int) (map.get("balance") + coupon.getAmount()));
+            }
+        }
+
+        // 處理返回結果
+        ajax.put("balance", balance);
+        ajax.put("consumed", consumed);
+        ajax.put("couponTypes", result);
+
+        return ajax;
     }
 }

@@ -77,4 +77,11 @@ public interface CouponMapper
      * @return
      */
     public List<Coupon> getConsumerCoupon(@Param("userId") Long userId,@Param("isUsed") String isUsed,@Param("storeTypes") String[] storeTypes);
+
+    /**
+     * 消費者擁有的抵用券總覽
+     * @param consumerId
+     * @return
+     */
+    List<Coupon> overviewCoupons(Long consumerId);
 }

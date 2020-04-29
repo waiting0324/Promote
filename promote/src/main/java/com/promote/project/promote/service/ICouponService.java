@@ -1,5 +1,6 @@
 package com.promote.project.promote.service;
 
+import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.domain.Coupon;
 import com.promote.project.promote.domain.CouponConsume;
 import com.promote.project.system.domain.SysUser;
@@ -100,4 +101,10 @@ public interface ICouponService {
      * @return 消費紀錄列表
      */
     List<CouponConsume> consumption();
+
+    /**
+     * 抵用券總攬
+     * @return
+     */
+    AjaxResult overviewCoupons();
 }

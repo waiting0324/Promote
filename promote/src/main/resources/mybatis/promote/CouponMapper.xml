@@ -113,4 +113,9 @@
         </foreach>
     </select>
 
+    <select id="overviewCoupons" parameterType="Long" resultMap="CouponResult">
+        <include refid="selectCouponVo"/>
+        where user_id = #{userId}
+    </select>
+
 </mapper>

@@ -172,4 +172,15 @@ public class CouponController extends BaseController {
         List<CouponConsume> list = couponService.consumption();
         return AjaxResult.success(list);
     }
+
+    /**
+     * 抵用券總覽
+     *
+     * @return 結果
+     */
+    @GetMapping("/overview")
+    public AjaxResult overview() {
+        AjaxResult ajax = couponService.overviewCoupons();
+        return ajax;
+    }
 }
