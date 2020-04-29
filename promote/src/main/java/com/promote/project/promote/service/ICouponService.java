@@ -1,6 +1,7 @@
 package com.promote.project.promote.service;
 
 import com.promote.project.promote.domain.Coupon;
+import com.promote.project.promote.domain.CouponConsume;
 import com.promote.project.system.domain.SysUser;
 
 import java.util.List;
@@ -83,9 +84,8 @@ public interface ICouponService {
      *
      * @param couponIds 抵用券序號
      * @param type      商家類型
-     * @param sysUser   使用者資料(消費者)
      */
-    void postiveScan(List<String> couponIds, Long type, SysUser sysUser);
+    void postiveScan(List<String> couponIds, Long type);
 
     /**
      * 反掃(商家掃消費者)
@@ -94,4 +94,10 @@ public interface ICouponService {
      * @param sysUser 使用者資料(店家)
      */
     void reverseScan(String id, SysUser sysUser);
+
+    /**
+     * 查詢當前消費者的消費紀錄
+     * @return 消費紀錄列表
+     */
+    List<CouponConsume> consumption();
 }

@@ -5,27 +5,46 @@
 <mapper namespace="com.promote.project.promote.mapper.CouponConsumeMapper">
 
     <resultMap type="CouponConsume" id="CouponConsumeResult">
-        <result property="couponId"    column="coupon_id"    />
-        <result property="fundType"    column="fund_type"    />
-        <result property="storeId"    column="store_id"    />
-        <result property="storeType"    column="store_type"    />
-        <result property="consumeTime"    column="consume_time"    />
-        <result property="amount"    column="amount"    />
+        <result property="couponId" column="coupon_id"/>
+        <result property="consumerId" column="consumer_id"/>
+        <result property="fundType" column="fund_type"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeType" column="store_type"/>
+        <result property="consumeTime" column="consume_time"/>
+        <result property="amount" column="amount"/>
     </resultMap>
 
     <sql id="selectCouponConsumeVo">
-        select coupon_id, fund_type, store_id, store_type, consume_time, amount from pro_coupon_consume
+        select coupon_id, consumer_id, fund_type, store_id, store_type, consume_time, amount from pro_coupon_consume
     </sql>
 
     <select id="selectCouponConsumeList" parameterType="CouponConsume" resultMap="CouponConsumeResult">
         <include refid="selectCouponConsumeVo"/>
         <where>
-            <if test="fundType != null  and fundType != ''"> and fund_type = #{fundType}</if>
-            <if test="storeId != null "> and store_id = #{storeId}</if>
-            <if test="storeType != null  and storeType != ''"> and store_type = #{storeType}</if>
-            <if test="consumeTime != null "> and consume_time = #{consumeTime}</if>
-            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="consumerId != null  and consumerId != ''">and consumer_id = #{consumerId}</if>
+            <if test="fundType != null  and fundType != ''">and fund_type = #{fundType}</if>
+            <if test="storeId != null ">and store_id = #{storeId}</if>
+            <if test="storeType != null  and storeType != ''">and store_type = #{storeType}</if>
+            <if test="consumeTime != null ">and consume_time = #{consumeTime}</if>
+            <if test="amount != null ">and amount = #{amount}</if>
         </where>
+    </select>
+
+    <select id="selectConsumptionList" parameterType="Long" resultMap="CouponConsumeResult">
+        SELECT
+            s.name storeName,
+            c.coupon_id,
+            c.consumer_id,
+            c.fund_type,
+            c.store_id,
+            c.store_type,
+            c.consume_time,
+            c.amount
+        FROM
+	        pro_coupon_consume c
+	LEFT JOIN pro_store_info s ON c.store_id = s.user_id
+	WHERE c.consumer_id = #{id}
+	ORDER BY c.consume_time
     </select>
 
     <select id="selectCouponConsumeById" parameterType="String" resultMap="CouponConsumeResult">
@@ -37,6 +56,7 @@
         insert into pro_coupon_consume
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="couponId != null  and couponId != ''">coupon_id,</if>
+            <if test="consumerId != null  and consumerId != ''">consumer_id,</if>
             <if test="fundType != null  and fundType != ''">fund_type,</if>
             <if test="storeId != null ">store_id,</if>
             <if test="storeType != null  and storeType != ''">store_type,</if>
@@ -45,6 +65,7 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="couponId != null  and couponId != ''">#{couponId},</if>
+            <if test="consumerId != null  and consumerId != ''">#{consumerId},</if>
             <if test="fundType != null  and fundType != ''">#{fundType},</if>
             <if test="storeId != null ">#{storeId},</if>
             <if test="storeType != null  and storeType != ''">#{storeType},</if>
@@ -56,6 +77,7 @@
     <update id="updateCouponConsume" parameterType="CouponConsume">
         update pro_coupon_consume
         <trim prefix="SET" suffixOverrides=",">
+            <if test="consumerId != null  and consumerId != ''">consumer_id = #{consumerId},</if>
             <if test="fundType != null  and fundType != ''">fund_type = #{fundType},</if>
             <if test="storeId != null ">store_id = #{storeId},</if>
             <if test="storeType != null  and storeType != ''">store_type = #{storeType},</if>

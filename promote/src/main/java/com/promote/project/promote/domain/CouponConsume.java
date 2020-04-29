@@ -1,5 +1,6 @@
 package com.promote.project.promote.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.promote.framework.aspectj.lang.annotation.Excel;
 import com.promote.framework.web.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -20,6 +21,9 @@ public class CouponConsume extends BaseEntity
     /** 抵用券序號 */
     private String couponId;
 
+    /** 消費者 ID */
+    private Long consumerId;
+
     /** 補助機構 (S:中企
      T:中辦
      B:商業司
@@ -30,12 +34,15 @@ public class CouponConsume extends BaseEntity
     @Excel(name = "商家的user_id")
     private Long storeId;
 
+    private String storeName;
+
     /** 商家類型(0夜市 1餐廳 2商圈 3藝文) */
     @Excel(name = "商家類型(0夜市 1餐廳 2商圈 3藝文)")
     private String storeType;
 
     /** 消費時間 */
     @Excel(name = "消費時間", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     private Date consumeTime;
 
     /** 抵用券金額 */
@@ -51,6 +58,23 @@ public class CouponConsume extends BaseEntity
     {
         return couponId;
     }
+
+    public Long getConsumerId() {
+        return consumerId;
+    }
+
+    public void setConsumerId(Long consumerId) {
+        this.consumerId = consumerId;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
+
     public void setFundType(String fundType)
     {
         this.fundType = fundType;
