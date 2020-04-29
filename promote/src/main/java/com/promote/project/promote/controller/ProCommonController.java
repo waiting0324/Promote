@@ -3,12 +3,16 @@ package com.promote.project.promote.controller;
 import com.promote.common.constant.Constants;
 import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.StringUtils;
+import com.promote.framework.security.service.SysLoginService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.service.ICommonService;
 import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 import java.util.Map;
@@ -24,6 +28,9 @@ public class ProCommonController extends BaseController {
 
     @Autowired
     ICommonService commonService;
+
+    @Autowired
+    private SysLoginService loginService;
 
     /**
      * 發送驗證碼
@@ -43,6 +50,24 @@ public class ProCommonController extends BaseController {
         commonService.sendCaptcha(username, type);
         return AjaxResult.success();
     }
+
+    /**
+     * 登入方法
+     */
+    @PostMapping("/common/login")
+    public AjaxResult login(@RequestBody SysUser user)
+    {
+        Map<String, Object> params = user.getParams();
+        String uuid = (String) params.get("uuid");
+        String code = (String) params.get("code");
+
+        AjaxResult ajax = AjaxResult.success();
+        // 生成令牌
+        String token = loginService.login(user.getUsername(), user.getPassword(), code, uuid);
+        ajax.put(Constants.TOKEN, token);
+        return ajax;
+    }
+
 
 
     /**

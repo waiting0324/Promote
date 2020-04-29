@@ -130,9 +130,9 @@ email:
   port: 587
   smtp: smtp
   # 發信人Email
-  from: dakhpc72@gmail.com
+  from: weicardstw@gmail.com
   # 發信人Email密碼
-  pwd: r150y9a018n
+  pwd: s89236001
 
 ftp:
   # FTP 遠端地址

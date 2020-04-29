@@ -1,6 +1,7 @@
 package com.promote.project.promote.controller;
 
 import com.promote.common.utils.MessageUtils;
+import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.common.utils.poi.ExcelUtil;
@@ -119,11 +120,10 @@ public class CouponController extends BaseController {
      * @param storeId 商家的user_id
      * @return 結果
      */
-    @GetMapping("/getConsumerCoupon/{storeId}")
+    @GetMapping("/consumer/{storeId}")
     public AjaxResult getConsumerCoupon(@PathVariable("storeId") Long storeId) {
-        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         //消費者
-        SysUser sysUser = loginUser.getUser();
+        SysUser sysUser = SecurityUtils.getLoginUser().getUser();
         return AjaxResult.success("coupons", couponService.getConsumerCoupon(storeId, sysUser));
     }
 
