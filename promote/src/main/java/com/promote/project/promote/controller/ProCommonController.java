@@ -1,8 +1,11 @@
 package com.promote.project.promote.controller;
 
 import com.promote.common.constant.Constants;
+import com.promote.common.exception.CustomException;
+import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.StringUtils;
+import com.promote.framework.redis.RedisCache;
 import com.promote.framework.security.service.SysLoginService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -31,6 +35,9 @@ public class ProCommonController extends BaseController {
 
     @Autowired
     private SysLoginService loginService;
+
+    @Autowired
+    private RedisCache redisCache;
 
     /**
      * 發送驗證碼
@@ -55,15 +62,32 @@ public class ProCommonController extends BaseController {
      * 登入方法
      */
     @PostMapping("/common/login")
-    public AjaxResult login(@RequestBody SysUser user)
+    public AjaxResult login(@RequestBody SysUser user, HttpServletRequest request)
     {
-        Map<String, Object> params = user.getParams();
-        String uuid = (String) params.get("uuid");
-        String code = (String) params.get("code");
+
+        String userAgent = request.getHeader("User-Agent");
+        // User-Agent不以 Mozilla 開頭，則代表是從APP發來的請求
+        Boolean isFromWeb = userAgent.startsWith("Mozilla");
+
+        // 圖形驗證碼校驗
+        // 不是從APP訪問則需要圖形驗證碼
+        if (isFromWeb) {
+            Map<String, Object> params = user.getParams();
+            String uuid = (String) params.get("uuid");
+            String code = (String) params.get("code");
+            String verifyKey = Constants.CAPTCHA_CODE_KEY + (StringUtils.isNotEmpty(uuid) ? uuid : "");
+            String captcha = redisCache.getCacheObject(verifyKey);
+            if (StringUtils.isEmpty(code)) {
+                throw new CustomException(MessageUtils.message("user.jcaptcha.not.exist"));
+            }
+            if (!code.equalsIgnoreCase(captcha)) {
+                throw new CaptchaException();
+            }
+        }
 
         AjaxResult ajax = AjaxResult.success();
         // 生成令牌
-        String token = loginService.login(user.getUsername(), user.getPassword(), code, uuid);
+        String token = loginService.login(user.getUsername(), user.getPassword(), "", "");
         ajax.put(Constants.TOKEN, token);
         return ajax;
     }
@@ -100,4 +124,6 @@ public class ProCommonController extends BaseController {
         // 確認驗證碼並更新密碼
         return toAjax(commonService.forgetPwd(code, username, newPwd));
     }
+
+
 }

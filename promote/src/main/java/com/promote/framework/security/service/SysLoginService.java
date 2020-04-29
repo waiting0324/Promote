@@ -1,22 +1,21 @@
 package com.promote.framework.security.service;
 
-import javax.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 import com.promote.common.constant.Constants;
 import com.promote.common.exception.CustomException;
-import com.promote.common.exception.user.CaptchaException;
-import com.promote.common.exception.user.CaptchaExpireException;
 import com.promote.common.exception.user.UserPasswordNotMatchException;
 import com.promote.common.utils.MessageUtils;
 import com.promote.framework.manager.AsyncManager;
 import com.promote.framework.manager.factory.AsyncFactory;
 import com.promote.framework.redis.RedisCache;
 import com.promote.framework.security.LoginUser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 /**
  * 登入校驗方法
@@ -46,7 +45,7 @@ public class SysLoginService
      */
     public String login(String username, String password, String code, String uuid)
     {
-        String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
+       /* String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
         String captcha = redisCache.getCacheObject(verifyKey);
         redisCache.deleteObject(verifyKey);
         if (captcha == null)
@@ -58,7 +57,7 @@ public class SysLoginService
         {
             AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error")));
             throw new CaptchaException();
-        }
+        }*/
         // 使用者驗證
         Authentication authentication = null;
         try
