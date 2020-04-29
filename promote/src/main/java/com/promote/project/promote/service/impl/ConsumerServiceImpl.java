@@ -119,11 +119,10 @@ public class ConsumerServiceImpl implements IConsumerService {
     public void updateConsumerInfo(SysUser user) {
         SysUser updUser = new SysUser();
         updUser.setUserId(user.getUserId());
-        updUser.setPassword(user.getPassword());
+        updUser.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
         updUser.setMobile(user.getMobile());
         if(userMapper.updateUser(updUser) < 0){
             throw new CustomException(MessageUtils.message("pro.err.update.consumer.fail"));
         }
-
     }
 }
