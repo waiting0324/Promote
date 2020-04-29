@@ -24,9 +24,6 @@ public class ConsumerInfo extends BaseEntity
     @Excel(name = "消費者姓名")
     private String name;
 
-    /** 身分證 */
-    @Excel(name = "身分證")
-    private String identity;
 
     /** 生日 */
     @Excel(name = "生日")
@@ -39,13 +36,6 @@ public class ConsumerInfo extends BaseEntity
      4. 已列印(紙本) */
     private String consumerStat;
 
-    /** 電子信箱 */
-    @Excel(name = "電子信箱")
-    private String email;
-
-    /** 手機號碼 */
-    @Excel(name = "手機號碼")
-    private String mobile;
 
     /** 抵用券類型 ( P:紙本 E:電子 ) */
     @Excel(name = "抵用券類型 ( P:紙本 E:電子 )")
@@ -89,15 +79,7 @@ public class ConsumerInfo extends BaseEntity
     {
         return name;
     }
-    public void setIdentity(String identity)
-    {
-        this.identity = identity;
-    }
 
-    public String getIdentity()
-    {
-        return identity;
-    }
     public void setBirthday(String birthday)
     {
         this.birthday = birthday;
@@ -116,24 +98,7 @@ public class ConsumerInfo extends BaseEntity
     {
         return consumerStat;
     }
-    public void setEmail(String email)
-    {
-        this.email = email;
-    }
 
-    public String getEmail()
-    {
-        return email;
-    }
-    public void setMobile(String mobile)
-    {
-        this.mobile = mobile;
-    }
-
-    public String getMobile()
-    {
-        return mobile;
-    }
     public void setCouponType(String couponType)
     {
         this.couponType = couponType;
@@ -194,11 +159,8 @@ public class ConsumerInfo extends BaseEntity
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("userId", getUserId())
                 .append("name", getName())
-                .append("identity", getIdentity())
                 .append("birthday", getBirthday())
                 .append("consumerStat", getConsumerStat())
-                .append("email", getEmail())
-                .append("mobile", getMobile())
                 .append("couponType", getCouponType())
                 .append("couponPrintType", getCouponPrintType())
                 .append("printCode", getPrintCode())

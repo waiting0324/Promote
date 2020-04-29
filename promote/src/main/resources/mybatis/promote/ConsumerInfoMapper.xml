@@ -7,7 +7,6 @@
     <resultMap type="ConsumerInfo" id="ConsumerInfoResult">
         <result property="userId"    column="user_id"    />
         <result property="name"    column="name"    />
-        <result property="identity"    column="identity"    />
         <result property="birthday"    column="birthday"    />
         <result property="consumerStat"    column="consumer_stat"    />
         <result property="couponType"    column="coupon_type"    />
@@ -21,14 +20,13 @@
     </resultMap>
 
     <sql id="selectConsumerInfoVo">
-        select user_id, name, identity, birthday, consumer_stat, coupon_type, coupon_print_type, print_code, hostel_id, issue_date, receive_date, update_time, create_time from pro_consumer_info
+        select user_id, name, birthday, consumer_stat, coupon_type, coupon_print_type, print_code, hostel_id, issue_date, receive_date, update_time, create_time from pro_consumer_info
     </sql>
 
     <select id="selectConsumerInfoList" parameterType="ConsumerInfo" resultMap="ConsumerInfoResult">
         <include refid="selectConsumerInfoVo"/>
         <where>
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
-            <if test="identity != null  and identity != ''"> and identity = #{identity}</if>
             <if test="birthday != null  and birthday != ''"> and birthday = #{birthday}</if>
             <if test="consumerStat != null  and consumerStat != ''"> and consumer_stat = #{consumerStat}</if>
             <if test="couponType != null  and couponType != ''"> and coupon_type = #{couponType}</if>
@@ -50,7 +48,6 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null ">user_id,</if>
             <if test="name != null  and name != ''">name,</if>
-            <if test="identity != null  and identity != ''">identity,</if>
             <if test="birthday != null  and birthday != ''">birthday,</if>
             <if test="consumerStat != null  and consumerStat != ''">consumer_stat,</if>
             <if test="couponType != null  and couponType != ''">coupon_type,</if>
@@ -65,7 +62,6 @@
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null ">#{userId},</if>
             <if test="name != null  and name != ''">#{name},</if>
-            <if test="identity != null  and identity != ''">#{identity},</if>
             <if test="birthday != null  and birthday != ''">#{birthday},</if>
             <if test="consumerStat != null  and consumerStat != ''">#{consumerStat},</if>
             <if test="couponType != null  and couponType != ''">#{couponType},</if>
@@ -83,7 +79,6 @@
         update pro_consumer_info
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null  and name != ''">name = #{name},</if>
-            <if test="identity != null  and identity != ''">identity = #{identity},</if>
             <if test="birthday != null  and birthday != ''">birthday = #{birthday},</if>
             <if test="consumerStat != null  and consumerStat != ''">consumer_stat = #{consumerStat},</if>
             <if test="couponType != null  and couponType != ''">coupon_type = #{couponType},</if>
