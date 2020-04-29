@@ -183,6 +183,7 @@ public class ProStoreController extends BaseController {
             user.setUserId(sysUser.getUserId());
         }
         storeService.updateStoreInfo(user);
+        //TODO 更新回SecurityUtils.getLoginUser().getUser();
         return AjaxResult.success();
     }
 }

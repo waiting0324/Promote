@@ -128,6 +128,7 @@ public class ConsumerController extends BaseController {
             user.setUserId(sysUser.getUserId());
         }
         consumerService.updateConsumerInfo(user);
+        //TODO 更新回SecurityUtils.getLoginUser().getUser();
         return AjaxResult.success();
     }
 
