@@ -122,9 +122,7 @@ public class CouponController extends BaseController {
      */
     @GetMapping("/consumer/{storeId}")
     public AjaxResult getConsumerCoupon(@PathVariable("storeId") Long storeId) {
-        //消費者
-        SysUser sysUser = SecurityUtils.getLoginUser().getUser();
-        return AjaxResult.success("coupons", couponService.getConsumerCoupon(storeId, sysUser));
+        return AjaxResult.success("coupons", couponService.getConsumerCoupon(storeId, SecurityUtils.getLoginUser().getUser()));
     }
 
     /**
@@ -147,10 +145,7 @@ public class CouponController extends BaseController {
         if (StringUtils.isNull(storeId)) {
             return AjaxResult.error("未掃描商家");
         }
-        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        //消費者
-        SysUser sysUser = loginUser.getUser();
-        couponService.postiveScan(couponIds, storeId, sysUser);
+        couponService.postiveScan(couponIds, storeId, SecurityUtils.getLoginUser().getUser());
         return AjaxResult.success();
     }
 
@@ -164,10 +159,7 @@ public class CouponController extends BaseController {
     @PostMapping("/reverseScan")
     public AjaxResult reverseScan(@RequestBody Coupon coupon) {
         String id = coupon.getId();
-        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        //店家
-        SysUser sysUser = loginUser.getUser();
-        couponService.reverseScan(id, sysUser);
+        couponService.reverseScan(id, SecurityUtils.getLoginUser().getUser());
         return AjaxResult.success();
     }
 }

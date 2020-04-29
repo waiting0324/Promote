@@ -5,6 +5,7 @@ import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.utils.MessageUtils;
+import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.common.utils.ip.IpUtils;
@@ -15,6 +16,7 @@ import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.monitor.service.ISysOperLogService;
 import com.promote.project.promote.domain.ProWhitelist;
+import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.promote.service.IProStoreService;
 import com.promote.project.promote.service.IProWhitelistService;
 import com.promote.project.system.domain.SysRole;
@@ -161,40 +163,21 @@ public class ProStoreController extends BaseController {
      */
     @GetMapping("/getStoreInfo")
     public AjaxResult getStoreInfo() {
-        AjaxResult ajax = new AjaxResult();
-        //取得登入者
-        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        if (loginUser != null) {
-            //取得使用者資料
-            SysUser user = loginUser.getUser();
-            if (user != null) {
-                user.setPassword(null);
-                //取得角色
-                List<SysRole> sysRoles = user.getRoles();
-                for (SysRole sysRole : sysRoles) {
-                    if (RoleConstants.STORE_ROLE_ID.equals(sysRole.getRoleId())) {
-                        ajax.put("role", "店家");
-                    }
-                }
-                ajax.put("user", user);
-                return ajax;
-            }
-            return AjaxResult.error(MessageUtils.message("pro.err.data.not.find"));
-        }
-        return AjaxResult.error("非法登入");
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        user.setPassword(null);
+        return AjaxResult.success(user);
     }
 
     /**
      * 修改店家基本資料
      */
     @PutMapping("/updateStoreInfo")
-    public AjaxResult updateStoreInfo(@RequestBody SysUser sysUser) {
-        if (sysUser.getUserId() == null) {
-            return AjaxResult.error("userId需有值");
+    public AjaxResult updateStoreInfo(@RequestBody SysUser user) {
+        if(StringUtils.isNull(user.getUserId())){
+            SysUser sysUser = SecurityUtils.getLoginUser().getUser();
+            user.setUserId(sysUser.getUserId());
         }
-        if (storeService.updateStoreInfo(sysUser) > 0) {
-            return AjaxResult.success();
-        }
-        return AjaxResult.error("修改店家基本資料失敗，請聯絡管理員");
+        storeService.updateStoreInfo(user);
+        return AjaxResult.success();
     }
 }

@@ -1,5 +1,6 @@
 package com.promote.project.promote.service;
 
+import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.system.domain.SysUser;
 
 
@@ -26,5 +27,13 @@ public interface IProStoreService {
      * @param sysUser 使用者資料
      * @return 結果
      */
-    int updateStoreInfo(SysUser sysUser);
+    void updateStoreInfo(SysUser sysUser);
+
+    /**
+     * 取得店家基本資料
+     *
+     * @param userId 商家的user_id
+     * @return 店家基本資料
+     */
+    StoreInfo getStoreInfo(Long userId);
 }
