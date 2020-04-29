@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Map;
 
@@ -57,17 +56,26 @@ public class ProStoreController extends BaseController {
      * @param taxNo 統編/身分證字號
      * @return 結果
      */
-    @GetMapping("/checkWhitelist")
-    public AjaxResult checkWhitelist(@NotBlank String taxNo) {
-        if (StringUtils.isNotEmpty(taxNo)) {
-            List<ProWhitelist> proWhitelist = whitelistService.selectProWhitelistByTaxNo(taxNo);
-            if (proWhitelist != null && proWhitelist.size() > 0) {
-                return AjaxResult.success(proWhitelist);
-            }
-            operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".checkWhitelist(String taxNo)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, MessageUtils.message("pro.err.data.not.find"));
-            return AjaxResult.error(MessageUtils.message("pro.err.data.not.find"));
+    @GetMapping("/whitelist/{taxNo}")
+    public AjaxResult checkWhitelist(@PathVariable("taxNo") String taxNo) {
+
+        // 未傳入參數
+        if (StringUtils.isEmpty(taxNo)) {
+            return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
-        return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
+
+        // 查詢白名單
+        ProWhitelist white = whitelistService.selectProWhitelistByTaxNo(taxNo);
+
+        // 沒有找到
+        if (StringUtils.isNull(white)) {
+            AjaxResult.error(MessageUtils.message("pro.err.data.not.find"));
+        }
+
+        // 寫入記錄檔
+        operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".checkWhitelist(String taxNo)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, MessageUtils.message("pro.err.data.not.find"));
+
+        return AjaxResult.success(white);
     }
 
     /**
@@ -121,11 +129,11 @@ public class ProStoreController extends BaseController {
 
         String userAgent = request.getHeader("User-Agent");
         // User-Agent不以 Mozilla 開頭，則代表是從APP發來的請求
-        Boolean isFromApp = !userAgent.startsWith("Mozilla");
+        Boolean isFromWeb = userAgent.startsWith("Mozilla");
 
         // 圖形驗證碼校驗
         // 不是從APP訪問則需要圖形驗證碼
-        if (!isFromApp) {
+        if (isFromWeb) {
             String uuid = (String) params.get("uuid");
             String verifyKey = Constants.CAPTCHA_CODE_KEY + (StringUtils.isNotEmpty(uuid) ? uuid : "");
             String captcha = redisCache.getCacheObject(verifyKey);
@@ -138,7 +146,7 @@ public class ProStoreController extends BaseController {
             }
         }
 
-        //白名單id
+        // 白名單id
         String whitelistId = (String) params.get("whitelistId");
 
         // 進行註冊
@@ -181,12 +189,12 @@ public class ProStoreController extends BaseController {
      */
     @PutMapping("/updateStoreInfo")
     public AjaxResult updateStoreInfo(@RequestBody SysUser sysUser) {
-            if (sysUser.getUserId() == null) {
-                return AjaxResult.error("userId需有值");
-            }
-            if (storeService.updateStoreInfo(sysUser) > 0) {
-                return AjaxResult.success();
-            }
-            return AjaxResult.error("修改店家基本資料失敗，請聯絡管理員");
+        if (sysUser.getUserId() == null) {
+            return AjaxResult.error("userId需有值");
+        }
+        if (storeService.updateStoreInfo(sysUser) > 0) {
+            return AjaxResult.success();
+        }
+        return AjaxResult.error("修改店家基本資料失敗，請聯絡管理員");
     }
 }

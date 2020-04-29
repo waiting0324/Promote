@@ -180,8 +180,16 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
      * @return 白名單
      */
     @Override
-    public List<ProWhitelist> selectProWhitelistByTaxNo(String taxNo) {
-        return proWhitelistMapper.selectProWhitelistByTaxNo(taxNo);
+    public ProWhitelist selectProWhitelistByTaxNo(String taxNo) {
+        // 查詢白名單
+        List<ProWhitelist> whitelists = proWhitelistMapper.selectProWhitelistByTaxNo(taxNo);
+
+        ProWhitelist white = whitelists.get(0);
+        // 清除關鍵訊息
+        white.setUsername(null);
+        white.setPassword(null);
+
+        return white;
     }
 
 //    private RowHandler createRowHandler(Map<String,Integer> dataMap) {

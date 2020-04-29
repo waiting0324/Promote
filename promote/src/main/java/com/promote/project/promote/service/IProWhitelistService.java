@@ -2,7 +2,6 @@ package com.promote.project.promote.service;
 
 import com.promote.project.promote.domain.ProWhitelist;
 
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -94,5 +93,5 @@ public interface IProWhitelistService
      * @param taxNo 統編/身分證字號
      * @return 白名單
      */
-    public List<ProWhitelist> selectProWhitelistByTaxNo(String taxNo);
+    public ProWhitelist selectProWhitelistByTaxNo(String taxNo);
 }
