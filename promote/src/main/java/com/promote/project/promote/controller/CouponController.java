@@ -120,7 +120,7 @@ public class CouponController extends BaseController {
      * @param storeId 商家的user_id
      * @return 結果
      */
-    @GetMapping("/getConsumerCoupon/{storeId}")
+    @GetMapping("/consumer/{storeId}")
     public AjaxResult getConsumerCoupon(@PathVariable("storeId") Long storeId) {
         return AjaxResult.success("coupons", couponService.getConsumerCoupon(storeId, SecurityUtils.getLoginUser().getUser()));
     }

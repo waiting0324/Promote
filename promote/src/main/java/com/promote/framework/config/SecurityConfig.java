@@ -87,7 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // 對於登入login 驗證碼captchaImage 允許匿名訪問
                 .antMatchers("/**/login", "/captchaImage", "/**/regist",
-                        "/store/checkWhitelist", "/captcha", "/forgetPwd").anonymous()
+                        "/store/whitelist/**", "/captcha", "/forgetPwd").anonymous()
                 .antMatchers(
                         HttpMethod.GET,
                         "/*.html",
