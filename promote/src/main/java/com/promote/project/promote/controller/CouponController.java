@@ -2,18 +2,16 @@ package com.promote.project.promote.controller;
 
 import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.SecurityUtils;
-import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.common.utils.poi.ExcelUtil;
 import com.promote.framework.aspectj.lang.annotation.Log;
 import com.promote.framework.aspectj.lang.enums.BusinessType;
-import com.promote.framework.security.LoginUser;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.framework.web.page.TableDataInfo;
 import com.promote.project.promote.domain.Coupon;
-import com.promote.project.promote.domain.StoreInfo;
+import com.promote.project.promote.domain.CouponConsume;
 import com.promote.project.promote.service.ICouponService;
 import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,24 +126,24 @@ public class CouponController extends BaseController {
     /**
      * 正掃(消費者掃商家)
      *
-     * @param storeInfo 店家基本資料
      * @return 結果
      */
 //    @PreAuthorize("@ss.hasRole('consumer')")
     @PostMapping("/postiveScan")
-    public AjaxResult postiveScan(@RequestBody StoreInfo storeInfo) {
-        Map<String, Object> params = storeInfo.getParams();
+    public AjaxResult postiveScan(@RequestBody Map<String, Object> request) {
+
         //抵用券序號
-        List<String> couponIds = (List<String>) params.get("couponIds");
+        List<String> couponIds = (List<String>) request.get("couponIds");
+
         //商家的user_id
-        Long storeId = storeInfo.getUserId();
+        Long storeId = Long.parseLong((String)request.get("storeId"));
         if (StringUtils.isNull(couponIds) || couponIds.size() == 0) {
             return AjaxResult.error("未輸入抵用券");
         }
         if (StringUtils.isNull(storeId)) {
             return AjaxResult.error("未掃描商家");
         }
-        couponService.postiveScan(couponIds, storeId, SecurityUtils.getLoginUser().getUser());
+        couponService.postiveScan(couponIds, storeId);
         return AjaxResult.success();
     }
 
@@ -161,5 +159,17 @@ public class CouponController extends BaseController {
         String id = coupon.getId();
         couponService.reverseScan(id, SecurityUtils.getLoginUser().getUser());
         return AjaxResult.success();
+    }
+
+
+    /**
+     * 消費紀錄列表
+     *
+     * @return 結果
+     */
+    @GetMapping("/consumption")
+    public AjaxResult consumption() {
+        List<CouponConsume> list = couponService.consumption();
+        return AjaxResult.success(list);
     }
 }

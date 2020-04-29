@@ -42,6 +42,7 @@ import java.util.UUID;
  */
 @Service
 public class CouponServiceImpl implements ICouponService {
+
     @Autowired
     private CouponMapper couponMapper;
 
@@ -262,18 +263,19 @@ public class CouponServiceImpl implements ICouponService {
      *
      * @param couponIds 抵用券序號
      * @param storeId   商家的user_id
-     * @param sysUser   使用者資料
      */
     @Override
     @Transactional
-    public void postiveScan(List<String> couponIds, Long storeId, SysUser sysUser) {
-        Long userId = sysUser.getUserId();
+    public void postiveScan(List<String> couponIds, Long storeId) {
+
+        Long userId = SecurityUtils.getLoginUser().getUser().getUserId();
+
         for (String couponId : couponIds) {
             Coupon coupon = couponMapper.selectCouponById(couponId);
             if (StringUtils.isNull(coupon)) {
                 throw new CustomException(MessageUtils.message("pro.err.coupon.not.exist"));
             }
-            if (coupon.getUserId() != userId) {
+            if (!coupon.getUserId().equals(userId)) {
                 throw new CustomException("該抵用券不屬於當前消費者");
             }
             if ("1".equals(coupon.getIsUsed())) {
@@ -301,6 +303,7 @@ public class CouponServiceImpl implements ICouponService {
             //建立消費記錄檔
             CouponConsume couponConsume = new CouponConsume();
             couponConsume.setCouponId(couponId);
+            couponConsume.setConsumerId(userId);
             couponConsume.setFundType(coupon.getFundType());
             couponConsume.setStoreId(storeId);
             couponConsume.setConsumeTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
@@ -350,6 +353,7 @@ public class CouponServiceImpl implements ICouponService {
         //建立消費記錄檔
         CouponConsume couponConsume = new CouponConsume();
         couponConsume.setCouponId(id);
+        couponConsume.setConsumerId(coupon.getUserId());
         couponConsume.setFundType(coupon.getFundType());
         couponConsume.setStoreId(storeInfo.getUserId());
         couponConsume.setConsumeTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
@@ -359,5 +363,17 @@ public class CouponServiceImpl implements ICouponService {
         if (result < 0) {
             throw new CustomException("新增消費記錄檔失敗，請聯絡管理員");
         }
+    }
+
+    @Override
+    public List<CouponConsume> consumption() {
+
+        // 構建查詢條件
+        CouponConsume couponConsume = new CouponConsume();
+        couponConsume.setConsumerId(SecurityUtils.getLoginUser().getUser().getUserId());
+
+        List<CouponConsume> list = couponConsumeMapper.selectConsumptionList(SecurityUtils.getLoginUser().getUser().getUserId());
+
+        return list;
     }
 }

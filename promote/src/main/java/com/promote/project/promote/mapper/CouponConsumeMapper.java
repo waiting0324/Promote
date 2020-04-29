@@ -59,4 +59,6 @@ public interface CouponConsumeMapper
      * @return 結果
      */
     public int deleteCouponConsumeByIds(String[] couponIds);
+
+    public List<CouponConsume> selectConsumptionList(Long consumerId);
 }
