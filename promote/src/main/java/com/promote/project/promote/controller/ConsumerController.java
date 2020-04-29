@@ -4,10 +4,12 @@ import com.promote.common.constant.Constants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.utils.MessageUtils;
+import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
+import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.promote.service.IConsumerService;
 import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +88,46 @@ public class ConsumerController extends BaseController {
         }
 
         consumerService.regist(user);
+        return AjaxResult.success();
+    }
+
+    /**
+     * 取得消費者基本資料
+     *
+     * @return 結果
+     */
+    @GetMapping("/getConsumerInfo")
+    public AjaxResult getConsumerInfo() {
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        user.setPassword(null);
+        return AjaxResult.success(user);
+    }
+
+    /**
+     * 修改消費者基本資料
+     *
+     * @param user 使用者資料
+     * @return 結果
+     */
+    @PutMapping("/updateConsumerInfo")
+    public AjaxResult updateConsumerInfo(@RequestBody SysUser user) {
+        Map<String, Object> params = user.getParams();
+        //密碼
+        String pwd = user.getPassword();
+        //確認密碼
+        String confirmPwd = (String) params.get("confirmPwd");
+        if (StringUtils.isEmpty(user.getMobile()) || StringUtils.isEmpty(pwd) || StringUtils.isEmpty(confirmPwd)){
+            throw new CustomException(MessageUtils.message("pro.err.columns.not.enter"));
+        }
+        //比對密碼是否一致
+        if(!pwd.equals(confirmPwd)){
+            throw new CustomException(MessageUtils.message("pro.err.pwd.diff"));
+        }
+        if (StringUtils.isNull(user.getUserId())) {
+            SysUser sysUser = SecurityUtils.getLoginUser().getUser();
+            user.setUserId(sysUser.getUserId());
+        }
+        consumerService.updateConsumerInfo(user);
         return AjaxResult.success();
     }
 

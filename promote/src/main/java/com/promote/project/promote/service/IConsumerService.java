@@ -1,5 +1,6 @@
 package com.promote.project.promote.service;
 
+import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.system.domain.SysUser;
 
 import java.util.List;
@@ -22,5 +23,12 @@ public interface IConsumerService {
      * 消費者註冊
      */
     public void regist(SysUser user);
+
+    /**
+     * 修改消費者基本資料
+     *
+     * @param user 使用者資料
+     */
+    void updateConsumerInfo(SysUser user);
 
 }

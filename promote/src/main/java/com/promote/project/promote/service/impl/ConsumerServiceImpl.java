@@ -4,6 +4,7 @@ import com.promote.common.constant.ConsumerConstants;
 import com.promote.common.constant.CouponConstants;
 import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
+import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.project.promote.domain.ConsumerInfo;
@@ -82,7 +83,7 @@ public class ConsumerServiceImpl implements IConsumerService {
         ConsumerInfo consumerInfo = new ConsumerInfo();
         consumerInfo.setUserId(insertUser.getUserId());
         consumerInfo.setName(user.getConsumerInfo().getName());
-        consumerInfo.setIdentity(user.getIdentity());
+//        consumerInfo.setIdentity(user.getIdentity());
         consumerInfo.setBirthday(user.getConsumerInfo().getBirthday());
         // 狀態設為註冊
         consumerInfo.setConsumerStat(ConsumerConstants.STAT_REGISTED);
@@ -104,6 +105,24 @@ public class ConsumerServiceImpl implements IConsumerService {
         result = userRoleMapper.batchUserRole(userRoleList);
         if(result < 0){
             throw new CustomException("註冊失敗，請聯絡管理員");
+        }
+
+    }
+
+    /**
+     * 修改消費者基本資料
+     *
+     * @param user 使用者資料
+     */
+    @Override
+    @Transactional
+    public void updateConsumerInfo(SysUser user) {
+        SysUser updUser = new SysUser();
+        updUser.setUserId(user.getUserId());
+        updUser.setPassword(user.getPassword());
+        updUser.setMobile(user.getMobile());
+        if(userMapper.updateUser(updUser) < 0){
+            throw new CustomException(MessageUtils.message("pro.err.update.consumer.fail"));
         }
 
     }
