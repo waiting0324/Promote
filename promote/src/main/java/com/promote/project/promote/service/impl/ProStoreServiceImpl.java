@@ -4,6 +4,7 @@ import com.promote.common.constant.RoleConstants;
 import com.promote.common.constant.StoreTypeConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.utils.DateUtils;
+import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.project.promote.domain.ProWhitelist;
@@ -145,13 +146,40 @@ public class ProStoreServiceImpl implements IProStoreService {
     /**
      * 修改店家基本資料
      *
-     * @param sysUser 使用者資料
+     * @param user 使用者資料
      * @return 結果
      */
+    @Transactional
     @Override
-    public int updateStoreInfo(SysUser sysUser) {
-        return userMapper.updateUser(sysUser);
+    public void updateStoreInfo(SysUser user) {
+        //更新店家基本資料
+        Long userId = user.getUserId();
+        StoreInfo storeInfoTmp = user.getStoreInfo();
+        StoreInfo storeInfo = new StoreInfo();
+        storeInfo.setUserId(userId);
+        storeInfo.setName(storeInfoTmp.getName());
+        storeInfo.setAddress(storeInfoTmp.getAddress());
+        int result = storeInfoMapper.updateStoreInfo(storeInfo);
+        if(result < 0){
+            throw new CustomException(MessageUtils.message("pro.err.update.store.fail"));
+        }
+        SysUser insertUser = new SysUser();
+        insertUser.setUserId(userId);
+        insertUser.setMobile(user.getMobile());
+        result = userMapper.updateUser(insertUser);
+        if(result < 0){
+            throw new CustomException(MessageUtils.message("pro.err.update.store.fail"));
+        }
     }
 
-
+    /**
+     * 取得店家基本資料
+     *
+     * @param userId 商家的user_id
+     * @return 店家基本資料
+     */
+    @Override
+    public StoreInfo getStoreInfo(Long userId) {
+        return storeInfoMapper.selectStoreInfoById(userId);
+    }
 }

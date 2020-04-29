@@ -94,43 +94,4 @@ public class ProWhitelistController extends BaseController
     {
         return toAjax(proWhitelistService.deleteProWhitelistByIds(ids));
     }
-
-    /**
-     * 將旅店資料匯入白名單
-     */
-//    @PostMapping("/hostel")
-//    public AjaxResult importHosteData(MultipartFile file) throws Exception{
-//        long startTime = System.currentTimeMillis();
-//        if(file != null){
-//            String Filename = file.getOriginalFilename();
-//            if(Filename.indexOf(".xls") > -1){
-//                String version = Filename.indexOf(".xlsx") > -1 ? "2007" : "2003";
-//                proWhitelistService.importHostelData(file.getInputStream(),version);
-//            }
-//            long endTime = System.currentTimeMillis();
-//            System.out.println("共花了：" + (endTime-startTime) + "豪秒");
-//            return AjaxResult.success();
-//        }
-//        return AjaxResult.error("找不到上傳資料");
-//    }
-
-
-    /**
-     * 將商家資料匯入白名單
-     */
-//    @PostMapping("/store")
-//    public AjaxResult importStoreData(MultipartFile file) throws Exception{
-//        long startTime = System.currentTimeMillis();
-//        if(file != null){
-//            String Filename = file.getOriginalFilename();
-//            if(Filename.indexOf(".xls") > -1){
-//                String version = Filename.indexOf(".xlsx") > -1 ? "2007" : "2003";
-//                proWhitelistService.importStoreData(file.getInputStream(),version);
-//            }
-//            long endTime = System.currentTimeMillis();
-//            System.out.println("共花了：" + (endTime-startTime) + "豪秒");
-//            return AjaxResult.success();
-//        }
-//        return AjaxResult.error("找不到上傳資料");
-//    }
 }
