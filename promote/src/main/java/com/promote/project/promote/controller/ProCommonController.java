@@ -4,18 +4,20 @@ import com.promote.common.constant.Constants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.utils.MessageUtils;
+import com.promote.common.utils.SecurityUtils;
+import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
+import com.promote.framework.security.LoginUser;
 import com.promote.framework.security.service.SysLoginService;
+import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.service.ICommonService;
 import com.promote.project.system.domain.SysUser;
+import com.promote.project.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +37,12 @@ public class ProCommonController extends BaseController {
 
     @Autowired
     private SysLoginService loginService;
+
+    @Autowired
+    private ISysUserService userService;
+
+    @Autowired
+    private TokenService tokenService;
 
     @Autowired
     private RedisCache redisCache;
@@ -125,5 +133,36 @@ public class ProCommonController extends BaseController {
         return toAjax(commonService.forgetPwd(code, username, newPwd));
     }
 
+    /**
+     * 變更密碼
+     * @return 結果
+     */
+    @PutMapping("/resetPwd")
+    public AjaxResult resetPwd(@RequestBody Map<String, String> request)
+    {
+
+        String oldPassword = request.get("oldPwd");
+        String newPassword = request.get("newPwd");
+
+        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        String userName = loginUser.getUsername();
+        String password = loginUser.getPassword();
+        if (!SecurityUtils.matchesPassword(oldPassword, password))
+        {
+            return AjaxResult.error("修改密碼失敗，舊密碼錯誤");
+        }
+        if (SecurityUtils.matchesPassword(newPassword, password))
+        {
+            return AjaxResult.error("新密碼不能與舊密碼相同");
+        }
+        if (userService.resetUserPwd(userName, SecurityUtils.encryptPassword(newPassword)) > 0)
+        {
+            // 更新快取使用者密碼
+            loginUser.getUser().setPassword(SecurityUtils.encryptPassword(newPassword));
+            tokenService.setLoginUser(loginUser);
+            return AjaxResult.success();
+        }
+        return AjaxResult.error("修改密碼異常，請聯絡管理員");
+    }
 
 }
