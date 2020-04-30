@@ -27,10 +27,9 @@ public interface ICommonService {
      * 資料遮罩
      *
      * @param sysUser    使用者資料
-     * @param extraField 額外需遮罩的欄位
      * @return 遮罩後的使用者資料
      */
-    SysUser hidePersonalInfo(SysUser sysUser, String[] extraField);
+    SysUser hidePersonalInfo(SysUser sysUser);
 
     /**
      * 發送驗證碼

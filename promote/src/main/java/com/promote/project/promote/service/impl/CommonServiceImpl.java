@@ -12,6 +12,7 @@ import com.promote.framework.manager.AsyncManager;
 import com.promote.framework.manager.factory.AsyncFactory;
 import com.promote.framework.redis.RedisCache;
 import com.promote.project.promote.domain.ConsumerInfo;
+import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.promote.mapper.ConsumerInfoMapper;
 import com.promote.project.promote.service.ICommonService;
 import com.promote.project.system.domain.SysUser;
@@ -72,66 +73,96 @@ public class CommonServiceImpl implements ICommonService {
     /**
      * 資料遮罩
      *
-     * @param sysUser    使用者資料
-     * @param extraField 額外需遮罩的欄位
+     * @param sysUser 使用者資料
      * @return 遮罩後的使用者資料
      */
     @Override
-    public SysUser hidePersonalInfo(SysUser sysUser, String... extraField) {
+    public SysUser hidePersonalInfo(SysUser sysUser) {
         if (sysUser != null) {
-            Class c = SysUser.class;
-            //預設需遮罩的欄位
-            String[] defaultField = {"identity", "birthday", "userName", "password", "name", "email", "phonenumber", "bankAccount", "bankAccountName"};
-            //所有需遮罩的欄位
-            List<String> columnNameList = Arrays.asList(defaultField);
-            for (String fieldName : extraField) {
-                columnNameList.add(fieldName);
-            }
-            for (int i = 0; i < columnNameList.size(); i++) {
-                String columnName = columnNameList.get(i);
-                String getMethodName = new StringBuilder("get").append(columnName.substring(0, 1).toUpperCase()).append(columnName.substring(1)).toString();
-                String setMethodName = new StringBuilder("set").append(columnName.substring(0, 1).toUpperCase()).append(columnName.substring(1)).toString();
-                try {
-                    //取得白名單Model的getter方法
-                    Method getMethod = c.getMethod(getMethodName);
-                    if (getMethod != null) {
-                        Object tempValue = getMethod.invoke(sysUser);
-                        String oriValue = StringUtils.isNotNull(tempValue) ? tempValue.toString() : null;
-                        if (oriValue != null) {
-                            StringBuilder tempResult = new StringBuilder("");
-                            //把值用*遮罩起來
-                            for (int j = 0; j < oriValue.length(); j++) {
-                                char unit = oriValue.charAt(j);
-                                if (unit != ' ' && unit != '-' && unit != '/' && unit != '@') {
-                                    if (j % 2 == 0) {
-                                        tempResult.append("*");
-                                        continue;
-                                    }
-                                }
-                                tempResult.append(unit);
+            //消費者基本資料
+            ConsumerInfo consumerInfo = sysUser.getConsumerInfo();
+            if (consumerInfo != null) {
+                //姓名
+                String nameTmp = consumerInfo.getName();
+                if (StringUtils.isNotEmpty(nameTmp)) {
+                    //取第一個字
+                    StringBuilder name = new StringBuilder(nameTmp.substring(0, 1));
+                    int length = nameTmp.length();
+                    //把中間字遮罩
+                    for (int i = 1; i < length; i++) {
+                        if (i == length - 1) {
+                            //最後一個字
+                            if (length == 2) {
+                                //單名 ex.楊過
+                                name.append("○");
+                            } else {
+                                name.append(nameTmp.substring(nameTmp.length() - 1));
                             }
-                            String result = tempResult.toString();
-                            Class fieldType = c.getDeclaredField(columnName).getType();
-                            //取得白名單Model的setter方法
-                            Method setMethod = c.getMethod(setMethodName, fieldType);
-                            //把值放進SysUser
-                            if (setMethod != null) {
-                                String typename = fieldType.getName();
-                                switch (typename) {
-                                    case "java.lang.String":
-                                        setMethod.invoke(sysUser, result);
-                                        break;
-                                    default:
-                                        //其餘類型不處理
-                                }
-                            }
+                            break;
                         }
+                        name.append("○");
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    consumerInfo.setName(name.toString());
+                }
+                //生日
+                String birthdayTmp = consumerInfo.getBirthday();
+                if(StringUtils.isNotEmpty(birthdayTmp)){
+                    StringBuilder birthday = new StringBuilder(birthdayTmp.substring(0, birthdayTmp.length() - 2)).append("**");
+                    consumerInfo.setBirthday(birthday.toString());
                 }
             }
-
+            //身分證字號,統編,居留證號
+            String identityTmp = sysUser.getIdentity();
+            if (StringUtils.isNotEmpty(identityTmp)) {
+                StringBuilder identity = new StringBuilder(identityTmp.substring(0, 3));
+                int length = identityTmp.length() - 6;
+                for (int i = 0; i < length; i++) {
+                    identity.append("*");
+                }
+                identity.append(identityTmp.substring(3 + length));
+                sysUser.setIdentity(identity.toString());
+            }
+            //手機,電話
+            String mobileTmp = sysUser.getMobile();
+            if (StringUtils.isNotEmpty(mobileTmp)) {
+                StringBuilder mobile = new StringBuilder(mobileTmp.substring(0, 4));
+                int length = mobileTmp.length() - 7;
+                for (int i = 0; i < length; i++) {
+                    mobile.append("*");
+                }
+                mobile.append(mobileTmp.substring(4 + length));
+                sysUser.setMobile(mobile.toString());
+            }
+            //店家基本資料
+            StoreInfo storeInfo = sysUser.getStoreInfo();
+            if (storeInfo != null) {
+                //銀行帳號
+                String bankAccountTmp = storeInfo.getBankAccount();
+                if(StringUtils.isNotEmpty(bankAccountTmp)){
+                    StringBuilder bankAccount = new StringBuilder(bankAccountTmp.substring(0, 6)).append("*****").append(bankAccountTmp.substring(11));
+                    storeInfo.setBankAccount(bankAccount.toString());
+                }
+            }
+            //電子郵件
+            String emailTmp = sysUser.getEmail();
+            if (StringUtils.isNotEmpty(emailTmp)) {
+                StringBuilder email = new StringBuilder(emailTmp.substring(0, 2));
+                int index = emailTmp.indexOf("@");
+                for (int i = 0; i < index - 2; i++) {
+                    email.append("*");
+                }
+                email.append(emailTmp.substring(index));
+                sysUser.setEmail(email.toString());
+            }
+            //密碼
+            String passwordTmp = sysUser.getPassword();
+            if(StringUtils.isNotEmpty(passwordTmp)){
+                StringBuilder password = new StringBuilder("");
+                for(int i = 0 ; i < passwordTmp.length(); i++){
+                    password.append("*");
+                }
+                sysUser.setPassword(password.toString());
+            }
         }
         return sysUser;
     }
@@ -193,8 +224,7 @@ public class CommonServiceImpl implements ICommonService {
             // 更新此消費者狀態
             consumerInfo.setConsumerStat(ConsumerConstants.STAT_CONFIRM);
             consumerInfoMapper.updateConsumerInfo(consumerInfo);
-        }
-        else {
+        } else {
             throw new CustomException("驗證方式選擇錯誤");
         }
 
