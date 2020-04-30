@@ -387,17 +387,20 @@ public class CouponServiceImpl implements ICouponService {
 
         Long consumerId = SecurityUtils.getLoginUser().getUser().getUserId();
         List<Coupon> couponList = couponMapper.overviewCoupons(consumerId);
+        List<CouponConsume> couponConsumeList = couponConsumeMapper.selectConsumptionList(consumerId);
 
         if (couponList.isEmpty()) {
             throw new CustomException("您尚未擁有振興券");
         }
 
         // 初始化返回結果
-        List<Map<String, Integer>> result = new ArrayList<>();
+        List<Map<String, Object>> result = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            Map<String, Integer> map = new HashMap<>();
+            Map<String, Object> map = new HashMap<>();
             map.put("consumed", 0);
             map.put("balance", 0);
+            map.put("type", i + "");
+            map.put("consumedCoupons", new ArrayList<>());
             result.add(map);
         }
 
@@ -407,21 +410,30 @@ public class CouponServiceImpl implements ICouponService {
             // 抵用券類型
             Integer storeType = Integer.parseInt(coupon.getStoreType());
             // storeType 類型的抵用券紀錄
-            Map<String, Integer> map = result.get(storeType);
+            Map<String, Object> map = result.get(storeType);
             // 抵用券已使用
             if (CouponConstants.USED.equals(coupon.getIsUsed())) {
                 // 已消費總金額
                 consumed += coupon.getAmount();
                 // storeType 類型的抵用券已消費金額
-                map.put("consumed", (int) (map.get("consumed") + coupon.getAmount()));
+                map.put("consumed", (int) (Integer.parseInt(map.get("consumed").toString()) + coupon.getAmount()));
+                /*List<Coupon> consumedCoupons = (List<Coupon>) map.get("consumedCoupons");
+                consumedCoupons.add(coupon);*/
             }
             // 抵用券未使用
             else {
                 // 可用總餘額
                 balance += coupon.getAmount();
                 // storeType 類型的抵用券總餘額
-                map.put("balance", (int) (map.get("balance") + coupon.getAmount()));
+                map.put("balance", (int) (Integer.parseInt(map.get("balance").toString()) + coupon.getAmount()));
             }
+        }
+
+        // 處理消費紀錄
+        for (CouponConsume couponConsume : couponConsumeList) {
+            int i = Integer.parseInt(couponConsume.getStoreType());
+            List<CouponConsume> consumedCoupons = (List<CouponConsume>)result.get(i).get("consumedCoupons");
+            consumedCoupons.add(couponConsume);
         }
 
         // 處理返回結果
