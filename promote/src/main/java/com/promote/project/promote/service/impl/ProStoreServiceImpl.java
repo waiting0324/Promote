@@ -163,10 +163,13 @@ public class ProStoreServiceImpl implements IProStoreService {
         if(result < 0){
             throw new CustomException(MessageUtils.message("pro.err.update.store.fail"));
         }
-        SysUser insertUser = new SysUser();
-        insertUser.setUserId(userId);
-        insertUser.setMobile(user.getMobile());
-        result = userMapper.updateUser(insertUser);
+        SysUser updUser = new SysUser();
+        updUser.setUserId(userId);
+        String mobile = user.getMobile();
+        if(mobile.indexOf("*") == -1){
+            updUser.setMobile(mobile);
+        }
+        result = userMapper.updateUser(updUser);
         if(result < 0){
             throw new CustomException(MessageUtils.message("pro.err.update.store.fail"));
         }
