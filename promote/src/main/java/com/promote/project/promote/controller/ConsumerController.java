@@ -111,18 +111,28 @@ public class ConsumerController extends BaseController {
      */
     @PutMapping("/updateConsumerInfo")
     public AjaxResult updateConsumerInfo(@RequestBody SysUser user) {
+        //手機
+        String mobile = user.getMobile();
         Map<String, Object> params = user.getParams();
         //密碼
         String pwd = user.getPassword();
         //確認密碼
         String confirmPwd = (String) params.get("confirmPwd");
-        if (StringUtils.isEmpty(user.getMobile()) || StringUtils.isEmpty(pwd) || StringUtils.isEmpty(confirmPwd)){
-            throw new CustomException(MessageUtils.message("pro.err.columns.not.enter"));
+        if(StringUtils.isEmpty(mobile) && StringUtils.isEmpty(pwd) && StringUtils.isEmpty(confirmPwd)){
+            //不變更
+            return AjaxResult.success();
         }
         //比對密碼是否一致
-        if(!pwd.equals(confirmPwd)){
+        if(StringUtils.isNotEmpty(pwd) && StringUtils.isEmpty(confirmPwd)){
             throw new CustomException(MessageUtils.message("pro.err.pwd.diff"));
         }
+        if(StringUtils.isNotEmpty(confirmPwd) && StringUtils.isEmpty(pwd)){
+            throw new CustomException(MessageUtils.message("pro.err.pwd.diff"));
+        }
+        if(StringUtils.isNotEmpty(pwd) && StringUtils.isNotEmpty(confirmPwd) && !pwd.equals(confirmPwd)){
+            throw new CustomException(MessageUtils.message("pro.err.pwd.diff"));
+        }
+
         if (StringUtils.isNull(user.getUserId())) {
             SysUser sysUser = SecurityUtils.getLoginUser().getUser();
             user.setUserId(sysUser.getUserId());
