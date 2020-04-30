@@ -173,10 +173,10 @@ public class ProStoreController extends BaseController {
      */
     @PutMapping("/updateStoreInfo")
     public AjaxResult updateStoreInfo(@RequestBody SysUser user) {
-        if (StringUtils.isEmpty(user.getStoreInfo().getName()) ||
-                StringUtils.isEmpty(user.getStoreInfo().getAddress()) ||
+        if (StringUtils.isEmpty(user.getStoreInfo().getName()) &&
+                StringUtils.isEmpty(user.getStoreInfo().getAddress()) &&
                 StringUtils.isEmpty(user.getMobile())) {
-            return AjaxResult.error(MessageUtils.message("pro.err.columns.not.ente"));
+            return AjaxResult.success();
         }
         if (StringUtils.isNull(user.getUserId())) {
             SysUser sysUser = SecurityUtils.getLoginUser().getUser();

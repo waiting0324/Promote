@@ -46,9 +46,10 @@ public class ProStoreServiceImpl implements IProStoreService {
 
     /**
      * 店家註冊
-     * @param user 商家基本資訊
+     *
+     * @param user         商家基本資訊
      * @param isAgreeTerms
-     * @param whitelistId 白名單ID
+     * @param whitelistId  白名單ID
      */
     @Transactional
     @Override
@@ -157,21 +158,36 @@ public class ProStoreServiceImpl implements IProStoreService {
         StoreInfo storeInfoTmp = user.getStoreInfo();
         StoreInfo storeInfo = new StoreInfo();
         storeInfo.setUserId(userId);
-        storeInfo.setName(storeInfoTmp.getName());
-        storeInfo.setAddress(storeInfoTmp.getAddress());
-        int result = storeInfoMapper.updateStoreInfo(storeInfo);
-        if(result < 0){
-            throw new CustomException(MessageUtils.message("pro.err.update.store.fail"));
+        boolean needUpdate = false;
+        String name = storeInfoTmp.getName();
+        if (StringUtils.isNotEmpty(name)) {
+            needUpdate = true;
+            storeInfo.setName(name);
+        }
+        String address = storeInfoTmp.getAddress();
+        if (StringUtils.isNotEmpty(address)) {
+            needUpdate = true;
+            storeInfo.setAddress(address);
+        }
+        if(needUpdate){
+            int result = storeInfoMapper.updateStoreInfo(storeInfo);
+            if (result < 0) {
+                throw new CustomException(MessageUtils.message("pro.err.update.store.fail"));
+            }
+            needUpdate = false;
         }
         SysUser updUser = new SysUser();
         updUser.setUserId(userId);
         String mobile = user.getMobile();
-        if(mobile.indexOf("*") == -1){
+        if (StringUtils.isNotEmpty(mobile) && mobile.indexOf("*") == -1) {
+            needUpdate = true;
             updUser.setMobile(mobile);
         }
-        result = userMapper.updateUser(updUser);
-        if(result < 0){
-            throw new CustomException(MessageUtils.message("pro.err.update.store.fail"));
+        if(needUpdate){
+            int result = userMapper.updateUser(updUser);
+            if (result < 0) {
+                throw new CustomException(MessageUtils.message("pro.err.update.store.fail"));
+            }
         }
     }
 
