@@ -341,14 +341,6 @@ public class PromoteTask {
         }
     }
 
-    public static void main(String[] args) {
-        Integer span = null;
-        span = StringUtils.isNull(span) ? 0 : 1;
-
-        System.out.println(span);
-
-    }
-
 
     public String getHost() {
         return host;
