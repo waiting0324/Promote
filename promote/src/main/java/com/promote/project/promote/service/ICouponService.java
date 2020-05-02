@@ -6,6 +6,7 @@ import com.promote.project.promote.domain.CouponConsume;
 import com.promote.project.system.domain.SysUser;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 抵用券Service介面
@@ -98,13 +99,24 @@ public interface ICouponService {
 
     /**
      * 查詢當前消費者的消費紀錄
+     *
      * @return 消費紀錄列表
      */
     List<CouponConsume> consumption();
 
     /**
      * 抵用券總攬
+     *
      * @return
      */
     AjaxResult overviewCoupons();
+
+    /**
+     * 取得時間範圍內的消費記錄檔
+     *
+     * @param beginDate 開始時間
+     * @param endDate   結束時間
+     * @return 結果
+     */
+    List<Map<String,Object>> getTotalAmtByStoreId(String beginDate, String endDate);
 }

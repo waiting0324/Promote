@@ -10,6 +10,8 @@ import com.promote.common.utils.StringUtils;
 import com.promote.project.monitor.domain.SysOperLog;
 import com.promote.project.monitor.service.ISysOperLogService;
 import com.promote.project.promote.domain.ProWhitelist;
+import com.promote.project.promote.service.ICouponService;
+import com.promote.project.promote.service.IDailyConsumeService;
 import com.promote.project.promote.service.IProWhitelistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -36,6 +38,12 @@ public class PromoteTask {
 
     @Autowired
     ISysOperLogService operLogServic;
+
+    @Autowired
+    ICouponService couponService;
+
+    @Autowired
+    IDailyConsumeService dailyConsumeService;
 
     // 與FTP相關配置 開始
     private String host;
@@ -73,7 +81,7 @@ public class PromoteTask {
 
         // 循環下載所有檔案
         for (String fileName : files) {
-            ftp.download(remoteDir, fileName, FileUtil.file(localTempDir + "/" +  fileName));
+            ftp.download(remoteDir, fileName, FileUtil.file(localTempDir + "/" + fileName));
         }
 
         // 刪除遠端資料
@@ -138,11 +146,11 @@ public class PromoteTask {
                 pair.put("isSightseeing", 12);
             }
             //根據Excel版本的不同選用不同的方式處理
-            if(path.indexOf(".xlsx") > -1){
+            if (path.indexOf(".xlsx") > -1) {
                 //Excel 2007
                 Excel07SaxReader reader = new Excel07SaxReader(createRowHandler(pair));
                 reader.read(path, 0);
-            }else{
+            } else {
                 //Excel 2003
                 Excel03SaxReader reader = new Excel03SaxReader(createRowHandler(pair));
                 reader.read(path, 0);
@@ -152,8 +160,9 @@ public class PromoteTask {
             if (totalSuccess > 0) {
                 //成功筆數寫log
                 SysOperLog successLog = new SysOperLog();
+                successLog.setTitle("定時任務");
                 successLog.setMethod(mathodName);
-                successLog.setOperatorType(2);
+                successLog.setOperatorType(1);
                 successLog.setOperName("SYSTEM");
                 successLog.setJsonResult("執行" + (isHostel ? "旅宿業者" : "店家") + "白名單匯入- 共成功: " + totalSuccess + "筆");
                 successLog.setOperTime(now);
@@ -162,8 +171,9 @@ public class PromoteTask {
             if (totalFail > 0) {
                 //失敗筆數寫log
                 SysOperLog failLog = new SysOperLog();
+                failLog.setTitle("定時任務");
                 failLog.setMethod(mathodName);
-                failLog.setOperatorType(2);
+                failLog.setOperatorType(1);
                 failLog.setOperName("SYSTEM");
                 failLog.setErrorMsg("執行" + (isHostel ? "旅宿業者" : "店家") + "白名單匯入-共失敗: " + totalFail + "筆");
                 failLog.setOperTime(now);
@@ -174,19 +184,15 @@ public class PromoteTask {
         }
     }
 
-    public static void main(String[] s){
-        System.out.println(String.class.getName());
-    }
-
     private RowHandler createRowHandler(Map<String, Integer> pair) {
         return new RowHandler() {
             @Override
             public void handle(int sheetIndex, int rowIndex, List<Object> rowlist) {
                 //每一列都會呼叫此方法一次
-                try{
+                try {
                     if (rowIndex > 0 && rowlist != null) {
                         String id = rowlist.get(pair.get("id")).toString();
-                        if(StringUtils.isEmpty(id)){
+                        if (StringUtils.isEmpty(id)) {
                             throw new Exception("ID不得為空");
                         }
                         boolean needInsert = false;
@@ -206,7 +212,7 @@ public class PromoteTask {
                         }
                         Integer type = pair.get("type");
                         //根據id及類型去查白名單table,有查到做update,沒查到做insert
-                        ProWhitelist proWhitelist = proWhitelistService.selectProWhitelistByIdType(id,type.toString());
+                        ProWhitelist proWhitelist = proWhitelistService.selectProWhitelistByIdType(id, type.toString());
                         if (proWhitelist == null) {
                             needInsert = true;
                             proWhitelist = new ProWhitelist();
@@ -226,7 +232,7 @@ public class PromoteTask {
                                     Object tempValue = rowlist.get(index);
                                     //設定Excel的值到白名單Model
                                     String value = StringUtils.isNotNull(tempValue) ? tempValue.toString().trim().replaceAll("\\u00A0+", "") : null;
-                                    switch (typeClass.getName()){
+                                    switch (typeClass.getName()) {
                                         case "java.lang.Double":
                                             method.invoke(proWhitelist, StringUtils.isNotNull(value) ? Double.parseDouble(value) : null);
                                             break;
@@ -265,8 +271,9 @@ public class PromoteTask {
                             //新增或更新失敗時寫log
                             totalFail++;
                             SysOperLog failLog = new SysOperLog();
+                            failLog.setTitle("定時任務");
                             failLog.setMethod(PromoteTask.class.getName() + ".dealDiffData(String path)");
-                            failLog.setOperatorType(2);
+                            failLog.setOperatorType(1);
                             failLog.setOperName("SYSTEM");
                             String errMsg = "";
                             if (type == 1) {
@@ -279,13 +286,69 @@ public class PromoteTask {
                             operLogServic.insertOperlog(failLog);
                         }
                     }
-                }catch(Exception e){
+                } catch (Exception e) {
                     //DO NOTHING
 //                    e.printStackTrace();
                 }
             }
         };
     }
+
+    /**
+     * 批次寫入每日消費統計檔
+     *
+     * @param span 增減幾日(ex.1:加1天,-1:減一天)
+     */
+    public void insertDailyConsume(Integer span) {
+        span = StringUtils.isNull(span) ? 0 : span;
+        //當前日期
+        Calendar begin = Calendar.getInstance();
+        begin.add(Calendar.DATE, span);
+        //設定時
+        begin.set(Calendar.HOUR_OF_DAY, 0);
+        //設定分
+        begin.set(Calendar.MINUTE, 0);
+        //設定秒
+        begin.set(Calendar.SECOND, 0);
+        //開始時間
+        String beginDate = DateUtils.parseDateToStr("yyyy-MM-dd HH:mm:ss", begin.getTime());
+        Calendar end = Calendar.getInstance();
+        end.add(Calendar.DATE, span);
+        end.set(Calendar.HOUR_OF_DAY, 23);
+        end.set(Calendar.MINUTE, 59);
+        end.set(Calendar.SECOND, 59);
+        //結束時間
+        String endDate = DateUtils.parseDateToStr("yyyy-MM-dd HH:mm:ss", end.getTime());
+        List<Map<String, Object>> storeTotalAmtList = couponService.getTotalAmtByStoreId(beginDate, endDate);
+        if (StringUtils.isNotNull(storeTotalAmtList) && storeTotalAmtList.size() > 0) {
+            for (Map<String, Object> storeTotalAmtMap : storeTotalAmtList) {
+                Long storeId = (Long) storeTotalAmtMap.get("storeId");
+                Long totalAmt = (Long) storeTotalAmtMap.get("totalAmt");
+                try{
+                    dailyConsumeService.insertDailyConsume(DateUtils.dateTime("yyyy-MM-dd", beginDate),storeId,totalAmt);
+                }catch(Exception e){
+                    SysOperLog failLog = new SysOperLog();
+                    failLog.setTitle("定時任務");
+                    failLog.setBusinessType(1);
+                    failLog.setMethod(PromoteTask.class.getName() + ".insertDailyConsume(Integer span)");
+                    failLog.setOperatorType(1);
+                    failLog.setOperName("SYSTEM");
+                    failLog.setErrorMsg("新增每日消費統計檔失敗- 店家ID:" + storeId);
+                    failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
+                    operLogServic.insertOperlog(failLog);
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Integer span = null;
+        span = StringUtils.isNull(span) ? 0 : 1;
+
+        System.out.println(span);
+
+    }
+
 
     public String getHost() {
         return host;
