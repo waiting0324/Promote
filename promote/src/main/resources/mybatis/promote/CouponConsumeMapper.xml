@@ -14,6 +14,11 @@
         <result property="amount" column="amount"/>
     </resultMap>
 
+    <resultMap type="java.util.Map" id="storeTotalAmt">
+        <result property="totalAmt" column="sum(amount)" javaType="java.lang.Long"/>
+        <result property="storeId" column="store_id" javaType="java.lang.Long"/>
+    </resultMap>
+
     <sql id="selectCouponConsumeVo">
         select coupon_id, consumer_id, fund_type, store_id, store_type, consume_time, amount from pro_coupon_consume
     </sql>
@@ -98,4 +103,13 @@
         </foreach>
     </delete>
 
+    <select id="getTotalAmtByStoreId" resultMap="storeTotalAmt">
+        select
+            sum(amount),
+            store_id
+        from
+            pro_coupon_consume
+        where consume_time &gt;= #{beginDate} and consume_time &lt;= #{endDate}
+        group by store_id
+    </select>
 </mapper>

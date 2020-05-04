@@ -1,8 +1,10 @@
 package com.promote.project.promote.mapper;
 
 import com.promote.project.promote.domain.CouponConsume;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 消費記錄檔Mapper介面
@@ -10,8 +12,7 @@ import java.util.List;
  * @author 6550 劉威廷
  * @date 2020-04-27
  */
-public interface CouponConsumeMapper
-{
+public interface CouponConsumeMapper {
     /**
      * 查詢消費記錄檔
      *
@@ -61,4 +62,14 @@ public interface CouponConsumeMapper
     public int deleteCouponConsumeByIds(String[] couponIds);
 
     public List<CouponConsume> selectConsumptionList(Long consumerId);
+
+    /**
+     * 取得時間範圍內的消費記錄檔
+     *
+     * @param beginDate 開始時間
+     * @param endDate   結束時間
+     * @return 結果
+     */
+    List<Map<String,Object>> getTotalAmtByStoreId(@Param("beginDate") String beginDate, @Param("endDate") String endDate);
+
 }
