@@ -79,7 +79,7 @@ public interface ICouponService {
      * @param sysUser 使用者(消費者)資料
      * @return
      */
-    List<Coupon> getConsumerCoupon(Long storeId, SysUser sysUser);
+    Map getConsumerCoupon(Long storeId, SysUser sysUser);
 
     /**
      * 正掃(消費者掃商家)

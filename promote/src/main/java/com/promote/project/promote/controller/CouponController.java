@@ -120,7 +120,7 @@ public class CouponController extends BaseController {
      */
     @GetMapping("/consumer/{storeId}")
     public AjaxResult getConsumerCoupon(@PathVariable("storeId") Long storeId) {
-        return AjaxResult.success("coupons", couponService.getConsumerCoupon(storeId, SecurityUtils.getLoginUser().getUser()));
+        return AjaxResult.success(couponService.getConsumerCoupon(storeId, SecurityUtils.getLoginUser().getUser()));
     }
 
     /**

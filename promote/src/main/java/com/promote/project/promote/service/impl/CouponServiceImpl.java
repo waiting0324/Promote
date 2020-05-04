@@ -241,19 +241,33 @@ public class CouponServiceImpl implements ICouponService {
      * @return
      */
     @Override
-    public List<Coupon> getConsumerCoupon(Long storeId, SysUser sysUser) {
+    public Map getConsumerCoupon(Long storeId, SysUser sysUser) {
+
         //店家基本資料
         StoreInfo storeInfo = storeInfoMapper.selectStoreInfoById(storeId);
         if (StringUtils.isNull(storeInfo)) {
             throw new CustomException(MessageUtils.message("pro.err.store.not.find"));
         }
+
         //店家類型
         String[] storeTypes = storeInfo.getType().split(",");
         List<Coupon> consumerCouponList = couponMapper.getConsumerCoupon(sysUser.getUserId(), "0", storeTypes);
         if (StringUtils.isNull(consumerCouponList) || consumerCouponList.size() == 0) {
             throw new CustomException("無可使用的抵用券");
         }
-        return consumerCouponList;
+
+
+        Map<String, List> result = new HashMap<>();
+        result.put("0", new ArrayList());
+        result.put("1", new ArrayList());
+        result.put("2", new ArrayList());
+        result.put("3", new ArrayList());
+        for (Coupon coupon : consumerCouponList) {
+            String storeType = coupon.getStoreType();
+            result.get(storeType).add(coupon);
+        }
+
+        return result;
     }
 
     /**
