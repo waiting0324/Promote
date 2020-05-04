@@ -1,7 +1,7 @@
 package com.promote.project.promote.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.promote.common.constant.Constants;
-import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.utils.MessageUtils;
@@ -16,16 +16,14 @@ import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.monitor.service.ISysOperLogService;
 import com.promote.project.promote.domain.ProWhitelist;
-import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.promote.service.IProStoreService;
 import com.promote.project.promote.service.IProWhitelistService;
-import com.promote.project.system.domain.SysRole;
 import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -163,7 +161,8 @@ public class ProStoreController extends BaseController {
      */
     @GetMapping("/getStoreInfo")
     public AjaxResult getStoreInfo() {
-        SysUser user = SecurityUtils.getLoginUser().getUser();
+        String json = JSON.toJSONString(SecurityUtils.getLoginUser().getUser(),true);
+        SysUser user = JSON.parseObject(json, SysUser.class);
         user.setPassword(null);
         return AjaxResult.success(user);
     }
@@ -178,12 +177,7 @@ public class ProStoreController extends BaseController {
                 StringUtils.isEmpty(user.getMobile())) {
             return AjaxResult.success();
         }
-        if (StringUtils.isNull(user.getUserId())) {
-            SysUser sysUser = SecurityUtils.getLoginUser().getUser();
-            user.setUserId(sysUser.getUserId());
-        }
-        storeService.updateStoreInfo(user);
-        //TODO 更新回SecurityUtils.getLoginUser().getUser();
+        tokenService.resetLoginUser(storeService.updateStoreInfo(user));
         return AjaxResult.success();
     }
 }

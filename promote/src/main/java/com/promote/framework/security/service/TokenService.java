@@ -233,4 +233,13 @@ public class TokenService {
         redisCache.setCacheObject(key, value, timeout, timeUnit);
     }
 
+    /**
+     * 重設LoginUser
+     *
+     * @param loginUser
+     */
+    public void resetLoginUser(LoginUser loginUser){
+        String userKey = getTokenKey(loginUser.getToken());
+        redisCache.setCacheObject(userKey, loginUser);
+    }
 }

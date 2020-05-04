@@ -7,6 +7,8 @@ import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
+import com.promote.framework.redis.RedisCache;
+import com.promote.framework.security.LoginUser;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
@@ -42,6 +44,9 @@ public class ProStoreServiceImpl implements IProStoreService {
 
     @Autowired
     private StoreInfoMapper storeInfoMapper;
+
+    @Autowired
+    private RedisCache redisCache;
 
 
     /**
@@ -152,12 +157,17 @@ public class ProStoreServiceImpl implements IProStoreService {
      */
     @Transactional
     @Override
-    public void updateStoreInfo(SysUser user) {
-        //更新店家基本資料
-        Long userId = user.getUserId();
+    public LoginUser updateStoreInfo(SysUser user) {
+//        Long userId = user.getUserId();
+
+//        StoreInfo storeInfo = new StoreInfo();
+//        storeInfo.setUserId(userId);
+        //從Spring Security取得的資料
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        SysUser updUser = loginUser.getUser();
+        StoreInfo storeInfo = updUser.getStoreInfo();
+        //從Client端取得的資料
         StoreInfo storeInfoTmp = user.getStoreInfo();
-        StoreInfo storeInfo = new StoreInfo();
-        storeInfo.setUserId(userId);
         boolean needUpdate = false;
         String name = storeInfoTmp.getName();
         if (StringUtils.isNotEmpty(name)) {
@@ -170,25 +180,28 @@ public class ProStoreServiceImpl implements IProStoreService {
             storeInfo.setAddress(address);
         }
         if(needUpdate){
+            //更新店家基本資料
             int result = storeInfoMapper.updateStoreInfo(storeInfo);
             if (result < 0) {
                 throw new CustomException(MessageUtils.message("pro.err.update.store.fail"));
             }
             needUpdate = false;
         }
-        SysUser updUser = new SysUser();
-        updUser.setUserId(userId);
+//        SysUser updUser = new SysUser();
+//        updUser.setUserId(userId);
         String mobile = user.getMobile();
         if (StringUtils.isNotEmpty(mobile) && mobile.indexOf("*") == -1) {
             needUpdate = true;
             updUser.setMobile(mobile);
         }
         if(needUpdate){
+            //更新使用者資料
             int result = userMapper.updateUser(updUser);
             if (result < 0) {
                 throw new CustomException(MessageUtils.message("pro.err.update.store.fail"));
             }
         }
+        return loginUser;
     }
 
     /**

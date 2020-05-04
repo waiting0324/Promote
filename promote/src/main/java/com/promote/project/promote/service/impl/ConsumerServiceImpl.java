@@ -7,7 +7,9 @@ import com.promote.common.exception.CustomException;
 import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
+import com.promote.framework.security.LoginUser;
 import com.promote.project.promote.domain.ConsumerInfo;
+import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.promote.mapper.ConsumerInfoMapper;
 import com.promote.project.promote.service.IConsumerService;
 import com.promote.project.system.domain.SysUser;
@@ -116,9 +118,11 @@ public class ConsumerServiceImpl implements IConsumerService {
      */
     @Override
     @Transactional
-    public void updateConsumerInfo(SysUser user) {
-        SysUser updUser = new SysUser();
-        updUser.setUserId(user.getUserId());
+    public LoginUser updateConsumerInfo(SysUser user) {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        SysUser updUser = loginUser.getUser();
+//        SysUser updUser = new SysUser();
+//        updUser.setUserId(user.getUserId());
         boolean needUpdate = false;
         String password = user.getPassword();
         if(StringUtils.isNotEmpty(password)){
@@ -136,5 +140,6 @@ public class ConsumerServiceImpl implements IConsumerService {
                 throw new CustomException(MessageUtils.message("pro.err.update.consumer.fail"));
             }
         }
+        return loginUser;
     }
 }
