@@ -83,7 +83,7 @@
             <if test="status != null  and status != ''">#{status},</if>
             <if test="pwNeedReset != null  and pwNeedReset != ''">#{pwNeedReset},</if>
             <if test="updateTime != null ">#{updateTime},</if>
-            sysdate()
+            sysdate
         </trim>
     </insert>
 

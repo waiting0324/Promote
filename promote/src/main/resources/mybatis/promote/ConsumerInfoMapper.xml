@@ -71,7 +71,7 @@
             <if test="issueDate != null ">#{issueDate},</if>
             <if test="receiveDate != null ">#{receiveDate},</if>
             <if test="updateTime != null ">#{updateTime},</if>
-            sysdate()
+            sysdate
         </trim>
     </insert>
 
@@ -87,7 +87,7 @@
             <if test="hostelId != null ">hostel_id = #{hostelId},</if>
             <if test="issueDate != null ">issue_date = #{issueDate},</if>
             <if test="receiveDate != null ">receive_date = #{receiveDate},</if>
-            update_time = sysdate()
+            update_time = sysdate
         </trim>
         where user_id = #{userId}
     </update>

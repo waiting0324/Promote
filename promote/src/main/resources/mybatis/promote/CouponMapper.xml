@@ -73,7 +73,7 @@
             store_type, amount, create_time) values
         <foreach item="item" collection="list" separator=",">
             (#{item.id}, #{item.fundType}, #{item.userId}, #{item.isUsed}, #{item.issueDate},
-            #{item.storeType},#{item.amount},sysdate())
+            #{item.storeType},#{item.amount},sysdate)
         </foreach>
     </insert>
 

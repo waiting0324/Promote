@@ -164,7 +164,7 @@
         <if test="status != null and status != ''">#{status},</if>
         <if test="createBy != null and createBy != ''">#{createBy},</if>
         <if test="remark != null and remark != ''">#{remark},</if>
-        sysdate()
+            sysdate
         )
     </insert>
 
@@ -181,7 +181,7 @@
             <if test="loginDate != null">login_date = #{loginDate},</if>
             <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
             <if test="remark != null">remark = #{remark},</if>
-            update_time = sysdate()
+            update_time = sysdate
         </set>
         where user_id = #{userId}
     </update>
@@ -229,9 +229,9 @@
         <if test="whitelistPhone != null and whitelistPhone != ''">#{whitelistPhone},</if>
         <if test="whitelistAddr != null and whitelistAddr != ''">#{whitelistAddr},</if>
         'Trade-Van',
-        sysdate(),
+        sysdate,
         'Trade-Van',
-        sysdate()
+        sysdate
         )
     </insert>
 

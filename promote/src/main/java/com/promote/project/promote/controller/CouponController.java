@@ -30,6 +30,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/coupon")
 public class CouponController extends BaseController {
+
     @Autowired
     private ICouponService couponService;
 
