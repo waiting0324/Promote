@@ -45,14 +45,6 @@ public interface SysUserMapper {
     public int insertUser(SysUser user);
 
     /**
-     * 修改使用者資訊
-     *
-     * @param user 使用者資訊
-     * @return 結果
-     */
-    public int updateUser(SysUser user);
-
-    /**
      * 修改使用者頭像
      *
      * @param username 使用者名稱
@@ -60,6 +52,14 @@ public interface SysUserMapper {
      * @return 結果
      */
     public int updateUserAvatar(@Param("username") String username, @Param("avatar") String avatar);
+
+    /**
+     * 修改使用者資訊
+     *
+     * @param user 使用者資訊
+     * @return 結果
+     */
+    public int updateUser(SysUser user);
 
     /**
      * 重置使用者密碼

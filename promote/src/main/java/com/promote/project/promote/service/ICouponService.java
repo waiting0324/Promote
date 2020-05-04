@@ -6,6 +6,7 @@ import com.promote.project.promote.domain.CouponConsume;
 import com.promote.project.system.domain.SysUser;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 抵用券Service介面
@@ -78,7 +79,7 @@ public interface ICouponService {
      * @param sysUser 使用者(消費者)資料
      * @return
      */
-    List<Coupon> getConsumerCoupon(Long storeId, SysUser sysUser);
+    Map getConsumerCoupon(Long storeId, SysUser sysUser);
 
     /**
      * 正掃(消費者掃商家)
