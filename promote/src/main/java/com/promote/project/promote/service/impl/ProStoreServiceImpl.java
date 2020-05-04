@@ -153,22 +153,31 @@ public class ProStoreServiceImpl implements IProStoreService {
     @Transactional
     @Override
     public void updateStoreInfo(SysUser user) {
+
         //更新店家基本資料
         Long userId = user.getUserId();
         StoreInfo storeInfoTmp = user.getStoreInfo();
         StoreInfo storeInfo = new StoreInfo();
         storeInfo.setUserId(userId);
+
+        // 判斷是否需要更新
         boolean needUpdate = false;
+
+        // 商家名稱
         String name = storeInfoTmp.getName();
         if (StringUtils.isNotEmpty(name)) {
             needUpdate = true;
             storeInfo.setName(name);
         }
+
+        // 商家地址
         String address = storeInfoTmp.getAddress();
         if (StringUtils.isNotEmpty(address)) {
             needUpdate = true;
             storeInfo.setAddress(address);
         }
+
+        // 更新商家基本資訊
         if(needUpdate){
             int result = storeInfoMapper.updateStoreInfo(storeInfo);
             if (result < 0) {
@@ -176,13 +185,18 @@ public class ProStoreServiceImpl implements IProStoreService {
             }
             needUpdate = false;
         }
+
         SysUser updUser = new SysUser();
         updUser.setUserId(userId);
+
+        // 商家手機
         String mobile = user.getMobile();
-        if (StringUtils.isNotEmpty(mobile) && mobile.indexOf("*") == -1) {
+        if (StringUtils.isNotEmpty(mobile) && !mobile.contains("*")) {
             needUpdate = true;
             updUser.setMobile(mobile);
         }
+
+        // 更新使用者資訊
         if(needUpdate){
             int result = userMapper.updateUser(updUser);
             if (result < 0) {

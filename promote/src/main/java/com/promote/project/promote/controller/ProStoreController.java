@@ -1,7 +1,6 @@
 package com.promote.project.promote.controller;
 
 import com.promote.common.constant.Constants;
-import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.utils.MessageUtils;
@@ -10,22 +9,18 @@ import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.common.utils.ip.IpUtils;
 import com.promote.framework.redis.RedisCache;
-import com.promote.framework.security.LoginUser;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.monitor.service.ISysOperLogService;
 import com.promote.project.promote.domain.ProWhitelist;
-import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.promote.service.IProStoreService;
 import com.promote.project.promote.service.IProWhitelistService;
-import com.promote.project.system.domain.SysRole;
 import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -161,17 +156,17 @@ public class ProStoreController extends BaseController {
     /**
      * 取得店家基本資料
      */
-    @GetMapping("/getStoreInfo")
+    /*@GetMapping("/getStoreInfo")
     public AjaxResult getStoreInfo() {
         SysUser user = SecurityUtils.getLoginUser().getUser();
         user.setPassword(null);
         return AjaxResult.success(user);
-    }
+    }*/
 
     /**
      * 修改店家基本資料
      */
-    @PutMapping("/updateStoreInfo")
+    @PutMapping("/info")
     public AjaxResult updateStoreInfo(@RequestBody SysUser user) {
         if (StringUtils.isEmpty(user.getStoreInfo().getName()) &&
                 StringUtils.isEmpty(user.getStoreInfo().getAddress()) &&
