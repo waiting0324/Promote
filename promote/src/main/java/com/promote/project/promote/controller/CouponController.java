@@ -107,7 +107,8 @@ public class CouponController extends BaseController {
         Map<String, Object> params = user.getParams();
         String code = (String) params.get("code");
         if (StringUtils.isNotEmpty(code)) {
-            return toAjax(couponService.sendCoupon(user, code));
+            couponService.sendCoupon(user, code);
+            return AjaxResult.success();
         }
         return AjaxResult.error(MessageUtils.message("user.jcaptcha.not.exist"));
     }

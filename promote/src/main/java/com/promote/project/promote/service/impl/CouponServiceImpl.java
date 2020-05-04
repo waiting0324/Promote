@@ -12,6 +12,7 @@ import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
+import com.promote.framework.security.LoginUser;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.promote.domain.Coupon;
@@ -130,7 +131,7 @@ public class CouponServiceImpl implements ICouponService {
 
     @Override
     @Transactional
-    public int sendCoupon(SysUser user, String code) {
+    public void sendCoupon(SysUser user, String code) {
 
         // 檢驗是否有消費者ID
         if (StringUtils.isNull(user.getUsername())) {
@@ -139,6 +140,10 @@ public class CouponServiceImpl implements ICouponService {
         Long userId = userMapper.selectUserByUsername(user.getUsername()).getUserId();
         String consumerStat = consumerInfoMapper.selectConsumerInfoById(userId).getConsumerStat();
 
+        //校驗是否有輸入手機號碼
+        if (StringUtils.isEmpty(user.getMobile())) {
+            throw new CustomException("未輸入手機號碼");
+        }
         // 校驗是否可以發抵用券
         if (ConsumerConstants.STAT_REGISTED.equals(consumerStat)) {
             throw new CustomException("請先發送OTP驗證碼給該消費者");
@@ -219,7 +224,6 @@ public class CouponServiceImpl implements ICouponService {
             throw new CustomException("消費者選擇發放抵用券的方式不正確");
         }
 
-
         // 處理要更新的消費者資料
         ConsumerInfo consumerInfo = new ConsumerInfo();
         consumerInfo.setUserId(userId);
@@ -229,8 +233,18 @@ public class CouponServiceImpl implements ICouponService {
         consumerInfo.setIssueDate(nowDate);
 
         // 更新消費者資料
-        return consumerInfoMapper.updateConsumerInfo(consumerInfo);
-
+        int result = consumerInfoMapper.updateConsumerInfo(consumerInfo);
+        if(result < 0){
+            throw new CustomException(MessageUtils.message("pro.err.update.consumer.fail"));
+        }
+        //更新使用者資料
+        SysUser updUser = new SysUser();
+        updUser.setUserId(userId);
+        updUser.setMobile(user.getMobile());
+        result = userMapper.updateUser(updUser);
+        if(result < 0){
+            throw new CustomException(MessageUtils.message("pro.err.update.user.fail"));
+        }
     }
 
     /**

@@ -70,7 +70,7 @@ public interface ICouponService {
      * @param code 簡訊驗證碼
      * @return
      */
-    int sendCoupon(SysUser user, String code);
+    void sendCoupon(SysUser user, String code);
 
     /**
      * 消費者取得可使用的抵用券
