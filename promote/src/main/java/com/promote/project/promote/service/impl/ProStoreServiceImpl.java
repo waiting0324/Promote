@@ -196,6 +196,18 @@ public class ProStoreServiceImpl implements IProStoreService {
             updUser.setMobile(mobile);
         }
 
+        // 密碼
+        String password = user.getPassword();
+        String confirmPwd = (String) user.getParams().get("confirmPwd");
+        if (StringUtils.isNotEmpty(password) && StringUtils.isNotEmpty(confirmPwd)) {
+
+            if (!password.equals(confirmPwd)) {
+                throw new CustomException("兩次輸入的密碼不一致");
+            }
+            // 設置密碼屬性
+            updUser.setPassword(SecurityUtils.encryptPassword(password));
+        }
+
         // 更新使用者資訊
         if(needUpdate){
             int result = userMapper.updateUser(updUser);
@@ -203,6 +215,7 @@ public class ProStoreServiceImpl implements IProStoreService {
                 throw new CustomException(MessageUtils.message("pro.err.update.store.fail"));
             }
         }
+
     }
 
     /**
