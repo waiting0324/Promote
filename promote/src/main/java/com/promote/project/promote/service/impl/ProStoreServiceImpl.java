@@ -155,7 +155,7 @@ public class ProStoreServiceImpl implements IProStoreService {
     public void updateStoreInfo(SysUser user) {
 
         //更新店家基本資料
-        Long userId = user.getUserId();
+        Long userId = SecurityUtils.getLoginUser().getUser().getUserId();
         StoreInfo storeInfoTmp = user.getStoreInfo();
         StoreInfo storeInfo = new StoreInfo();
         storeInfo.setUserId(userId);

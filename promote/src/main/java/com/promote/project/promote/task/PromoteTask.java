@@ -77,24 +77,35 @@ public class PromoteTask {
         Ftp ftp = new Ftp(host, port, username, password, Charset.forName("utf8"));
 
         // 讀取檔案列表
-        List<String> files = ftp.ls(remoteDir);
+        List<String> hostelFiles = ftp.ls(remoteDir + "hostellist");
+        List<String> storeFiles = ftp.ls(remoteDir + "storelist");
 
         // 循環下載所有檔案
-        for (String fileName : files) {
-            ftp.download(remoteDir, fileName, FileUtil.file(localTempDir + "/" + fileName));
+        for (String fileName : hostelFiles) {
+            ftp.download(remoteDir, fileName, FileUtil.file(localTempDir + "/hostellist/" + fileName));
+        }
+        for (String fileName : storeFiles) {
+            ftp.download(remoteDir, fileName, FileUtil.file(localTempDir + "/storelist/" + fileName));
         }
 
         // 刪除遠端資料
-        ftp.delDir(remoteDir);
+        //ftp.delDir(remoteDir);
 
         // 關閉FTP連接
         ftp.close();
 
         // 開始將Excel檔案匯入資料庫
-        File[] localFiles = FileUtil.ls(localTempDir);
+
+        // 旅宿業者
+        File[] localFiles = FileUtil.ls(localTempDir + "/hostellist");
         for (File localFile : localFiles) {
-            // TODO 需要做商家或旅宿業者判斷
-            this.dealDiffData(localFile.getPath());
+            this.dealDiffData(localFile.getPath(), true);
+        }
+
+        // 商家
+        localFiles = FileUtil.ls(localTempDir + "/storelist");
+        for (File localFile : localFiles) {
+            this.dealDiffData(localFile.getPath(), false);
         }
 
         // 將檔案從臨時資料夾轉到儲存資料夾
@@ -110,11 +121,11 @@ public class PromoteTask {
      *
      * @param path 白名單路徑
      */
-    public void dealDiffData(String path) {
+    public void dealDiffData(String path, Boolean isHostel) {
         if (StringUtils.isNotEmpty(path)) {
             Map<String, Integer> pair = new HashMap<String, Integer>();
+
             //白名單Field與白名單Excel映射關係
-            boolean isHostel = true;  //TODO 待確認檔名規則
             if (isHostel) {
                 //旅宿
                 pair.put("id", 0);
