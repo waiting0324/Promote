@@ -101,13 +101,13 @@ public class ConsumerController extends BaseController {
      *
      * @return 結果
      */
-    @GetMapping("/getConsumerInfo")
+    /*@GetMapping("/info")
     public AjaxResult getConsumerInfo() {
         String json = JSON.toJSONString(SecurityUtils.getLoginUser().getUser(),true);
         SysUser user = JSON.parseObject(json, SysUser.class);
         user.setPassword(null);
         return AjaxResult.success(user);
-    }
+    }*/
 
     /**
      * 修改消費者基本資料

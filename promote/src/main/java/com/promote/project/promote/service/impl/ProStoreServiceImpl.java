@@ -170,11 +170,15 @@ public class ProStoreServiceImpl implements IProStoreService {
         StoreInfo storeInfoTmp = user.getStoreInfo();
         //判斷是否要做update
         boolean needUpdate = false;
+
+        // 商家名稱
         String name = storeInfoTmp.getName();
         if (StringUtils.isNotEmpty(name)) {
             needUpdate = true;
             storeInfo.setName(name);
         }
+
+        // 商家地址
         String address = storeInfoTmp.getAddress();
         if (StringUtils.isNotEmpty(address)) {
             needUpdate = true;
@@ -189,11 +193,25 @@ public class ProStoreServiceImpl implements IProStoreService {
             needUpdate = false;
         }
         String mobile = user.getMobile();
-        if (StringUtils.isNotEmpty(mobile) && mobile.indexOf("*") == -1) {
+        if (StringUtils.isNotEmpty(mobile) && !mobile.contains("*")) {
             needUpdate = true;
             updUser.setMobile(mobile);
         }
-        if (needUpdate) {
+        // 密碼
+        String password = user.getPassword();
+        String confirmPwd = (String) user.getParams().get("confirmPwd");
+        if (StringUtils.isNotEmpty(password) && StringUtils.isNotEmpty(confirmPwd)) {
+
+            if (!password.equals(confirmPwd)) {
+                throw new CustomException("兩次輸入的密碼不一致");
+            }
+            needUpdate = true;
+            // 設置密碼屬性
+            updUser.setPassword(SecurityUtils.encryptPassword(password));
+        }
+
+        // 更新使用者資訊
+        if(needUpdate){
             //更新使用者資料
             int result = userMapper.updateUser(updUser);
             if (result < 0) {
@@ -287,5 +305,4 @@ public class ProStoreServiceImpl implements IProStoreService {
         }
         return weekDay;
     }
-
 }

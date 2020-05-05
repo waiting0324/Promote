@@ -1,5 +1,6 @@
 package com.promote.project.promote.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.promote.framework.aspectj.lang.annotation.Excel;
 import com.promote.framework.web.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -54,6 +55,7 @@ public class ConsumerInfo extends BaseEntity
     private Long hostelId;
 
     /** 抵用券發放時間 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Excel(name = "抵用券發放時間", width = 30, dateFormat = "yyyy-MM-dd")
     private Date issueDate;
 

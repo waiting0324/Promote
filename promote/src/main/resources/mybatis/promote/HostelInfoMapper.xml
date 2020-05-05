@@ -67,7 +67,7 @@
             <if test="isAgreeTerms != null  and isAgreeTerms != ''">#{isAgreeTerms},</if>
             <if test="pwNeedReset != null  and pwNeedReset != ''">#{pwNeedReset},</if>
             <if test="updateTime != null ">#{updateTime},</if>
-            sysdate()
+            sysdate
         </trim>
     </insert>
 

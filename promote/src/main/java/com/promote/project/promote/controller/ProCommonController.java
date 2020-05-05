@@ -165,4 +165,17 @@ public class ProCommonController extends BaseController {
         return AjaxResult.error("修改密碼異常，請聯絡管理員");
     }
 
+
+    /**
+     * 取得 消費者、商家 基本資料
+     *
+     * @return 結果
+     */
+    @GetMapping("/user/info")
+    public AjaxResult getUserInfo() {
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        user.setPassword(null);
+        return AjaxResult.success(user);
+    }
+
 }

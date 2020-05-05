@@ -157,18 +157,19 @@ public class ProStoreController extends BaseController {
     /**
      * 取得店家基本資料
      */
-    @GetMapping("/getStoreInfo")
+    /*@GetMapping("/getStoreInfo")
     public AjaxResult getStoreInfo() {
         String json = JSON.toJSONString(SecurityUtils.getLoginUser().getUser(), true);
         SysUser user = JSON.parseObject(json, SysUser.class);
+        SysUser user = SecurityUtils.getLoginUser().getUser();
         user.setPassword(null);
         return AjaxResult.success(user);
-    }
+    }*/
 
     /**
      * 修改店家基本資料
      */
-    @PutMapping("/updateStoreInfo")
+    @PutMapping("/info")
     public AjaxResult updateStoreInfo(@RequestBody SysUser user) {
         if (StringUtils.isEmpty(user.getStoreInfo().getName()) &&
                 StringUtils.isEmpty(user.getStoreInfo().getAddress()) &&
