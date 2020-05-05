@@ -14,6 +14,11 @@
         <result property="couponAmount"    column="coupon_amount"    />
     </resultMap>
 
+    <resultMap type="java.util.Map" id="storeTotalAmt">
+        <result property="totalAmt" column="sum(coupon_amount)" javaType="java.lang.Long"/>
+        <result property="storeId" column="store_id" javaType="java.lang.Long"/>
+    </resultMap>
+
     <sql id="selectDailyConsumeVo">
         select id, consume_time, fund_type, store_id, consume_amount, store_type, coupon_amount from pro_daily_consume
     </sql>
@@ -81,4 +86,17 @@
         </foreach>
     </delete>
 
+    <select id="getRecdMoneyByTimeSpan" resultMap="DailyConsumeResult">
+        <include refid="selectDailyConsumeVo"/>
+        where store_id=#{storeId} and consume_time &gt;= #{beginDate} and consume_time &lt;= #{endDate} order by consume_time desc;
+    </select>
+
+    <select id="getTotalAmtByStoreId" parameterType="java.lang.Long" resultMap="storeTotalAmt">
+        select
+            sum(coupon_amount),
+            store_id
+        from pro_daily_consume
+        where store_id=#{storeId}
+        group by store_id;
+    </select>
 </mapper>

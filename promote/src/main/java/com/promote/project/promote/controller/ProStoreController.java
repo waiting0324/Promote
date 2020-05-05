@@ -10,7 +10,6 @@ import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.common.utils.ip.IpUtils;
 import com.promote.framework.redis.RedisCache;
-import com.promote.framework.security.LoginUser;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
@@ -23,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -161,7 +159,7 @@ public class ProStoreController extends BaseController {
      */
     @GetMapping("/getStoreInfo")
     public AjaxResult getStoreInfo() {
-        String json = JSON.toJSONString(SecurityUtils.getLoginUser().getUser(),true);
+        String json = JSON.toJSONString(SecurityUtils.getLoginUser().getUser(), true);
         SysUser user = JSON.parseObject(json, SysUser.class);
         user.setPassword(null);
         return AjaxResult.success(user);
@@ -179,5 +177,15 @@ public class ProStoreController extends BaseController {
         }
         tokenService.resetLoginUser(storeService.updateStoreInfo(user));
         return AjaxResult.success();
+    }
+
+    /**
+     * 當前商家收款紀錄總覽
+     */
+    @GetMapping("/getRecdMoneyRecord")
+    public AjaxResult getRecdMoneyRecord(){
+        AjaxResult ajax = new AjaxResult();
+        ajax.putAll(storeService.getRecdMoneyRecord());
+        return ajax;
     }
 }

@@ -1,8 +1,10 @@
 package com.promote.project.promote.mapper;
 
 import com.promote.project.promote.domain.DailyConsume;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 每日消費統計檔Mapper介面
@@ -10,8 +12,7 @@ import java.util.List;
  * @author 6550 劉威廷
  * @date 2020-04-27
  */
-public interface DailyConsumeMapper
-{
+public interface DailyConsumeMapper {
     /**
      * 查詢每日消費統計檔
      *
@@ -59,4 +60,22 @@ public interface DailyConsumeMapper
      * @return 結果
      */
     public int deleteDailyConsumeByIds(Long[] ids);
+
+    /**
+     * 當前商家收款紀錄總覽
+     *
+     * @param storeId 店家id
+     * @param beginDate 開始日期
+     * @param endDate 結束日期
+     * @return 結果
+     */
+    public List<DailyConsume> getRecdMoneyByTimeSpan(@Param("storeId") Long storeId, @Param("beginDate") String beginDate, @Param("endDate") String endDate);
+
+    /**
+     * 根據店家id取得總收入金額
+     *
+     * @param storeId 店家id
+     * @return 結果
+     */
+    public Map<String,Object> getTotalAmtByStoreId(Long storeId);
 }

@@ -20,7 +20,7 @@ public interface IDailyConsumeService {
      *
      * @param consumeTime  使用日期
      * @param storeId      商家的user_id
-     * @param couponAmount 抵用券金額
+     * @param couponAmount 抵用券總金額
      * @return 結果
      */
     public int insertDailyConsume(Date consumeTime, Long storeId, Long couponAmount);
