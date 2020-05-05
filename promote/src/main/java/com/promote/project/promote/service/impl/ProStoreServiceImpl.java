@@ -248,7 +248,7 @@ public class ProStoreServiceImpl implements IProStoreService {
             Long storeId = storeInfo.getUserId();
             String[] weeks = {"(一)", "(二)", "(三)", "(四)", "(五)", "(六)", "(日)"};
             //取今天是星期幾
-            int weekDay = this.getWeekDay(null);
+            int weekDay = getWeekDay(null);
             Calendar begin = Calendar.getInstance();
             Calendar end = Calendar.getInstance();
             //換算開始日期
