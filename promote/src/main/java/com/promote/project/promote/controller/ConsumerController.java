@@ -1,5 +1,6 @@
 package com.promote.project.promote.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.promote.common.constant.Constants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
@@ -7,6 +8,7 @@ import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
+import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.domain.ConsumerInfo;
@@ -34,6 +36,9 @@ public class ConsumerController extends BaseController {
 
     @Autowired
     private RedisCache redisCache;
+
+    @Autowired
+    private TokenService tokenService;
 
     @PreAuthorize("@ss.hasRole('hostel')")
     @GetMapping("/identity/{identity}")
@@ -98,7 +103,8 @@ public class ConsumerController extends BaseController {
      */
     /*@GetMapping("/info")
     public AjaxResult getConsumerInfo() {
-        SysUser user = SecurityUtils.getLoginUser().getUser();
+        String json = JSON.toJSONString(SecurityUtils.getLoginUser().getUser(),true);
+        SysUser user = JSON.parseObject(json, SysUser.class);
         user.setPassword(null);
         return AjaxResult.success(user);
     }*/
@@ -137,8 +143,7 @@ public class ConsumerController extends BaseController {
             SysUser sysUser = SecurityUtils.getLoginUser().getUser();
             user.setUserId(sysUser.getUserId());
         }
-        consumerService.updateConsumerInfo(user);
-        //TODO 更新回SecurityUtils.getLoginUser().getUser();
+        tokenService.resetLoginUser( consumerService.updateConsumerInfo(user));
         return AjaxResult.success();
     }
 

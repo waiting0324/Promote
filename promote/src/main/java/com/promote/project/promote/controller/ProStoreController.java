@@ -1,5 +1,6 @@
 package com.promote.project.promote.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.promote.common.constant.Constants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -173,12 +175,7 @@ public class ProStoreController extends BaseController {
                 StringUtils.isEmpty(user.getMobile())) {
             return AjaxResult.success();
         }
-        if (StringUtils.isNull(user.getUserId())) {
-            SysUser sysUser = SecurityUtils.getLoginUser().getUser();
-            user.setUserId(sysUser.getUserId());
-        }
-        storeService.updateStoreInfo(user);
-        //TODO 更新回SecurityUtils.getLoginUser().getUser();
+        tokenService.resetLoginUser(storeService.updateStoreInfo(user));
         return AjaxResult.success();
     }
 }

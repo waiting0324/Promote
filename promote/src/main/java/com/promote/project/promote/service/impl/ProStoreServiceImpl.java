@@ -43,6 +43,9 @@ public class ProStoreServiceImpl implements IProStoreService {
     @Autowired
     private StoreInfoMapper storeInfoMapper;
 
+    @Autowired
+    private RedisCache redisCache;
+
 
     /**
      * 店家註冊
@@ -152,15 +155,17 @@ public class ProStoreServiceImpl implements IProStoreService {
      */
     @Transactional
     @Override
-    public void updateStoreInfo(SysUser user) {
+    public LoginUser updateStoreInfo(SysUser user) {
+//        Long userId = user.getUserId();
 
-        //更新店家基本資料
-        Long userId = SecurityUtils.getLoginUser().getUser().getUserId();
+//        StoreInfo storeInfo = new StoreInfo();
+//        storeInfo.setUserId(userId);
+        //從Spring Security取得的資料
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        SysUser updUser = loginUser.getUser();
+        StoreInfo storeInfo = updUser.getStoreInfo();
+        //從Client端取得的資料
         StoreInfo storeInfoTmp = user.getStoreInfo();
-        StoreInfo storeInfo = new StoreInfo();
-        storeInfo.setUserId(userId);
-
-        // 判斷是否需要更新
         boolean needUpdate = false;
 
         // 商家名稱
@@ -176,20 +181,16 @@ public class ProStoreServiceImpl implements IProStoreService {
             needUpdate = true;
             storeInfo.setAddress(address);
         }
-
-        // 更新商家基本資訊
         if(needUpdate){
+            //更新店家基本資料
             int result = storeInfoMapper.updateStoreInfo(storeInfo);
             if (result < 0) {
                 throw new CustomException(MessageUtils.message("pro.err.update.store.fail"));
             }
             needUpdate = false;
         }
-
-        SysUser updUser = new SysUser();
-        updUser.setUserId(userId);
-
-        // 商家手機
+//        SysUser updUser = new SysUser();
+//        updUser.setUserId(userId);
         String mobile = user.getMobile();
         if (StringUtils.isNotEmpty(mobile) && !mobile.contains("*")) {
             needUpdate = true;
@@ -210,12 +211,13 @@ public class ProStoreServiceImpl implements IProStoreService {
 
         // 更新使用者資訊
         if(needUpdate){
+            //更新使用者資料
             int result = userMapper.updateUser(updUser);
             if (result < 0) {
                 throw new CustomException(MessageUtils.message("pro.err.update.store.fail"));
             }
         }
-
+        return loginUser;
     }
 
     /**

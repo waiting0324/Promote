@@ -1,5 +1,6 @@
 package com.promote.project.promote.service;
 
+import com.promote.framework.security.LoginUser;
 import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.system.domain.SysUser;
 
@@ -27,7 +28,7 @@ public interface IProStoreService {
      * @param sysUser 使用者資料
      * @return 結果
      */
-    void updateStoreInfo(SysUser sysUser);
+    LoginUser updateStoreInfo(SysUser sysUser);
 
     /**
      * 取得店家基本資料
