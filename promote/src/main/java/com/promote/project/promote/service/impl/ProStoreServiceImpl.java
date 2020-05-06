@@ -73,7 +73,7 @@ public class ProStoreServiceImpl implements IProStoreService {
         if (StringUtils.isNull(white)) {
             throw new CustomException("白名單內並無此店家");
         }
-        if (user.getIdentity().equals(white.getTaxNo())) {
+        if (!user.getIdentity().equals(white.getTaxNo())) {
             throw new CustomException("填寫的統編與白名單資料不一致");
         }
 

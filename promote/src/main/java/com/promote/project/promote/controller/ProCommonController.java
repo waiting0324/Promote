@@ -94,9 +94,13 @@ public class ProCommonController extends BaseController {
         }
 
         AjaxResult ajax = AjaxResult.success();
+
         // 生成令牌
-        String token = loginService.login(user.getUsername(), user.getPassword(), "", "");
+        LoginUser loginUser = loginService.login(user.getUsername(), user.getPassword(), "", "");
+        String token = tokenService.createToken(loginUser);
         ajax.put(Constants.TOKEN, token);
+        ajax.put("role", loginUser.getUser().getRoles().get(0).getRoleKey());
+
         return ajax;
     }
 

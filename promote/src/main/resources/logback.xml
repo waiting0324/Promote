@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <!-- 日誌存放路徑 -->
-	<property name="log.path" value="/home/ruoyi/logs" />
+	<!--日誌存放路徑-->
+	<property name="log.path" value="/home" />
     <!-- 日誌輸出格式 -->
 	<property name="log.pattern" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n" />
 
@@ -13,63 +13,63 @@
 	</appender>
 	
 	<!-- 系統日誌輸出 -->
-	<appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	<!--<appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
 	    <file>${log.path}/sys-info.log</file>
-        <!-- 迴圈政策：基於時間建立日誌檔案 -->
+        &lt;!&ndash; 迴圈政策：基於時間建立日誌檔案 &ndash;&gt;
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- 日誌檔名格式 -->
+            &lt;!&ndash; 日誌檔名格式 &ndash;&gt;
 			<fileNamePattern>${log.path}/sys-info.%d{yyyy-MM-dd}.log</fileNamePattern>
-			<!-- 日誌最大的歷史 60天 -->
+			&lt;!&ndash; 日誌最大的歷史 60天 &ndash;&gt;
 			<maxHistory>60</maxHistory>
 		</rollingPolicy>
 		<encoder>
 			<pattern>${log.pattern}</pattern>
 		</encoder>
 		<filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <!-- 過濾的級別 -->
+            &lt;!&ndash; 過濾的級別 &ndash;&gt;
             <level>INFO</level>
-            <!-- 匹配時的操作：接收（記錄） -->
+            &lt;!&ndash; 匹配時的操作：接收（記錄） &ndash;&gt;
             <onMatch>ACCEPT</onMatch>
-            <!-- 不匹配時的操作：拒絕（不記錄） -->
+            &lt;!&ndash; 不匹配時的操作：拒絕（不記錄） &ndash;&gt;
             <onMismatch>DENY</onMismatch>
         </filter>
 	</appender>
 	
 	<appender name="file_error" class="ch.qos.logback.core.rolling.RollingFileAppender">
 	    <file>${log.path}/sys-error.log</file>
-        <!-- 迴圈政策：基於時間建立日誌檔案 -->
+        &lt;!&ndash; 迴圈政策：基於時間建立日誌檔案 &ndash;&gt;
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- 日誌檔名格式 -->
+            &lt;!&ndash; 日誌檔名格式 &ndash;&gt;
             <fileNamePattern>${log.path}/sys-error.%d{yyyy-MM-dd}.log</fileNamePattern>
-			<!-- 日誌最大的歷史 60天 -->
+			&lt;!&ndash; 日誌最大的歷史 60天 &ndash;&gt;
 			<maxHistory>60</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>${log.pattern}</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <!-- 過濾的級別 -->
+            &lt;!&ndash; 過濾的級別 &ndash;&gt;
             <level>ERROR</level>
-			<!-- 匹配時的操作：接收（記錄） -->
+			&lt;!&ndash; 匹配時的操作：接收（記錄） &ndash;&gt;
             <onMatch>ACCEPT</onMatch>
-			<!-- 不匹配時的操作：拒絕（不記錄） -->
+			&lt;!&ndash; 不匹配時的操作：拒絕（不記錄） &ndash;&gt;
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
 	
-	<!-- 使用者訪問日誌輸出  -->
+	&lt;!&ndash; 使用者訪問日誌輸出  &ndash;&gt;
     <appender name="sys-user" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${log.path}/sys-user.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- 按天回滾 daily -->
+            &lt;!&ndash; 按天回滾 daily &ndash;&gt;
             <fileNamePattern>${log.path}/sys-user.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- 日誌最大的歷史 60天 -->
+            &lt;!&ndash; 日誌最大的歷史 60天 &ndash;&gt;
             <maxHistory>60</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>${log.pattern}</pattern>
         </encoder>
-    </appender>
+    </appender>-->
 	
 	<!-- 系統模組日誌級別控制  -->
 	<logger name="com.promote" level="info" />
@@ -81,13 +81,13 @@
 	</root>
 	
 	<!--系統操作日誌-->
-    <root level="info">
+    <!--<root level="info">
         <appender-ref ref="file_info" />
         <appender-ref ref="file_error" />
-    </root>
+    </root>-->
 	
 	<!--系統使用者操作日誌-->
-    <logger name="sys-user" level="info">
+    <!--<logger name="sys-user" level="info">
         <appender-ref ref="sys-user"/>
-    </logger>
+    </logger>-->
 </configuration> 

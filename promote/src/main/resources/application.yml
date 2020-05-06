@@ -9,11 +9,11 @@ promote:
   # 例項演示開關
   demoEnabled: true
   # 檔案路徑 示例（ Windows配置D:/promote/uploadPath，Linux配置 /home/promote/uploadPath）
-  profile: D:/promote/uploadPath
+  profile: /home/promote/uploadPath
   # 獲取ip地址開關
   addressEnabled: true
 
-  jndiName: java:/MySqlDS
+  jndiName: java:/PRECPool
 
 # 開發環境配置
 server:
@@ -59,9 +59,9 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: localhost
+    host: 10.89.16.82
     # 埠，預設為6379
-    port: 6379
+    port: 30001
     # 密碼
     password: 
     # 連線超時時間
@@ -97,7 +97,7 @@ mybatis:
 
 # PageHelper分頁外掛
 pagehelper: 
-  helperDialect: mysql
+  helperDialect: DB2
   reasonable: true
   supportMethodsArguments: true
   params: count=countSql 

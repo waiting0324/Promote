@@ -37,7 +37,7 @@ public class DruidConfig
     @ConfigurationProperties("spring.datasource.druid.master")
     public DataSource masterDataSource(DruidProperties druidProperties)
     {
-       /* JndiDataSourceLookup lookup = new JndiDataSourceLookup();
+      /*  JndiDataSourceLookup lookup = new JndiDataSourceLookup();
         lookup.setResourceRef(true);
         DataSource dataSource = lookup.getDataSource(jndiName);
         return dataSource;*/

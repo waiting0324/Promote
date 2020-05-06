@@ -1,14 +1,10 @@
 package com.promote.project.promote.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.promote.common.constant.Constants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.utils.MessageUtils;
-import com.promote.common.utils.SecurityUtils;
-import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
-import com.promote.common.utils.ip.IpUtils;
 import com.promote.framework.redis.RedisCache;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
@@ -71,7 +67,7 @@ public class ProStoreController extends BaseController {
         }
 
         // 寫入記錄檔
-        operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".checkWhitelist(String taxNo)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, MessageUtils.message("pro.err.data.not.find"));
+        //operLogService.insertOperlog("白名單", null, null, ProStoreController.class.getName() + ".checkWhitelist(String taxNo)", ServletUtils.getRequest().getMethod(), null, null, null, ServletUtils.getRequest().getRequestURI(), IpUtils.getIpAddr(ServletUtils.getRequest()), null, null, null, 1, MessageUtils.message("pro.err.data.not.find"));
 
         return AjaxResult.success(white);
     }
