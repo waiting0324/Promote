@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.promote.project.promote.mapper.HotelWhitelistMapper">
+
+    <resultMap type="HotelWhitelist" id="HotelWhitelistResult">
+        <result property="dataId"    column="data_id"    />
+        <result property="status"    column="status"    />
+        <result property="name"    column="name"    />
+        <result property="grade"    column="grade"    />
+        <result property="add"    column="add"    />
+        <result property="zipCode"    column="zipcode"    />
+        <result property="tel"    column="tel"    />
+        <result property="fax"    column="fax"    />
+        <result property="gov"    column="gov"    />
+        <result property="webSite"    column="website"    />
+        <result property="px"    column="px"    />
+        <result property="py"    column="py"    />
+        <result property="type"    column="class"    />
+        <result property="map"    column="map"    />
+        <result property="spec"    column="spec"    />
+        <result property="serviceInfo"    column="serviceinfo"    />
+        <result property="parkingInfo"    column="parkinginfo"    />
+        <result property="changeTime"    column="changetime"    />
+        <result property="taiwanStayReferenceUrl"    column="taiwanstayreferenceURL"    />
+        <result property="totalNumberOfRooms"    column="totalnumberofrooms"    />
+        <result property="lowestPrice"    column="lowestprice"    />
+        <result property="ceilingPrice"    column="ceilingprice"    />
+        <result property="unifiedBusinessNo"    column="unifiedbusinessno"    />
+        <result property="taiwanHost"    column="taiwanhost"    />
+        <result property="region"    column="region"    />
+        <result property="town"    column="town"    />
+        <result property="hotelHomeId"    column="hotelhomeid"    />
+        <result property="industryEmail"    column="industryemail"    />
+        <result property="totalNumberOfPeople"    column="totalnumberofpeople"    />
+        <result property="accessibilityRooms"    column="accessibilityrooms"    />
+        <result property="publicToilets"    column="publictoilets"    />
+        <result property="liftingEquipment"    column="liftingequipment"    />
+        <result property="parkingSpace"    column="parkingspace"    />
+        <result property="markNumber"    column="marknumber"    />
+        <result property="markNumberText"    column="marknumbertext"    />
+        <result property="firstUserName"    column="firstusername"    />
+        <result property="firstPassword"    column="firstpassword"    />
+    </resultMap>
+
+    <sql id="selectHotelWhitelistVo">
+        select data_id,status,name,grade,add,zipcode,tel,fax,gov,website,px,py,class,map,spec,serviceinfo,parkinginfo,changetime,taiwanstayreferenceURL,totalnumberofrooms,lowestprice,ceilingprice,unifiedbusinessno,taiwanhost,region,town,hotelhomeid,industryemail,totalnumberofpeople,accessibilityrooms,publictoilets,liftingequipment,parkingspace,marknumber,marknumbertext,firstusername,firstpassword from hotel_whitelist
+    </sql>
+
+    <select id="getHotelWhitelistById" parameterType="String" resultMap="HotelWhitelistResult">
+        <include refid="selectHotelWhitelistVo"/>
+        where data_id=#{dataId}
+    </select>
+
+    <insert id="insertHotelWhitelist" parameterType="HotelWhitelist">
+        insert into hotel_whitelist
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="dataId != null  and dataId != ''">data_id,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="grade != null  and grade != ''">grade,</if>
+            <if test="add != null and add != ''">add,</if>
+            <if test="zipCode != null  and zipCode != ''">zipcode,</if>
+            <if test="tel != null  and tel != ''">tel,</if>
+            <if test="fax != null and fax != ''">fax,</if>
+            <if test="gov != null and gov != ''">gov,</if>
+            <if test="webSite != null and webSite != ''">website,</if>
+            <if test="px != null  and px != ''">px,</if>
+            <if test="py != null  and py != ''">py,</if>
+            <if test="type != null and type != ''">class,</if>
+            <if test="map != null  and map != ''">map,</if>
+            <if test="spec != null and spec != ''">spec,</if>
+            <if test="serviceInfo != null  and serviceInfo != ''">serviceinfo,</if>
+            <if test="parkingInfo != null  and parkingInfo != ''">parkinginfo,</if>
+            <if test="changeTime != null and changeTime != ''">changetime,</if>
+            <if test="taiwanStayReferenceUrl != null and taiwanStayReferenceUrl != ''">taiwanstayreferenceURL,</if>
+            <if test="totalNumberOfRooms != null and totalNumberOfRooms != ''">totalnumberofrooms,</if>
+            <if test="lowestPrice != null  and lowestPrice != ''">lowestprice,</if>
+            <if test="ceilingPrice != null  and ceilingPrice != ''">ceilingprice,</if>
+            <if test="unifiedBusinessNo != null and unifiedBusinessNo != ''">unifiedbusinessno,</if>
+            <if test="taiwanHost != null  and taiwanHost != ''">taiwanhost,</if>
+            <if test="region != null and region != ''">region,</if>
+            <if test="town != null  and town != ''">town,</if>
+            <if test="hotelHomeId != null  and hotelHomeId != ''">hotelhomeid,</if>
+            <if test="industryEmail != null and industryEmail != ''">industryemail,</if>
+            <if test="totalNumberOfPeople != null and totalNumberOfPeople != ''">totalnumberofpeople,</if>
+            <if test="accessibilityRooms != null and accessibilityRooms != ''">accessibilityrooms,</if>
+            <if test="publicToilets != null  and publicToilets != ''">publictoilets,</if>
+            <if test="liftingEquipment != null  and liftingEquipment != ''">liftingequipment,</if>
+            <if test="parkingSpace != null and parkingSpace != ''">parkingspace,</if>
+            <if test="markNumber != null  and markNumber != ''">marknumber,</if>
+            <if test="markNumberText != null and markNumberText != ''">marknumbertext,</if>
+            <if test="firstUserName != null  and firstUserName != ''">firstusername,</if>
+            <if test="firstPassword != null  and firstPassword != ''">firstpassword,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="dataId != null  and dataId != ''">#{dataId},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="grade != null  and grade != ''">#{grade},</if>
+            <if test="add != null and add != ''">#{add},</if>
+            <if test="zipCode != null  and zipCode != ''">#{zipCode},</if>
+            <if test="tel != null  and tel != ''">#{tel},</if>
+            <if test="fax != null and fax != ''">#{fax},</if>
+            <if test="gov != null and gov != ''">#{gov},</if>
+            <if test="webSite != null and webSite != ''">#{webSite},</if>
+            <if test="px != null  and px != ''">#{px},</if>
+            <if test="py != null  and py != ''">#{py},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="map != null  and map != ''">#{map},</if>
+            <if test="spec != null and spec != ''">#{spec},</if>
+            <if test="serviceInfo != null  and serviceInfo != ''">#{serviceInfo},</if>
+            <if test="parkingInfo != null  and parkingInfo != ''">#{parkingInfo},</if>
+            <if test="changeTime != null and changeTime != ''">#{changeTime},</if>
+            <if test="taiwanStayReferenceUrl != null and taiwanStayReferenceUrl != ''">#{taiwanStayReferenceUrl},</if>
+            <if test="totalNumberOfRooms != null and totalNumberOfRooms != ''">#{totalNumberOfRooms},</if>
+            <if test="lowestPrice != null  and lowestPrice != ''">#{lowestPrice},</if>
+            <if test="ceilingPrice != null  and ceilingPrice != ''">#{ceilingPrice},</if>
+            <if test="unifiedBusinessNo != null and unifiedBusinessNo != ''">#{unifiedBusinessNo},</if>
+            <if test="taiwanHost != null  and taiwanHost != ''">#{taiwanHost},</if>
+            <if test="region != null and region != ''">#{region},</if>
+            <if test="town != null  and town != ''">#{town},</if>
+            <if test="hotelHomeId != null  and hotelHomeId != ''">#{hotelHomeId},</if>
+            <if test="industryEmail != null and industryEmail != ''">#{industryEmail},</if>
+            <if test="totalNumberOfPeople != null and totalNumberOfPeople != ''">#{totalNumberOfPeople},</if>
+            <if test="accessibilityRooms != null and accessibilityRooms != ''">#{accessibilityRooms},</if>
+            <if test="publicToilets != null  and publicToilets != ''">#{publicToilets},</if>
+            <if test="liftingEquipment != null  and liftingEquipment != ''">#{liftingEquipment},</if>
+            <if test="parkingSpace != null and parkingSpace != ''">#{parkingSpace},</if>
+            <if test="markNumber != null  and markNumber != ''">#{markNumber},</if>
+            <if test="markNumberText != null and markNumberText != ''">#{markNumberText},</if>
+            <if test="firstUserName != null  and firstUserName != ''">#{firstUserName},</if>
+            <if test="firstPassword != null  and firstPassword != ''">#{firstPassword},</if>
+        </trim>
+    </insert>
+
+    <update id="updateHotelWhitelist" parameterType="HotelWhitelist">
+        update hotel_whitelist
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="grade != null  and grade != ''">grade = #{grade},</if>
+            <if test="add != null and add != ''">add = #{add},</if>
+            <if test="zipCode != null  and zipCode != ''">zipcode = #{zipCode},</if>
+            <if test="tel != null  and tel != ''">tel = #{tel},</if>
+            <if test="fax != null and fax != ''">fax = #{fax},</if>
+            <if test="gov != null and gov != ''">gov = #{gov},</if>
+            <if test="webSite != null and webSite != ''">website = #{webSite},</if>
+            <if test="px != null  and px != ''">px = #{px},</if>
+            <if test="py != null  and py != ''">py = #{py},</if>
+            <if test="type != null and type != ''">class = #{type},</if>
+            <if test="map != null  and map != ''">map = #{map},</if>
+            <if test="spec != null and spec != ''">spec = #{spec},</if>
+            <if test="serviceInfo != null  and serviceInfo != ''">serviceinfo = #{serviceInfo},</if>
+            <if test="parkingInfo != null  and parkingInfo != ''">parkinginfo = #{parkingInfo},</if>
+            <if test="changeTime != null and changeTime != ''">changetime = #{changeTime},</if>
+            <if test="taiwanStayReferenceUrl != null and taiwanStayReferenceUrl != ''">taiwanstayreferenceURL = #{taiwanStayReferenceUrl},</if>
+            <if test="totalNumberOfRooms != null and totalNumberOfRooms != ''">totalnumberofrooms = #{totalNumberOfRooms},</if>
+            <if test="lowestPrice != null  and lowestPrice != ''">lowestprice = #{lowestPrice},</if>
+            <if test="ceilingPrice != null  and ceilingPrice != ''">ceilingprice = #{ceilingPrice},</if>
+            <if test="unifiedBusinessNo != null and unifiedBusinessNo != ''">unifiedbusinessno = #{unifiedBusinessNo},</if>
+            <if test="taiwanHost != null  and taiwanHost != ''">taiwanhost = #{taiwanHost},</if>
+            <if test="region != null and region != ''">region = #{region},</if>
+            <if test="town != null  and town != ''">town = #{town},</if>
+            <if test="hotelHomeId != null  and hotelHomeId != ''">hotelhomeid = #{hotelHomeId},</if>
+            <if test="industryEmail != null and industryEmail != ''">industryemail = #{industryEmail},</if>
+            <if test="totalNumberOfPeople != null and totalNumberOfPeople != ''">totalnumberofpeople = #{totalNumberOfPeople},</if>
+            <if test="accessibilityRooms != null and accessibilityRooms != ''">accessibilityrooms = #{accessibilityRooms},</if>
+            <if test="publicToilets != null  and publicToilets != ''">publictoilets = #{publicToilets},</if>
+            <if test="liftingEquipment != null  and liftingEquipment != ''">liftingequipment = #{liftingEquipment},</if>
+            <if test="parkingSpace != null and parkingSpace != ''">parkingspace = #{parkingSpace},</if>
+            <if test="markNumber != null  and markNumber != ''">marknumber = #{markNumber},</if>
+            <if test="markNumberText != null and markNumberText != ''">marknumbertext = #{markNumberText},</if>
+            <if test="firstUserName != null  and firstUserName != ''">firstusername = #{firstUserName},</if>
+            <if test="firstPassword != null  and firstPassword != ''">firstpassword = #{firstPassword},</if>
+        </trim>
+        where data_id = #{dataId}
+    </update>
+
+</mapper>

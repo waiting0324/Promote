@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.promote.project.promote.mapper.StoreWhitelistMapper">
+
+    <resultMap type="StoreWhitelist" id="StoreWhitelistResult">
+        <result property="storeUid"    column="store_uid"    />
+        <result property="storeName"    column="store_name"    />
+        <result property="taxNo"    column="tax_no"    />
+        <result property="businessName"    column="business_name"    />
+        <result property="address"    column="address"    />
+        <result property="zipCode"    column="zipcode"    />
+        <result property="owner"    column="owner"    />
+        <result property="phoneNumber"    column="phone_number"    />
+        <result property="nMarket"    column="n_market"    />
+        <result property="tMarket"    column="t_market"    />
+        <result property="marketName"    column="market_name"    />
+        <result property="foodBeverage"    column="foodbeverage"    />
+        <result property="cultural"    column="cultural"    />
+        <result property="sightSeeing"    column="sightseeing"    />
+        <result property="adminOrg"    column="admin_org"    />
+        <result property="spaceMemo"    column="space_memo"    />
+        <result property="culturalType"    column="cultural_type"    />
+        <result property="shoppingArea"    column="shopping_area"    />
+        <result property="areaName"    column="area_name"    />
+        <result property="areaCode"    column="area_code"    />
+    </resultMap>
+
+    <sql id="selectStoreWhitelistVo">
+        select store_uid,store_name,tax_no,business_name,address,zipcode,owner,phone_number,n_market,t_market,market_name,foodbeverage,cultural,sightseeing,admin_org,space_memo,cultural_type,shopping_area,area_name,area_code from store_whitelist
+    </sql>
+
+    <select id="getStoreWhitelistById" parameterType="String" resultMap="StoreWhitelistResult">
+        <include refid="selectStoreWhitelistVo"/>
+        where store_uid=#{storeUid}
+    </select>
+
+    <insert id="insertStoreWhitelist" parameterType="StoreWhitelist">
+        insert into store_whitelist
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeUid != null and storeUid != ''">store_uid,</if>
+            <if test="storeName != null  and storeName != ''">store_name,</if>
+            <if test="taxNo != null  and taxNo != ''">tax_no,</if>
+            <if test="businessName != null  and businessName != ''">business_name,</if>
+            <if test="address != null  and address != ''">address,</if>
+            <if test="zipCode != null  and zipCode != ''">zipcode,</if>
+            <if test="owner != null  and owner != ''">owner,</if>
+            <if test="phoneNumber != null and phoneNumber != ''">phone_number,</if>
+            <if test="nMarket != null and nMarket != ''">n_market,</if>
+            <if test="tMarket != null  and tMarket != ''">t_market,</if>
+            <if test="marketName != null  and marketName != ''">market_name,</if>
+            <if test="foodBeverage != null  and foodBeverage != ''">foodbeverage,</if>
+            <if test="cultural != null  and cultural != ''">cultural,</if>
+            <if test="sightSeeing != null  and sightSeeing != ''">sightseeing,</if>
+            <if test="adminOrg != null  and adminOrg != ''">admin_org,</if>
+            <if test="spaceMemo != null  and spaceMemo != ''">space_memo,</if>
+            <if test="culturalType != null  and culturalType != ''">cultural_type,</if>
+            <if test="shoppingArea != null and shoppingArea != ''">shopping_area,</if>
+            <if test="areaName != null and areaName != ''">area_name,</if>
+            <if test="areaCode != null and areaCode != ''">area_code,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeUid != null and storeUid != ''">#{storeUid},</if>
+            <if test="storeName != null  and storeName != ''">#{storeName},</if>
+            <if test="taxNo != null  and taxNo != ''">#{taxNo},</if>
+            <if test="businessName != null  and businessName != ''">#{businessName},</if>
+            <if test="address != null  and address != ''">#{address},</if>
+            <if test="zipCode != null  and zipCode != ''">#{zipCode},</if>
+            <if test="owner != null  and owner != ''">#{owner},</if>
+            <if test="phoneNumber != null and phoneNumber != ''">#{phoneNumber},</if>
+            <if test="nMarket != null and nMarket != ''">#{nMarket},</if>
+            <if test="tMarket != null  and tMarket != ''">#{tMarket},</if>
+            <if test="marketName != null  and marketName != ''">#{marketName},</if>
+            <if test="foodBeverage != null  and foodBeverage != ''">#{foodBeverage},</if>
+            <if test="cultural != null  and cultural != ''">#{cultural},</if>
+            <if test="sightSeeing != null  and sightSeeing != ''">#{sightSeeing},</if>
+            <if test="adminOrg != null  and adminOrg != ''">#{adminOrg},</if>
+            <if test="spaceMemo != null  and spaceMemo != ''">#{spaceMemo},</if>
+            <if test="culturalType != null and culturalType != ''">#{culturalType},</if>
+            <if test="shoppingArea != null and shoppingArea != ''">#{shoppingArea},</if>
+            <if test="areaName != null and areaName != ''">#{areaName},</if>
+            <if test="areaCode != null and areaCode != ''">#{areaCode},</if>
+        </trim>
+    </insert>
+
+
+    <update id="updateStoreWhitelist" parameterType="StoreWhitelist">
+        update store_whitelist
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeName != null  and storeName != ''">store_name = #{storeName},</if>
+            <if test="taxNo != null  and taxNo != ''">tax_no = #{taxNo},</if>
+            <if test="businessName != null  and businessName != ''">business_name = #{businessName},</if>
+            <if test="address != null  and address != ''">address = #{address},</if>
+            <if test="zipCode != null  and zipCode != ''">zipcode = #{zipCode},</if>
+            <if test="owner != null  and owner != ''">owner = #{owner},</if>
+            <if test="phoneNumber != null and phoneNumber != ''">phone_number = #{phoneNumber},</if>
+            <if test="nMarket != null and nMarket != ''">n_market = #{nMarket},</if>
+            <if test="tMarket != null  and tMarket != ''">t_market = #{tMarket},</if>
+            <if test="marketName != null  and marketName != ''">market_name = #{marketName},</if>
+            <if test="foodBeverage != null  and foodBeverage != ''">foodbeverage = #{foodBeverage},</if>
+            <if test="cultural != null  and cultural != ''">cultural = #{cultural},</if>
+            <if test="sightSeeing != null  and sightSeeing != ''">sightseeing = #{sightSeeing},</if>
+            <if test="adminOrg != null  and adminOrg != ''">admin_org = #{adminOrg},</if>
+            <if test="spaceMemo != null  and spaceMemo != ''">space_memo = #{spaceMemo},</if>
+            <if test="culturalType != null and culturalType != ''">cultural_type = #{culturalType},</if>
+            <if test="shoppingArea != null and shoppingArea != ''">shopping_area = #{shoppingArea},</if>
+            <if test="areaName != null and areaName != ''">area_name = #{areaName},</if>
+            <if test="areaCode != null and areaCode != ''">area_code = #{areaCode},</if>
+        </trim>
+        where store_uid = #{storeUid}
+    </update>
+</mapper>
