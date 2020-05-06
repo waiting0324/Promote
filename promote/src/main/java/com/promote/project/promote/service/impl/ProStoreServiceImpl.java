@@ -7,6 +7,8 @@ import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
+import com.promote.framework.redis.RedisCache;
+import com.promote.framework.security.LoginUser;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.promote.mapper.ProWhitelistMapper;

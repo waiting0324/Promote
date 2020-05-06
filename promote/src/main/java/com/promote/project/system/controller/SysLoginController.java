@@ -1,11 +1,5 @@
 package com.promote.project.system.controller;
 
-import java.util.List;
-import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.promote.common.constant.Constants;
 import com.promote.common.utils.ServletUtils;
 import com.promote.framework.security.LoginUser;
@@ -16,6 +10,13 @@ import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.system.domain.SysMenu;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.service.ISysMenuService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * 登入驗證
@@ -51,7 +52,8 @@ public class SysLoginController
     {
         AjaxResult ajax = AjaxResult.success();
         // 生成令牌
-        String token = loginService.login(username, password, code, uuid);
+        LoginUser loginUser = loginService.login(username, password, "", "");
+        String token = tokenService.createToken(loginUser);
         ajax.put(Constants.TOKEN, token);
         return ajax;
     }

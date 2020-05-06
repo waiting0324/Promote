@@ -1,11 +1,15 @@
 package com.promote.project.promote.service.impl;
 
+import com.promote.common.constant.Constants;
 import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
+import com.promote.framework.security.LoginUser;
 import com.promote.framework.security.service.SysLoginService;
+import com.promote.framework.security.service.TokenService;
+import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.domain.HostelInfo;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.mapper.HostelInfoMapper;
@@ -45,6 +49,9 @@ public class SysHostelServiceImpl implements ISysHostelService {
 
     @Autowired
     private SysLoginService loginService;
+
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 旅宿業者註冊
@@ -131,7 +138,10 @@ public class SysHostelServiceImpl implements ISysHostelService {
         }
 
         // 非第一次登入，則正常進行登入
-        String token = loginService.login(username, password, code, uuid);
+        AjaxResult ajax = AjaxResult.success();
+        LoginUser loginUser = loginService.login(username, password, "", "");
+        String token = tokenService.createToken(loginUser);
+        ajax.put(Constants.TOKEN, token);
 
         return token;
     }

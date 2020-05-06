@@ -6,9 +6,9 @@ spring:
         druid:
             # 主庫資料來源
             master:
-                url: jdbc:db2://7.193.39.51:50000/promote:currentSchema=PROMOTE_FINAL;
-                username: db2admin
-                password: s89236001
+                url: jdbc:db2://10.89.1.161:50007/VPREC:currentSchema=PRECMGR;
+                username: precweb
+                password: tvprec2AD
             # 從庫資料來源
             slave:
                 # 從資料來源開關/預設關閉

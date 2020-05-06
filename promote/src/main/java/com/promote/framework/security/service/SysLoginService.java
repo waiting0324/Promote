@@ -43,7 +43,7 @@ public class SysLoginService
      * @param uuid 唯一標識
      * @return 結果
      */
-    public String login(String username, String password, String code, String uuid)
+    public LoginUser login(String username, String password, String code, String uuid)
     {
        /* String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
         String captcha = redisCache.getCacheObject(verifyKey);
@@ -81,7 +81,10 @@ public class SysLoginService
         }
         AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+
         // 生成token
-        return tokenService.createToken(loginUser);
+        // return tokenService.createToken(loginUser);
+
+        return loginUser;
     }
 }

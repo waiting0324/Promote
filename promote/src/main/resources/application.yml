@@ -9,7 +9,7 @@ promote:
   # 例項演示開關
   demoEnabled: true
   # 檔案路徑 示例（ Windows配置D:/promote/uploadPath，Linux配置 /home/promote/uploadPath）
-  profile: D:/promote/uploadPath
+  profile: /home/promote/uploadPath
   # 獲取ip地址開關
   addressEnabled: true
 
@@ -97,7 +97,7 @@ mybatis:
 
 # PageHelper分頁外掛
 pagehelper: 
-  helperDialect: mysql
+  helperDialect: DB2
   reasonable: true
   supportMethodsArguments: true
   params: count=countSql 
