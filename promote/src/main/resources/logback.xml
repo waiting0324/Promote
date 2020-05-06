@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <!-- 日誌存放路徑 -->
-	<!--<property name="log.path" value="/home" />
-    &lt;!&ndash; 日誌輸出格式 &ndash;&gt;
+	<!--日誌存放路徑-->
+	<property name="log.path" value="/home" />
+    <!-- 日誌輸出格式 -->
 	<property name="log.pattern" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n" />
 
-	&lt;!&ndash; 控制檯輸出 &ndash;&gt;
+	<!-- 控制檯輸出 -->
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>${log.pattern}</pattern>
 		</encoder>
 	</appender>
 	
-	&lt;!&ndash; 系統日誌輸出 &ndash;&gt;
-	<appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	<!-- 系統日誌輸出 -->
+	<!--<appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
 	    <file>${log.path}/sys-info.log</file>
         &lt;!&ndash; 迴圈政策：基於時間建立日誌檔案 &ndash;&gt;
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -69,25 +69,25 @@
         <encoder>
             <pattern>${log.pattern}</pattern>
         </encoder>
-    </appender>
+    </appender>-->
 	
-	&lt;!&ndash; 系統模組日誌級別控制  &ndash;&gt;
+	<!-- 系統模組日誌級別控制  -->
 	<logger name="com.promote" level="info" />
-	&lt;!&ndash; Spring日誌級別控制  &ndash;&gt;
+	<!-- Spring日誌級別控制  -->
 	<logger name="org.springframework" level="warn" />
 
 	<root level="info">
 		<appender-ref ref="console" />
 	</root>
 	
-	&lt;!&ndash;系統操作日誌&ndash;&gt;
-    <root level="info">
+	<!--系統操作日誌-->
+    <!--<root level="info">
         <appender-ref ref="file_info" />
         <appender-ref ref="file_error" />
-    </root>
+    </root>-->
 	
-	&lt;!&ndash;系統使用者操作日誌&ndash;&gt;
-    <logger name="sys-user" level="info">
+	<!--系統使用者操作日誌-->
+    <!--<logger name="sys-user" level="info">
         <appender-ref ref="sys-user"/>
     </logger>-->
 </configuration> 

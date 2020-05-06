@@ -10,8 +10,6 @@ import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
 import com.promote.framework.security.LoginUser;
 import com.promote.project.promote.domain.DailyConsume;
-import com.promote.framework.redis.RedisCache;
-import com.promote.framework.security.LoginUser;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.promote.mapper.DailyConsumeMapper;
@@ -75,7 +73,7 @@ public class ProStoreServiceImpl implements IProStoreService {
         if (StringUtils.isNull(white)) {
             throw new CustomException("白名單內並無此店家");
         }
-        if (user.getIdentity().equals(white.getTaxNo())) {
+        if (!user.getIdentity().equals(white.getTaxNo())) {
             throw new CustomException("填寫的統編與白名單資料不一致");
         }
 

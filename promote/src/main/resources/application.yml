@@ -13,7 +13,7 @@ promote:
   # 獲取ip地址開關
   addressEnabled: true
 
-  jndiName: java:/MySqlDS
+  jndiName: java:/PRECPool
 
 # 開發環境配置
 server:
@@ -59,9 +59,9 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: localhost
+    host: 10.89.16.82
     # 埠，預設為6379
-    port: 6379
+    port: 30001
     # 密碼
     password: 
     # 連線超時時間
