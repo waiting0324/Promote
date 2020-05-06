@@ -9,8 +9,12 @@ import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
 import com.promote.framework.security.LoginUser;
+import com.promote.project.promote.domain.DailyConsume;
+import com.promote.framework.redis.RedisCache;
+import com.promote.framework.security.LoginUser;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.domain.StoreInfo;
+import com.promote.project.promote.mapper.DailyConsumeMapper;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
 import com.promote.project.promote.mapper.StoreInfoMapper;
 import com.promote.project.promote.service.IProStoreService;
@@ -22,8 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * 店家 服務層實現
@@ -47,6 +50,9 @@ public class ProStoreServiceImpl implements IProStoreService {
 
     @Autowired
     private RedisCache redisCache;
+
+    @Autowired
+    DailyConsumeMapper dailyConsumeMapper;
 
 
     /**
@@ -158,16 +164,13 @@ public class ProStoreServiceImpl implements IProStoreService {
     @Transactional
     @Override
     public LoginUser updateStoreInfo(SysUser user) {
-//        Long userId = user.getUserId();
-
-//        StoreInfo storeInfo = new StoreInfo();
-//        storeInfo.setUserId(userId);
         //從Spring Security取得的資料
         LoginUser loginUser = SecurityUtils.getLoginUser();
         SysUser updUser = loginUser.getUser();
         StoreInfo storeInfo = updUser.getStoreInfo();
         //從Client端取得的資料
         StoreInfo storeInfoTmp = user.getStoreInfo();
+        //判斷是否要做update
         boolean needUpdate = false;
 
         // 商家名稱
@@ -183,7 +186,7 @@ public class ProStoreServiceImpl implements IProStoreService {
             needUpdate = true;
             storeInfo.setAddress(address);
         }
-        if(needUpdate){
+        if (needUpdate) {
             //更新店家基本資料
             int result = storeInfoMapper.updateStoreInfo(storeInfo);
             if (result < 0) {
@@ -191,14 +194,11 @@ public class ProStoreServiceImpl implements IProStoreService {
             }
             needUpdate = false;
         }
-//        SysUser updUser = new SysUser();
-//        updUser.setUserId(userId);
         String mobile = user.getMobile();
         if (StringUtils.isNotEmpty(mobile) && !mobile.contains("*")) {
             needUpdate = true;
             updUser.setMobile(mobile);
         }
-
         // 密碼
         String password = user.getPassword();
         String confirmPwd = (String) user.getParams().get("confirmPwd");
@@ -207,6 +207,7 @@ public class ProStoreServiceImpl implements IProStoreService {
             if (!password.equals(confirmPwd)) {
                 throw new CustomException("兩次輸入的密碼不一致");
             }
+            needUpdate = true;
             // 設置密碼屬性
             updUser.setPassword(SecurityUtils.encryptPassword(password));
         }
@@ -231,5 +232,79 @@ public class ProStoreServiceImpl implements IProStoreService {
     @Override
     public StoreInfo getStoreInfo(Long userId) {
         return storeInfoMapper.selectStoreInfoById(userId);
+    }
+
+    /**
+     * 當前商家收款紀錄總覽
+     *
+     * @return 結果
+     */
+    @Override
+    public Map<String, Object> getRecdMoneyRecord() {
+        StoreInfo storeInfo = SecurityUtils.getLoginUser().getUser().getStoreInfo();
+        Map<String, Object> recdMoneyRecordMap = new HashMap<String, Object>();
+        if (storeInfo != null) {
+            //店家id
+            List<Map<String, Object>> dayList = new ArrayList<Map<String, Object>>();
+            recdMoneyRecordMap.put("days", dayList);
+            Long storeId = storeInfo.getUserId();
+            String[] weeks = {"(一)", "(二)", "(三)", "(四)", "(五)", "(六)", "(日)"};
+            //取今天是星期幾
+            int weekDay = getWeekDay(null);
+            Calendar begin = Calendar.getInstance();
+            Calendar end = Calendar.getInstance();
+            //換算開始日期
+            if (weekDay == 1) {
+                begin.add(Calendar.DATE, -7);
+            } else if (weekDay == 2) {
+                begin.add(Calendar.DATE, -1);
+            } else {
+                begin.add(Calendar.DATE, weekDay - (weekDay * 2 - 1));
+            }
+            //換算結束日期
+            end.add(Calendar.DATE, -1);
+            //開始日期
+            String beginDate = DateUtils.parseDateToStr("yyyy-MM-dd", begin.getTime());
+            //結束日期
+            String endDate = DateUtils.parseDateToStr("yyyy-MM-dd", end.getTime());
+            //取出每日日期及其收入
+            List<DailyConsume> recdMoneyList = dailyConsumeMapper.getRecdMoneyByTimeSpan(storeId, beginDate, endDate);
+            for (DailyConsume dailyConsume : recdMoneyList) {
+                weekDay = getWeekDay(dailyConsume.getConsumeTime());
+                Map<String, Object> dayAmountMap = new HashMap<String, Object>();
+                dayAmountMap.put(DateUtils.parseDateToStr("yyyy/MM/dd", dailyConsume.getConsumeTime()) + weeks[weekDay - 1], dailyConsume.getCouponAmount());
+                dayList.add(dayAmountMap);
+            }
+            //取得店家總收入
+            Map<String, Object> totalAmtMap = dailyConsumeMapper.getTotalAmtByStoreId(storeId);
+            Long totalAmt = 0L;
+            if (StringUtils.isNotNull(totalAmtMap)) {
+                totalAmt = (Long) totalAmtMap.get("totalAmt");
+            }
+            recdMoneyRecordMap.put("totalAmt", totalAmt);
+        }
+        return recdMoneyRecordMap;
+    }
+
+    /**
+     * 取得星期幾
+     *
+     * @param date 日期
+     * @return
+     */
+    private int getWeekDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        boolean isFirstSunday = (calendar.getFirstDayOfWeek() == Calendar.SUNDAY);
+        if (StringUtils.isNotNull(date)) {
+            calendar.setTime(date);
+        }
+        int weekDay = calendar.get(Calendar.DAY_OF_WEEK);
+        if (isFirstSunday) {
+            weekDay = weekDay - 1;
+            if (weekDay == 0) {
+                weekDay = 7;
+            }
+        }
+        return weekDay;
     }
 }

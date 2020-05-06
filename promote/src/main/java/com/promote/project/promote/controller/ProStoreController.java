@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -160,6 +159,8 @@ public class ProStoreController extends BaseController {
      */
     /*@GetMapping("/getStoreInfo")
     public AjaxResult getStoreInfo() {
+        String json = JSON.toJSONString(SecurityUtils.getLoginUser().getUser(), true);
+        SysUser user = JSON.parseObject(json, SysUser.class);
         SysUser user = SecurityUtils.getLoginUser().getUser();
         user.setPassword(null);
         return AjaxResult.success(user);
@@ -177,5 +178,15 @@ public class ProStoreController extends BaseController {
         }
         tokenService.resetLoginUser(storeService.updateStoreInfo(user));
         return AjaxResult.success();
+    }
+
+    /**
+     * 當前商家收款紀錄總覽
+     */
+    @GetMapping("/getRecdMoneyRecord")
+    public AjaxResult getRecdMoneyRecord(){
+        AjaxResult ajax = new AjaxResult();
+        ajax.putAll(storeService.getRecdMoneyRecord());
+        return ajax;
     }
 }

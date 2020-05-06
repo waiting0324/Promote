@@ -4,6 +4,8 @@ import com.promote.framework.security.LoginUser;
 import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.system.domain.SysUser;
 
+import java.util.Map;
+
 
 /**
  * 店家 服務層
@@ -15,9 +17,10 @@ public interface IProStoreService {
 
     /**
      * 商家註冊
-     * @param user 商家基本資訊
+     *
+     * @param user         商家基本資訊
      * @param isAgreeTerms 是否同意註冊條款
-     * @param whitelistId 白名單ID
+     * @param whitelistId  白名單ID
      */
     public void regist(SysUser user, String isAgreeTerms, String whitelistId);
 
@@ -37,4 +40,13 @@ public interface IProStoreService {
      * @return 店家基本資料
      */
     StoreInfo getStoreInfo(Long userId);
+
+
+    /**
+     * 當前商家收款紀錄總覽
+     *
+     * @return
+     */
+    Map<String, Object> getRecdMoneyRecord();
+
 }
