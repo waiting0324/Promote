@@ -416,11 +416,11 @@ public class HotelWhitelist extends BaseEntity
         this.firstUserName = firstUserName;
     }
 
-    public String getFirstPasword() {
-        return firstPasword;
+    public String getFirstPassword() {
+        return firstPassword;
     }
 
-    public void setFirstPasword(String firstPasword) {
-        this.firstPasword = firstPasword;
+    public void setFirstPassword(String firstPassword) {
+        this.firstPassword = firstPassword;
     }
 }
