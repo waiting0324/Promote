@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/store")
-public class ProStoreController extends BaseController {
+public class StoreController extends BaseController {
 
     @Autowired
     private IProWhitelistService whitelistService;

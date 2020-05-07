@@ -241,7 +241,7 @@
 
     <select id="selectUserByIdBirthday" parameterType="SysUser" resultMap="SysUserResult">
         <include refid="selectUserVo"/>
-        where u.user_id = #{userId} and u.birthday = #{birthday}
+        where u.identity = #{identity} and u.birthday = #{birthday}
     </select>
 
 

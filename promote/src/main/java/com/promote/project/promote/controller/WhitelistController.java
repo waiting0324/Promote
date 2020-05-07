@@ -22,7 +22,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/promote/whitelist")
-public class ProWhitelistController extends BaseController
+public class WhitelistController extends BaseController
 {
     @Autowired
     private IProWhitelistService proWhitelistService;

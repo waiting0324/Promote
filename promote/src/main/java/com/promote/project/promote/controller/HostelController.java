@@ -2,17 +2,17 @@ package com.promote.project.promote.controller;
 
 import com.promote.common.constant.Constants;
 import com.promote.common.utils.MessageUtils;
-import com.promote.common.utils.SecurityUtils;
-import com.promote.common.utils.ServletUtils;
 import com.promote.common.utils.StringUtils;
-import com.promote.framework.security.LoginUser;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.service.ISysHostelService;
 import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/hostel")
-public class SysHostelController extends BaseController {
+public class HostelController extends BaseController {
 
     @Autowired
     private ISysHostelService hostelService;
@@ -78,6 +78,22 @@ public class SysHostelController extends BaseController {
         String uuid = (String) params.get("uuid");
         String token = hostelService.login(username, password, code, uuid);
         ajax.put(Constants.TOKEN, token);
+        return ajax;
+    }
+
+    /**
+     * 旅宿業者替消費者代為註冊
+     *
+     * @param sysUser 消費者資料
+     * @return 結果
+     */
+    @PostMapping("/proxyRegist")
+    public AjaxResult proxyRegist(@RequestBody SysUser sysUser) {
+
+        hostelService.proxyRegist(sysUser);
+
+        AjaxResult ajax = AjaxResult.success();
+
         return ajax;
     }
 }

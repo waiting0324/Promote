@@ -29,7 +29,7 @@ import com.promote.framework.web.page.TableDataInfo;
  */
 @RestController
 @RequestMapping("/system/news")
-public class ProNewsController extends BaseController
+public class NewsController extends BaseController
 {
     @Autowired
     private IProNewsService proNewsService;
