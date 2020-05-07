@@ -67,12 +67,13 @@ public class PromoteTask {
     private String localStoreDir;
     // 與FTP相關配置 結束
 
+    //白名單成功筆數
     private Integer proWhitelistSuccessCnt = 0 ;
-
+    //白名單失敗筆數
     private Integer proWhitelistFailCnt= 0 ;
-
+    //旅宿,店家白名單成功筆數
     private Integer whitelistSuccessCnt= 0 ;
-
+    //旅宿,店家白名單失敗筆數
     private Integer whitelistFailCnt= 0 ;
 
 //    private int count = 0; //測試用
@@ -133,10 +134,6 @@ public class PromoteTask {
      */
     public void dealDiffData(String path, Boolean isHostel) {
         if (StringUtils.isNotEmpty(path)) {
-            Integer proWhitelistSuccessCnt = 0 ;
-            Integer proWhitelistFailCnt= 0 ;
-            Integer whitelistSuccessCnt= 0 ;
-            Integer whitelistFailCnt= 0 ;
             Map<String, Integer> pair = new HashMap<String, Integer>();
             //白名單Field與白名單Excel映射關係
             if (isHostel) {
