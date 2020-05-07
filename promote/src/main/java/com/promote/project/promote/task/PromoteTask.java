@@ -76,7 +76,7 @@ public class PromoteTask {
     //旅宿,店家白名單失敗筆數
     private Integer whitelistFailCnt= 0 ;
 
-    private int count = 0; //測試用
+//    private int count = 0; //測試用
 
 
     /**
