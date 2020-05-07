@@ -30,7 +30,7 @@ public class HotelWhitelist extends BaseEntity
     private String grade;
 
     /** 旅館民宿地址 */
-    private String add;
+    private String address;
 
     /** 地址的郵遞區號 */
     private String zipCode;
@@ -160,12 +160,12 @@ public class HotelWhitelist extends BaseEntity
         this.grade = grade;
     }
 
-    public String getAdd() {
-        return add;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAdd(String add) {
-        this.add = add;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getZipCode() {

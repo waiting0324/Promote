@@ -7,8 +7,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="StoreWhitelist" id="StoreWhitelistResult">
         <result property="storeUid"    column="store_uid"    />
         <result property="storeName"    column="store_name"    />
-        <result property="taxNo"    column="tax_no"    />
         <result property="businessName"    column="business_name"    />
+        <result property="taxNo"    column="tax_no"    />
+        <result property="licenseNo"    column="license_no"    />
         <result property="address"    column="address"    />
         <result property="zipCode"    column="zipcode"    />
         <result property="owner"    column="owner"    />
@@ -28,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreWhitelistVo">
-        select store_uid,store_name,tax_no,business_name,address,zipcode,owner,phone_number,n_market,t_market,market_name,foodbeverage,cultural,sightseeing,admin_org,space_memo,cultural_type,shopping_area,area_name,area_code from store_whitelist
+        select store_uid,store_name,business_name,tax_no,license_no,address,zipcode,owner,phone_number,n_market,t_market,market_name,foodbeverage,cultural,sightseeing,admin_org,space_memo,cultural_type,shopping_area,area_name,area_code from store_whitelist
     </sql>
 
     <select id="getStoreWhitelistById" parameterType="String" resultMap="StoreWhitelistResult">
@@ -41,8 +42,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="storeUid != null and storeUid != ''">store_uid,</if>
             <if test="storeName != null  and storeName != ''">store_name,</if>
-            <if test="taxNo != null  and taxNo != ''">tax_no,</if>
             <if test="businessName != null  and businessName != ''">business_name,</if>
+            <if test="taxNo != null  and taxNo != ''">tax_no,</if>
+            <if test="licenseNo != null  and licenseNo != ''">license_no,</if>
             <if test="address != null  and address != ''">address,</if>
             <if test="zipCode != null  and zipCode != ''">zipcode,</if>
             <if test="owner != null  and owner != ''">owner,</if>
@@ -63,8 +65,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="storeUid != null and storeUid != ''">#{storeUid},</if>
             <if test="storeName != null  and storeName != ''">#{storeName},</if>
-            <if test="taxNo != null  and taxNo != ''">#{taxNo},</if>
             <if test="businessName != null  and businessName != ''">#{businessName},</if>
+            <if test="taxNo != null  and taxNo != ''">#{taxNo},</if>
+            <if test="licenseNo != null  and licenseNo != ''">#{licenseNo},</if>
             <if test="address != null  and address != ''">#{address},</if>
             <if test="zipCode != null  and zipCode != ''">#{zipCode},</if>
             <if test="owner != null  and owner != ''">#{owner},</if>
@@ -89,8 +92,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update store_whitelist
         <trim prefix="SET" suffixOverrides=",">
             <if test="storeName != null  and storeName != ''">store_name = #{storeName},</if>
-            <if test="taxNo != null  and taxNo != ''">tax_no = #{taxNo},</if>
             <if test="businessName != null  and businessName != ''">business_name = #{businessName},</if>
+            <if test="taxNo != null  and taxNo != ''">tax_no = #{taxNo},</if>
+            <if test="licenseNo != null  and licenseNo != ''">license_no = #{licenseNo},</if>
             <if test="address != null  and address != ''">address = #{address},</if>
             <if test="zipCode != null  and zipCode != ''">zipcode = #{zipCode},</if>
             <if test="owner != null  and owner != ''">owner = #{owner},</if>

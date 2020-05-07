@@ -9,7 +9,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="status"    column="status"    />
         <result property="name"    column="name"    />
         <result property="grade"    column="grade"    />
-        <result property="add"    column="add"    />
+        <result property="address"    column="address"    />
         <result property="zipCode"    column="zipcode"    />
         <result property="tel"    column="tel"    />
         <result property="fax"    column="fax"    />
@@ -45,7 +45,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectHotelWhitelistVo">
-        select data_id,status,name,grade,add,zipcode,tel,fax,gov,website,px,py,class,map,spec,serviceinfo,parkinginfo,changetime,taiwanstayreferenceURL,totalnumberofrooms,lowestprice,ceilingprice,unifiedbusinessno,taiwanhost,region,town,hotelhomeid,industryemail,totalnumberofpeople,accessibilityrooms,publictoilets,liftingequipment,parkingspace,marknumber,marknumbertext,firstusername,firstpassword from hotel_whitelist
+        select data_id,status,name,grade,address,zipcode,tel,fax,gov,website,px,py,class,map,spec,serviceinfo,parkinginfo,changetime,taiwanstayreferenceURL,totalnumberofrooms,lowestprice,ceilingprice,unifiedbusinessno,taiwanhost,region,town,hotelhomeid,industryemail,totalnumberofpeople,accessibilityrooms,publictoilets,liftingequipment,parkingspace,marknumber,marknumbertext,firstusername,firstpassword from hotel_whitelist
     </sql>
 
     <select id="getHotelWhitelistById" parameterType="String" resultMap="HotelWhitelistResult">
@@ -60,7 +60,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null  and status != ''">status,</if>
             <if test="name != null and name != ''">name,</if>
             <if test="grade != null  and grade != ''">grade,</if>
-            <if test="add != null and add != ''">add,</if>
+            <if test="address != null and address != ''">address,</if>
             <if test="zipCode != null  and zipCode != ''">zipcode,</if>
             <if test="tel != null  and tel != ''">tel,</if>
             <if test="fax != null and fax != ''">fax,</if>
@@ -99,7 +99,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null  and status != ''">#{status},</if>
             <if test="name != null and name != ''">#{name},</if>
             <if test="grade != null  and grade != ''">#{grade},</if>
-            <if test="add != null and add != ''">#{add},</if>
+            <if test="address != null and address != ''">#{address},</if>
             <if test="zipCode != null  and zipCode != ''">#{zipCode},</if>
             <if test="tel != null  and tel != ''">#{tel},</if>
             <if test="fax != null and fax != ''">#{fax},</if>
@@ -141,7 +141,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null  and status != ''">status = #{status},</if>
             <if test="name != null and name != ''">name = #{name},</if>
             <if test="grade != null  and grade != ''">grade = #{grade},</if>
-            <if test="add != null and add != ''">add = #{add},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
             <if test="zipCode != null  and zipCode != ''">zipcode = #{zipCode},</if>
             <if test="tel != null  and tel != ''">tel = #{tel},</if>
             <if test="fax != null and fax != ''">fax = #{fax},</if>

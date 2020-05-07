@@ -76,7 +76,7 @@ public class PromoteTask {
     //旅宿,店家白名單失敗筆數
     private Integer whitelistFailCnt= 0 ;
 
-//    private int count = 0; //測試用
+    private int count = 0; //測試用
 
 
     /**
@@ -152,19 +152,17 @@ public class PromoteTask {
             } else {
                 //店家
                 pair.put("id", 0);
-                pair.put("owner", 5);
+                pair.put("owner", 7);
                 pair.put("name", 1);
-                pair.put("taxNo", 2);
-//            pair.put("username", 26); TODO待確認
-//            pair.put("password", ); TODO待確認
-                pair.put("address", 3);
-                pair.put("phonenumber", 6);
+                pair.put("taxNo", 3);
+                pair.put("address", 5);
+                pair.put("phonenumber", 8);
                 pair.put("type", 2);
-                pair.put("isNMarket", 7);
-                pair.put("isTMarket", 8);
-                pair.put("isFoodbeverage", 10);
-                pair.put("isCulture", 11);
-                pair.put("isSightseeing", 12);
+                pair.put("isNMarket", 9);
+                pair.put("isTMarket", 10);
+                pair.put("isFoodbeverage", 12);
+                pair.put("isCulture", 13);
+                pair.put("isSightseeing", 14);
             }
             //根據Excel版本的不同選用不同的方式處理
             if (path.indexOf(".xlsx") > -1) {
@@ -219,7 +217,7 @@ public class PromoteTask {
                 failLog.setMethod(mathodName);
                 failLog.setOperatorType(1);
                 failLog.setOperName("SYSTEM");
-                failLog.setErrorMsg("執行" + (isHostel ? "旅宿白名單(hotel_whitelist)匯入- 共成功: " : "店家白名單(store_whitelist)匯入- 共失敗: ") + whitelistFailCnt + "筆");
+                failLog.setErrorMsg("執行" + (isHostel ? "旅宿白名單(hotel_whitelist)匯入- 共失敗: " : "店家白名單(store_whitelist)匯入- 共失敗: ") + whitelistFailCnt + "筆");
                 failLog.setOperTime(now);
                 operLogServic.insertOperlog(failLog);
             }
@@ -394,7 +392,7 @@ public class PromoteTask {
                                 int result = type == 1 ? hotelWhitelistService.insertHotelWhitelist(hotelWhitelist) : storeWhitelistService.insertStoreWhitelist(storeWhitelist);
                             } else {
                                 //更新
-//                                if(count == 3){
+//                                if(count == 4){
 //                                    //測試用
 //                                    count++;
 //                                    throw new Exception();

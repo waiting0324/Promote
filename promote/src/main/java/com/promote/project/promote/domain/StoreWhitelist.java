@@ -17,11 +17,14 @@ public class StoreWhitelist extends BaseEntity {
     /** 店家名稱 */
     private String storeName;
 
+    /** 公司登記名稱 */
+    private String businessName;
+
     /** 店家統編/身分證字號 */
     private String taxNo;
 
-    /** 公司登記名稱 */
-    private String businessName;
+    /** 攤位編號/許可證號 */
+    private String licenseNo;
 
     /** 店家地址 */
     private String address;
@@ -87,6 +90,14 @@ public class StoreWhitelist extends BaseEntity {
         this.storeName = storeName;
     }
 
+    public String getBusinessName() {
+        return businessName;
+    }
+
+    public void setBusinessName(String businessName) {
+        this.businessName = businessName;
+    }
+
     public String getTaxNo() {
         return taxNo;
     }
@@ -95,12 +106,12 @@ public class StoreWhitelist extends BaseEntity {
         this.taxNo = taxNo;
     }
 
-    public String getBusinessName() {
-        return businessName;
+    public String getLicenseNo() {
+        return licenseNo;
     }
 
-    public void setBusinessName(String businessName) {
-        this.businessName = businessName;
+    public void setLicenseNo(String licenseNo) {
+        this.licenseNo = licenseNo;
     }
 
     public String getAddress() {
@@ -135,19 +146,19 @@ public class StoreWhitelist extends BaseEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getnMarket() {
+    public String getNMarket() {
         return nMarket;
     }
 
-    public void setnMarket(String nMarket) {
+    public void setNMarket(String nMarket) {
         this.nMarket = nMarket;
     }
 
-    public String gettMarket() {
+    public String getTMarket() {
         return tMarket;
     }
 
-    public void settMarket(String tMarket) {
+    public void setTMarket(String tMarket) {
         this.tMarket = tMarket;
     }
 
