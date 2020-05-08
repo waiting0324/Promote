@@ -1,8 +1,6 @@
 package com.promote.project.promote.service.impl;
 
 import com.promote.common.constant.Constants;
-import com.promote.common.constant.ConsumerConstants;
-import com.promote.common.constant.CouponConstants;
 import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.utils.DateUtils;
@@ -12,7 +10,6 @@ import com.promote.framework.security.LoginUser;
 import com.promote.framework.security.service.SysLoginService;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.domain.AjaxResult;
-import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.promote.domain.HostelInfo;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.mapper.ConsumerInfoMapper;
@@ -30,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 /**
  * 旅宿業者 服務層實現
@@ -112,7 +108,6 @@ public class SysHostelServiceImpl implements ISysHostelService {
         hostelInfo.setLatitude(white.getLatitude());
         hostelInfo.setLongitude(white.getLongitude());
         hostelInfo.setAgreeTime(nowDate);
-        hostelInfo.setPwNeedReset("0");
         // TODO isSupportCoupon
         // TODO isAgreeTerms
 

@@ -26,21 +26,6 @@ public class HostelInfo extends BaseEntity
     @Excel(name = "旅宿業者名稱")
     private String name;
 
-    /** 商家類型 ( 0夜市 1餐廳 2商圈 3藝文 ) */
-    private String type;
-
-    /** 地址 */
-    @Excel(name = "地址")
-    private String address;
-
-    /** 緯度 */
-    @Excel(name = "緯度")
-    private Double latitude;
-
-    /** 經度 */
-    @Excel(name = "經度")
-    private Double longitude;
-
     /** 是否協助發放抵用券( 0不協助 1協助 ) */
     @Excel(name = "是否協助發放抵用券( 0不協助 1協助 )")
     private String isSupportCoupon;
@@ -53,9 +38,17 @@ public class HostelInfo extends BaseEntity
     @Excel(name = "是否同意註冊條款 ( 0不同意 1同意 )")
     private String isAgreeTerms;
 
-    /** 是否強制變更密碼( 0否 1是 ) */
-    @Excel(name = "是否強制變更密碼( 0否 1是 )")
-    private String pwNeedReset;
+    /** 地址 */
+    @Excel(name = "地址")
+    private String address;
+
+    /** 緯度 */
+    @Excel(name = "緯度")
+    private Double latitude;
+
+    /** 經度 */
+    @Excel(name = "經度")
+    private Double longitude;
 
     public void setUserId(Long userId)
     {
@@ -128,23 +121,6 @@ public class HostelInfo extends BaseEntity
     {
         return isAgreeTerms;
     }
-    public void setPwNeedReset(String pwNeedReset)
-    {
-        this.pwNeedReset = pwNeedReset;
-    }
-
-    public String getPwNeedReset()
-    {
-        return pwNeedReset;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
     @Override
     public String toString() {
@@ -157,7 +133,6 @@ public class HostelInfo extends BaseEntity
                 .append("isSupportCoupon", getIsSupportCoupon())
                 .append("agreeTime", getAgreeTime())
                 .append("isAgreeTerms", getIsAgreeTerms())
-                .append("pwNeedReset", getPwNeedReset())
                 .append("updateTime", getUpdateTime())
                 .append("createTime", getCreateTime())
                 .toString();
