@@ -9,10 +9,10 @@ import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.project.monitor.domain.SysOperLog;
 import com.promote.project.monitor.service.ISysOperLogService;
+import com.promote.project.promote.domain.HotelWhitelist;
 import com.promote.project.promote.domain.ProWhitelist;
-import com.promote.project.promote.service.ICouponService;
-import com.promote.project.promote.service.IDailyConsumeService;
-import com.promote.project.promote.service.IProWhitelistService;
+import com.promote.project.promote.domain.StoreWhitelist;
+import com.promote.project.promote.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -45,6 +45,12 @@ public class PromoteTask {
     @Autowired
     IDailyConsumeService dailyConsumeService;
 
+    @Autowired
+    HotelWhitelistService hotelWhitelistService;
+
+    @Autowired
+    StoreWhitelistService storeWhitelistService;
+
     // 與FTP相關配置 開始
     private String host;
 
@@ -61,9 +67,14 @@ public class PromoteTask {
     private String localStoreDir;
     // 與FTP相關配置 結束
 
-    private int totalSuccess;
-
-    private int totalFail;
+    //白名單成功筆數
+    private Integer proWhitelistSuccessCnt = 0 ;
+    //白名單失敗筆數
+    private Integer proWhitelistFailCnt= 0 ;
+    //旅宿,店家白名單成功筆數
+    private Integer whitelistSuccessCnt= 0 ;
+    //旅宿,店家白名單失敗筆數
+    private Integer whitelistFailCnt= 0 ;
 
 //    private int count = 0; //測試用
 
@@ -124,15 +135,14 @@ public class PromoteTask {
     public void dealDiffData(String path, Boolean isHostel) {
         if (StringUtils.isNotEmpty(path)) {
             Map<String, Integer> pair = new HashMap<String, Integer>();
-
             //白名單Field與白名單Excel映射關係
             if (isHostel) {
                 //旅宿
                 pair.put("id", 0);
                 pair.put("name", 2);
                 pair.put("taxNo", 22);
-//            pair.put("username", 26); TODO待確認
-//            pair.put("password", ); TODO待確認
+                pair.put("username", 35);
+                pair.put("password", 36);
                 pair.put("address", 4);
                 pair.put("phonenumber", 6);
                 pair.put("email", 27);
@@ -142,19 +152,17 @@ public class PromoteTask {
             } else {
                 //店家
                 pair.put("id", 0);
-                pair.put("owner", 5);
+                pair.put("owner", 7);
                 pair.put("name", 1);
-                pair.put("taxNo", 2);
-//            pair.put("username", 26); TODO待確認
-//            pair.put("password", ); TODO待確認
-                pair.put("address", 3);
-                pair.put("phonenumber", 6);
+                pair.put("taxNo", 3);
+                pair.put("address", 5);
+                pair.put("phonenumber", 8);
                 pair.put("type", 2);
-                pair.put("isNMarket", 7);
-                pair.put("isTMarket", 8);
-                pair.put("isFoodbeverage", 10);
-                pair.put("isCulture", 11);
-                pair.put("isSightseeing", 12);
+                pair.put("isNMarket", 9);
+                pair.put("isTMarket", 10);
+                pair.put("isFoodbeverage", 12);
+                pair.put("isCulture", 13);
+                pair.put("isSightseeing", 14);
             }
             //根據Excel版本的不同選用不同的方式處理
             if (path.indexOf(".xlsx") > -1) {
@@ -168,30 +176,56 @@ public class PromoteTask {
             }
             String mathodName = PromoteTask.class.getName() + ".dealDiffData(String path)";
             Date now = DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime());
-            if (totalSuccess > 0) {
-                //成功筆數寫log
+            if (proWhitelistSuccessCnt > 0) {
+                //白名單成功筆數寫log
                 SysOperLog successLog = new SysOperLog();
                 successLog.setTitle("定時任務");
                 successLog.setMethod(mathodName);
                 successLog.setOperatorType(1);
                 successLog.setOperName("SYSTEM");
-                successLog.setJsonResult("執行" + (isHostel ? "旅宿業者" : "店家") + "白名單匯入- 共成功: " + totalSuccess + "筆");
+                successLog.setJsonResult("執行白名單(pro_whitelist)匯入- 共成功: " + proWhitelistSuccessCnt + "筆");
                 successLog.setOperTime(now);
                 operLogServic.insertOperlog(successLog);
             }
-            if (totalFail > 0) {
-                //失敗筆數寫log
+            if (proWhitelistFailCnt > 0) {
+                //白名單失敗筆數寫log
                 SysOperLog failLog = new SysOperLog();
                 failLog.setTitle("定時任務");
                 failLog.setMethod(mathodName);
                 failLog.setOperatorType(1);
                 failLog.setOperName("SYSTEM");
-                failLog.setErrorMsg("執行" + (isHostel ? "旅宿業者" : "店家") + "白名單匯入-共失敗: " + totalFail + "筆");
+                failLog.setErrorMsg("執行白名單(pro_whitelist)匯入-共失敗: " + proWhitelistFailCnt + "筆");
                 failLog.setOperTime(now);
                 operLogServic.insertOperlog(failLog);
             }
-            totalSuccess = 0;
-            totalFail = 0;
+
+            if (whitelistSuccessCnt > 0) {
+                //旅宿or店家白名單成功筆數寫log
+                SysOperLog successLog = new SysOperLog();
+                successLog.setTitle("定時任務");
+                successLog.setMethod(mathodName);
+                successLog.setOperatorType(1);
+                successLog.setOperName("SYSTEM");
+                successLog.setJsonResult("執行" + (isHostel ? "旅宿白名單(hotel_whitelist)匯入- 共成功: " : "店家白名單(store_whitelist)匯入- 共成功: ") + whitelistSuccessCnt + "筆");
+                successLog.setOperTime(now);
+                operLogServic.insertOperlog(successLog);
+            }
+            if (whitelistFailCnt > 0) {
+                //旅宿or店家白名單失敗筆數寫log
+                SysOperLog failLog = new SysOperLog();
+                failLog.setTitle("定時任務");
+                failLog.setMethod(mathodName);
+                failLog.setOperatorType(1);
+                failLog.setOperName("SYSTEM");
+                failLog.setErrorMsg("執行" + (isHostel ? "旅宿白名單(hotel_whitelist)匯入- 共失敗: " : "店家白名單(store_whitelist)匯入- 共失敗: ") + whitelistFailCnt + "筆");
+                failLog.setOperTime(now);
+                operLogServic.insertOperlog(failLog);
+            }
+            //成功,失敗Count清成0
+            proWhitelistSuccessCnt = 0 ;
+            proWhitelistFailCnt= 0 ;
+            whitelistSuccessCnt= 0 ;
+            whitelistFailCnt= 0 ;
         }
     }
 
@@ -202,39 +236,71 @@ public class PromoteTask {
                 //每一列都會呼叫此方法一次
                 try {
                     if (rowIndex > 0 && rowlist != null) {
+                        //取得類型-旅宿or店家
+                        Integer type = pair.get("type");
                         String id = rowlist.get(pair.get("id")).toString();
                         if (StringUtils.isEmpty(id)) {
                             throw new Exception("ID不得為空");
                         }
-                        boolean needInsert = false;
-                        Class c = ProWhitelist.class;
-                        Field[] fields = c.getDeclaredFields();
+                        Class proWhitelistCls = ProWhitelist.class;
+                        Class whitelistCls = type == 1 ? HotelWhitelist.class : StoreWhitelist.class;
+                        Field[] proWhitelistFields = proWhitelistCls.getDeclaredFields();
+                        Field[] whitelistFields = whitelistCls.getDeclaredFields();
                         //白名單Model的屬性名
-                        List<String> columnNameList = new ArrayList<String>();
+                        List<String> proWhitelistFieldName = new ArrayList<String>();
+                        List<String> whitelistFieldName = new ArrayList<String>();
                         //白名單Model的屬性類型
-                        List<Class> columnTypeList = new ArrayList<Class>();
-                        for (Field field : fields) {
+                        List<Class> proWhitelistFieldType = new ArrayList<Class>();
+                        List<Class> whitelistFieldType = new ArrayList<Class>();
+                        //取得白名單屬姓名及屬性類型
+                        for (Field field : proWhitelistFields) {
                             String fieldName = field.getName();
                             if ("serialVersionUID".equals(fieldName) || "type".equals(fieldName)) {
                                 continue;
                             }
-                            columnNameList.add(fieldName);
-                            columnTypeList.add(field.getType());
+                            proWhitelistFieldName.add(fieldName);
+                            proWhitelistFieldType.add(field.getType());
                         }
-                        Integer type = pair.get("type");
+                        //取得旅宿or店家白名單屬姓名及屬性類型
+                        for (Field field : whitelistFields) {
+                            String fieldName = field.getName();
+                            if ("serialVersionUID".equals(fieldName)) {
+                                continue;
+                            }
+                            whitelistFieldName.add(fieldName);
+                            whitelistFieldType.add(field.getType());
+                        }
                         //根據id及類型去查白名單table,有查到做update,沒查到做insert
                         ProWhitelist proWhitelist = proWhitelistService.selectProWhitelistByIdType(id, type.toString());
+                        HotelWhitelist hotelWhitelist = null;
+                        StoreWhitelist storeWhitelist = null;
+                        if(type == 1){
+                            hotelWhitelist = hotelWhitelistService.getHotelWhitelistById(id);
+                        }else if(type == 2){
+                            storeWhitelist = storeWhitelistService.getStoreWhitelistById(id);
+                        }
+                        boolean needInsertProWhitelist = false;
+                        boolean needInsertWhitelist = false;
                         if (proWhitelist == null) {
-                            needInsert = true;
+                            needInsertProWhitelist = true;
                             proWhitelist = new ProWhitelist();
                         }
-                        for (int i = 0; i < columnNameList.size(); i++) {
+                        if(type == 1 && StringUtils.isNull(hotelWhitelist)){
+                            needInsertWhitelist = true;
+                            hotelWhitelist = new HotelWhitelist();
+                        }
+                        if(type == 2 && StringUtils.isNull(storeWhitelist)){
+                            needInsertWhitelist = true;
+                            storeWhitelist = new StoreWhitelist();
+                        }
+                        //處理白名單
+                        for (int i = 0; i < proWhitelistFieldName.size(); i++) {
                             try {
-                                String columnName = columnNameList.get(i);
+                                String columnName = proWhitelistFieldName.get(i);
                                 String methodName = new StringBuilder("set").append(columnName.substring(0, 1).toUpperCase()).append(columnName.substring(1)).toString();
                                 //取得白名單Model的setter方法
-                                Class typeClass = columnTypeList.get(i);
-                                Method method = c.getMethod(methodName, typeClass);
+                                Class typeClass = proWhitelistFieldType.get(i);
+                                Method method = proWhitelistCls.getMethod(methodName, typeClass);
                                 if (method != null) {
                                     Integer index = pair.get(columnName);
                                     if (index == null) {
@@ -258,7 +324,7 @@ public class PromoteTask {
                         }
                         proWhitelist.setType(type != null ? type.toString() : null);
                         try {
-                            if (needInsert) {
+                            if (needInsertProWhitelist) {
                                 //新增
 //                                if(count == 3){
 //                                    //測試用
@@ -276,11 +342,68 @@ public class PromoteTask {
 //                                }
                                 proWhitelistService.updateProWhitelist(proWhitelist);
                             }
-                            totalSuccess++;
+                            proWhitelistSuccessCnt++;
 //                            count++; //測試用
                         } catch (Exception e) {
                             //新增或更新失敗時寫log
-                            totalFail++;
+                            proWhitelistFailCnt++;
+                            SysOperLog failLog = new SysOperLog();
+                            failLog.setTitle("定時任務");
+                            failLog.setMethod(PromoteTask.class.getName() + ".dealDiffData(String path)");
+                            failLog.setOperatorType(1);
+                            failLog.setOperName("SYSTEM");
+                            failLog.setErrorMsg("執行白名單" + (needInsertProWhitelist ? "新增" : "更新") + "失敗: " + (type == 1 ? "旅宿業者代號= " : "店家代碼= ") + id);
+                            failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
+                            operLogServic.insertOperlog(failLog);
+                        }
+                        //處理旅宿or店家白名單
+                        for (int i = 0; i < whitelistFieldName.size(); i++) {
+                            try {
+                                String columnName = whitelistFieldName.get(i);
+                                String methodName = new StringBuilder("set").append(columnName.substring(0, 1).toUpperCase()).append(columnName.substring(1)).toString();
+                                //取得旅宿or店家白名單Model的setter方法
+                                Class typeClass = whitelistFieldType.get(i);
+                                Method method = whitelistCls.getMethod(methodName, typeClass);
+                                if (method != null) {
+                                    Object tempValue = rowlist.get(i);
+                                    //設定Excel的值到白名單Model
+                                    String value = StringUtils.isNotNull(tempValue) ? tempValue.toString().trim().replaceAll("\\u00A0+", "") : null;
+                                    switch (typeClass.getName()) {
+                                        case "java.lang.Double":
+                                            method.invoke(type == 1 ? hotelWhitelist : storeWhitelist, StringUtils.isNotNull(value) ? Double.parseDouble(value) : null);
+                                            break;
+                                        case "java.lang.String":
+                                            method.invoke(type == 1 ? hotelWhitelist : storeWhitelist, value);
+                                            break;
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        try {
+                            if (needInsertWhitelist) {
+                                //新增
+//                                if(count == 3){
+//                                    //測試用
+//                                    count++;
+//                                    throw new Exception();
+//                                }
+                                int result = type == 1 ? hotelWhitelistService.insertHotelWhitelist(hotelWhitelist) : storeWhitelistService.insertStoreWhitelist(storeWhitelist);
+                            } else {
+                                //更新
+//                                if(count == 4){
+//                                    //測試用
+//                                    count++;
+//                                    throw new Exception();
+//                                }
+                                int result = type == 1 ? hotelWhitelistService.updateHotelWhitelist(hotelWhitelist) :storeWhitelistService.updateStoreWhitelist(storeWhitelist);
+                            }
+                            whitelistSuccessCnt++;
+//                            count++; //測試用
+                        } catch (Exception e) {
+                            //新增或更新失敗時寫log
+                            whitelistFailCnt++;
                             SysOperLog failLog = new SysOperLog();
                             failLog.setTitle("定時任務");
                             failLog.setMethod(PromoteTask.class.getName() + ".dealDiffData(String path)");
@@ -288,14 +411,16 @@ public class PromoteTask {
                             failLog.setOperName("SYSTEM");
                             String errMsg = "";
                             if (type == 1) {
-                                errMsg = "執行旅宿業者白名單" + (needInsert ? "新增" : "更新") + "失敗: ID = " + id;
+                                errMsg = "執行旅宿白名單(hotel_whitelist)" + (needInsertWhitelist ? "新增" : "更新") + "失敗: 旅宿業者代號 = " + id;
                             } else if (type == 2) {
-                                errMsg = "執行店家白名單" + (needInsert ? "新增" : "更新") + "失敗: ID = " + id;
+                                errMsg = "執行店家白名單(store_whitelist)" + (needInsertWhitelist ? "新增" : "更新") + "失敗: 店家代碼 = " + id;
                             }
                             failLog.setErrorMsg(errMsg);
                             failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
                             operLogServic.insertOperlog(failLog);
                         }
+
+
                     }
                 } catch (Exception e) {
                     //DO NOTHING
