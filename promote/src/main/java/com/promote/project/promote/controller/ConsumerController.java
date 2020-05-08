@@ -84,7 +84,7 @@ public class ConsumerController extends BaseController {
 
         // 必填欄位檢核，姓名、身分證、生日
         if ( StringUtils.isEmpty(user.getConsumerInfo().getName()) || StringUtils.isEmpty(user.getIdentity()) ||
-                 StringUtils.isEmpty(user.getConsumerInfo().getBirthday())) {
+                 StringUtils.isNull(user.getConsumerInfo().getBirthday())) {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
 

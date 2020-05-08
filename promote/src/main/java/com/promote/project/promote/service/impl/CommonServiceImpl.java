@@ -102,11 +102,11 @@ public class CommonServiceImpl implements ICommonService {
                     consumerInfo.setName(name.toString());
                 }
                 //生日
-                String birthdayTmp = consumerInfo.getBirthday();
+                /*String birthdayTmp = consumerInfo.getBirthday();
                 if(StringUtils.isNotEmpty(birthdayTmp)){
                     StringBuilder birthday = new StringBuilder(birthdayTmp.substring(0, birthdayTmp.length() - 2)).append("**");
                     consumerInfo.setBirthday(birthday.toString());
-                }
+                }*/
             }
             //身分證字號,統編,居留證號
             String identityTmp = sysUser.getIdentity();

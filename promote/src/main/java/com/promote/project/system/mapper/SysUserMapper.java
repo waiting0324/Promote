@@ -4,6 +4,7 @@ import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.system.domain.SysUser;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -134,7 +135,7 @@ public interface SysUserMapper {
      * @param sysUser 使用者資料
      * @return 結果
      */
-    public SysUser selectUserByIdentityAndBirthday(@Param("identity") String identity, @Param("birthday") String birthday);
+    public SysUser selectUserByIdentityAndBirthday(@Param("identity") String identity, @Param("birthday") Date birthday);
 
 
     /**
