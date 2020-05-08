@@ -149,3 +149,18 @@ ftp:
   localTempDir: D:\FTP\temp
   # 本地儲存已處理檔案
   localStoreDir: D:\FTP\store
+
+# IMB MQ配置
+ibm:
+  mq:
+    # IBM MQ server地址
+    host: 172.31.70.148
+    # 端口
+    port: 1415
+    # 隊列管理器名稱
+    queue-manager: QM_NGSC_BG
+    # 通道名稱
+    channel: svrconn
+    # 逾時
+    receive-timeout: 20000
+
