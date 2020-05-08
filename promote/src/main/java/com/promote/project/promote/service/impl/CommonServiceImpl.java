@@ -212,7 +212,7 @@ public class CommonServiceImpl implements ICommonService {
             }
 
             // TODO 改為使用OTP
-            AsyncManager.me().execute(AsyncFactory.sendEmail(user.getEmail(), "振興券 - 抵用券驗證碼", msg));
+            System.out.println(msg);
 
             // 驗證碼存入Redis
             String verifyKey = Constants.VERI_COUPON_SEND_CODE_KEY + username;

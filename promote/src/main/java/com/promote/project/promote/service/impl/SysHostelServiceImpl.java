@@ -154,35 +154,5 @@ public class SysHostelServiceImpl implements ISysHostelService {
         return token;
     }
 
-    @Override
-    @Transactional
-    public void proxyRegist(SysUser sysUser) {
-
-        SysUser insertUser = new SysUser();
-
-        // 設定使用者資料
-        insertUser.setUsername(sysUser.getIdentity());
-        insertUser.setIdentity(sysUser.getIdentity());
-        String password = "s" + String.format("%07d", new Random().nextInt(9999999));
-        insertUser.setPassword(SecurityUtils.encryptPassword(password));
-        insertUser.setMobile(sysUser.getMobile());
-
-        // 插入使用者資料表
-        userMapper.insertUser(insertUser);
-
-        // 設定消費者基本資料
-        ConsumerInfo consumerInfo = sysUser.getConsumerInfo();
-        ConsumerInfo insertConsumerInfo = new ConsumerInfo();
-        insertConsumerInfo.setUserId(insertUser.getUserId());
-        insertConsumerInfo.setName(consumerInfo.getName());
-        insertConsumerInfo.setBirthday(consumerInfo.getBirthday());
-        // 已註冊狀態
-        insertConsumerInfo.setConsumerStat(ConsumerConstants.STAT_REGISTED);
-        // 紙本領用抵用券
-        insertConsumerInfo.setCouponType(CouponConstants.TYPE_PAPAER);
-
-        // 插入消費者基本資料表
-        consumerInfoMapper.insertConsumerInfo(insertConsumerInfo);
-    }
 
 }

@@ -83,7 +83,10 @@ public class ConsumerServiceImpl implements IConsumerService {
         // 設定使用者資訊
         SysUser insertUser = new SysUser();
         insertUser.setUsername(user.getUsername());
-        insertUser.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
+        // 非代註冊才需要密碼
+        if (!isProxy) {
+            insertUser.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
+        }
         insertUser.setMobile(user.getMobile().replace("-", ""));
         insertUser.setIdentity(user.getIdentity());
 

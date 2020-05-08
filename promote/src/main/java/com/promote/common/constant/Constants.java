@@ -60,6 +60,11 @@ public class Constants
     public static final String LOGIN_TOKEN_KEY = "login_tokens:";
 
     /**
+     * 補助額度檔 redis key
+     */
+    public static final String FOUND_AMOUNT_KEY = "found_amount";
+
+    /**
      * 驗證碼有效期（分鐘）
      */
     public static final Integer CAPTCHA_EXPIRATION = 60;

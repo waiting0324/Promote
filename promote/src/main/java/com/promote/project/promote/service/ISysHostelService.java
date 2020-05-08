@@ -1,7 +1,5 @@
 package com.promote.project.promote.service;
 
-import com.promote.project.system.domain.SysUser;
-
 /**
  * 旅宿業者 服務層
  *
@@ -31,11 +29,4 @@ public interface ISysHostelService {
     String login(String username, String password, String code, String uuid);
 
 
-    /**
-     * 旅宿業者替消費者代為註冊
-     *
-     * @param sysUser 消費者資料
-     * @return 結果
-     */
-    void proxyRegist(SysUser sysUser);
 }
