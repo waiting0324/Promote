@@ -30,7 +30,7 @@ public class ConsumerInfo extends BaseEntity
 
     /** 生日 */
     @Excel(name = "生日")
-    private String birthday;
+    private Date birthday;
 
     /** 消費者狀態
      1. 註冊
@@ -84,15 +84,14 @@ public class ConsumerInfo extends BaseEntity
         return name;
     }
 
-    public void setBirthday(String birthday)
-    {
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
         this.birthday = birthday;
     }
 
-    public String getBirthday()
-    {
-        return birthday;
-    }
     public void setConsumerStat(String consumerStat)
     {
         this.consumerStat = consumerStat;

@@ -8,22 +8,21 @@
         <result property="userId"    column="user_id"    />
         <result property="name"    column="name"    />
         <result property="type"    column="type"    />
-        <result property="bankAccount"    column="bank_account"    />
         <result property="bankAccountName"    column="bank_account_name"    />
+        <result property="bankAccount"    column="bank_account"    />
         <result property="bankAchCode"    column="bank_ach_code"    />
         <result property="address"    column="address"    />
         <result property="latitude"    column="latitude"    />
         <result property="longitude"    column="longitude"    />
-        <result property="isAgreeTerms"    column="is_agree_terms"    />
         <result property="agreeTime"    column="agree_time"    />
+        <result property="isAgreeTerms"    column="is_agree_terms"    />
         <result property="status"    column="status"    />
-        <result property="pwNeedReset"    column="pw_need_reset"    />
         <result property="updateTime"    column="update_time"    />
         <result property="createTime"    column="create_time"    />
     </resultMap>
 
     <sql id="selectStoreInfoVo">
-        select user_id, name, type, bank_account_name, bank_account, bank_ach_code, address, latitude, longitude, is_agree_terms, agree_time, status, pw_need_reset, update_time, create_time from pro_store_info
+        select user_id, name, type, bank_account_name, bank_account, bank_ach_code, address, latitude, longitude, is_agree_terms, agree_time, status, update_time, create_time from pro_store_info
     </sql>
 
     <select id="selectStoreInfoList" parameterType="StoreInfo" resultMap="StoreInfoResult">
@@ -40,7 +39,6 @@
             <if test="isAgreeTerms != null  and isAgreeTerms != ''"> and is_agree_terms = #{isAgreeTerms}</if>
             <if test="agreeTime != null "> and agree_time = #{agreeTime}</if>
             <if test="status != null  and status != ''"> and status = #{status}</if>
-            <if test="pwNeedReset != null  and pwNeedReset != ''"> and pw_need_reset = #{pwNeedReset}</if>
         </where>
     </select>
 
@@ -64,7 +62,6 @@
             <if test="isAgreeTerms != null  and isAgreeTerms != ''">is_agree_terms,</if>
             <if test="agreeTime != null ">agree_time,</if>
             <if test="status != null  and status != ''">status,</if>
-            <if test="pwNeedReset != null  and pwNeedReset != ''">pw_need_reset,</if>
             <if test="updateTime != null ">update_time,</if>
             create_time
         </trim>
@@ -81,7 +78,6 @@
             <if test="isAgreeTerms != null  and isAgreeTerms != ''">#{isAgreeTerms},</if>
             <if test="agreeTime != null ">#{agreeTime},</if>
             <if test="status != null  and status != ''">#{status},</if>
-            <if test="pwNeedReset != null  and pwNeedReset != ''">#{pwNeedReset},</if>
             <if test="updateTime != null ">#{updateTime},</if>
             sysdate
         </trim>
@@ -101,7 +97,6 @@
             <if test="isAgreeTerms != null  and isAgreeTerms != ''">is_agree_terms = #{isAgreeTerms},</if>
             <if test="agreeTime != null ">agree_time = #{agreeTime},</if>
             <if test="status != null  and status != ''">status = #{status},</if>
-            <if test="pwNeedReset != null  and pwNeedReset != ''">pw_need_reset = #{pwNeedReset},</if>
             <if test="updateTime != null ">update_time = #{updateTime},</if>
             <if test="createTime != null ">create_time = #{createTime},</if>
         </trim>

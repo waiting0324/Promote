@@ -81,19 +81,4 @@ public class HostelController extends BaseController {
         return ajax;
     }
 
-    /**
-     * 旅宿業者替消費者代為註冊
-     *
-     * @param sysUser 消費者資料
-     * @return 結果
-     */
-    @PostMapping("/proxyRegist")
-    public AjaxResult proxyRegist(@RequestBody SysUser sysUser) {
-
-        hostelService.proxyRegist(sysUser);
-
-        AjaxResult ajax = AjaxResult.success();
-
-        return ajax;
-    }
 }

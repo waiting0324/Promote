@@ -1,5 +1,7 @@
 package com.promote.project.promote.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import com.promote.common.constant.Constants;
 import com.promote.common.constant.ConsumerConstants;
 import com.promote.common.constant.CouponConstants;
@@ -13,17 +15,12 @@ import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
 import com.promote.framework.web.domain.AjaxResult;
-import com.promote.project.promote.domain.ConsumerInfo;
-import com.promote.project.promote.domain.Coupon;
-import com.promote.project.promote.domain.CouponConsume;
-import com.promote.project.promote.domain.StoreInfo;
-import com.promote.project.promote.mapper.ConsumerInfoMapper;
-import com.promote.project.promote.mapper.CouponConsumeMapper;
-import com.promote.project.promote.mapper.CouponMapper;
-import com.promote.project.promote.mapper.StoreInfoMapper;
+import com.promote.project.promote.domain.*;
+import com.promote.project.promote.mapper.*;
 import com.promote.project.promote.service.ICouponService;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.mapper.SysUserMapper;
+import com.promote.project.system.service.ISysConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +56,11 @@ public class CouponServiceImpl implements ICouponService {
     @Autowired
     private CouponConsumeMapper couponConsumeMapper;
 
+    @Autowired
+    private FundAmountMapper fundAmountMapper;
+
+    @Autowired
+    private ISysConfigService configService;
 
     /**
      * 查詢抵用券
@@ -132,20 +134,19 @@ public class CouponServiceImpl implements ICouponService {
     @Transactional
     public void sendCoupon(SysUser user, String code) {
 
+
         // 檢驗是否有消費者帳號
         if (StringUtils.isNull(user.getUsername())) {
             throw new CustomException("未指定消費者帳號");
         }
         Long userId = userMapper.selectUserByUsername(user.getUsername()).getUserId();
         String consumerStat = consumerInfoMapper.selectConsumerInfoById(userId).getConsumerStat();
+        ConsumerInfo consumerInfo = new ConsumerInfo();
 
-        // 校驗是否有輸入手機號碼
-        if (StringUtils.isEmpty(user.getMobile())) {
+        // 除了代註冊沒手機的之外，都要校驗是否有輸入手機號碼
+        if (StringUtils.isEmpty(user.getMobile())
+                && !consumerStat.equals(ConsumerConstants.STAT_REGISTED_PROXY_NO_MOBILE)) {
             throw new CustomException("未輸入手機號碼");
-        }
-        // 校驗是否可以發抵用券
-        if (ConsumerConstants.STAT_REGISTED.equals(consumerStat)) {
-            throw new CustomException("請先發送OTP驗證碼給該消費者");
         }
         if (ConsumerConstants.STAT_SEND.equals(consumerStat)
             || ConsumerConstants.STAT_PRINT.equals(consumerStat)) {
@@ -156,7 +157,8 @@ public class CouponServiceImpl implements ICouponService {
         // 從Redis中取出驗證碼
         String verifyKey = Constants.VERI_COUPON_SEND_CODE_KEY + user.getUsername();
         String captcha = redisCache.getCacheObject(verifyKey);
-        // redisCache.deleteObject(verifyKey);
+        redisCache.deleteObject(verifyKey);
+
         // 比對驗證碼
         if (captcha == null)
         {
@@ -168,6 +170,27 @@ public class CouponServiceImpl implements ICouponService {
         }
 
         Date nowDate = DateUtils.getNowDate();
+
+        // 查看預算是否足夠
+        // 從Redis中查詢預算
+        List<FundAmount> fundAmountList = redisCache.getCacheList(Constants.FOUND_AMOUNT_KEY);
+        // Redis中沒有則從DB中查詢
+        if (fundAmountList.isEmpty()) {
+            fundAmountList = fundAmountMapper.selectFundAmountList(null);
+            redisCache.setCacheList(Constants.FOUND_AMOUNT_KEY, fundAmountList);
+        }
+
+        // 檢查預算是否足夠
+        Map<String, Boolean> fundMap = checkFundEnough(fundAmountList);
+        // 夜市預算是否足夠
+        boolean isNightMarketFundEnough = fundMap.get(StoreTypeConstants.NIGHT_MARKET);
+        // 餐廳預算是否足夠
+        boolean isRestaurantFundEnough = fundMap.get(StoreTypeConstants.RESTAURANT);
+        // 商圈預算是否足夠
+        boolean isShoppingAreaFundEnough = fundMap.get(StoreTypeConstants.SHOPPING_AERA);
+        // 藝文預算是否足夠
+        boolean isArtFundEnough = fundMap.get(StoreTypeConstants.ART);
+
 
         // 消費者選擇使用電子(虛擬)方式發放抵用券
         if (CouponConstants.TYPE_ELEC.equals(user.getConsumerInfo().getCouponType())) {
@@ -185,25 +208,25 @@ public class CouponServiceImpl implements ICouponService {
                 coupon.setAmount(CouponConstants.COUPON_AMOUNT);
 
                 // 夜市
-                if (i <= 3) {
+                if (i <= 3 && isNightMarketFundEnough) {
                     coupon.setStoreType(StoreTypeConstants.NIGHT_MARKET);
                     // 中辦
                     coupon.setFundType(CouponConstants.FUND_TYPE_CENTER_OFFICE);
                 }
                 // 餐廳
-                else if (4 <= i && i <= 7) {
+                else if (4 <= i && i <= 7 && isRestaurantFundEnough) {
                     coupon.setStoreType(StoreTypeConstants.RESTAURANT);
                     // 商業司
                     coupon.setFundType(CouponConstants.FUND_TYPE_BUSINESS_DEPARTMENT);
                 }
                 // 商圈
-                else if (8 <= i && i <= 11) {
+                else if (8 <= i && i <= 11 && isShoppingAreaFundEnough) {
                     coupon.setStoreType(StoreTypeConstants.SHOPPING_AERA);
                     // 中企
                     coupon.setFundType(CouponConstants.FUND_TYPE_SME);
                 }
                 // 藝文
-                else if (12 <= i && i <= 15) {
+                else if (12 <= i && i <= 15 && isArtFundEnough) {
                     coupon.setStoreType(StoreTypeConstants.ART);
                     // 文化部
                     coupon.setFundType(CouponConstants.FUND_TYPE_MINISTRY_CULTURE);
@@ -218,13 +241,13 @@ public class CouponServiceImpl implements ICouponService {
         }
         // 消費者選擇使用紙本方式發放抵用券
         else if (CouponConstants.TYPE_PAPAER.equals(user.getConsumerInfo().getCouponType())) {
-            // TODO 設定KIOSK兌換碼
+            // KIOSK兌換碼
+            consumerInfo.setPrintCode(RandomUtil.randomNumbers(10));
         } else {
             throw new CustomException("消費者選擇發放抵用券的方式不正確");
         }
 
         // 處理要更新的消費者資料
-        ConsumerInfo consumerInfo = new ConsumerInfo();
         consumerInfo.setUserId(userId);
         consumerInfo.setConsumerStat(ConsumerConstants.STAT_SEND);
         consumerInfo.setCouponPrintType(user.getConsumerInfo().getCouponType());
@@ -236,16 +259,85 @@ public class CouponServiceImpl implements ICouponService {
         if(result < 0){
             throw new CustomException(MessageUtils.message("pro.err.update.consumer.fail"));
         }
-        //更新使用者資料
+
+        // 更新使用者資料
         SysUser updUser = new SysUser();
         updUser.setUserId(userId);
         updUser.setMobile(user.getMobile());
+
+        // 隨機密碼
+        String down = String.valueOf(((char)(new Random().nextInt(26)+97)));  // 得到a-z
+        String genPwd = down + RandomUtil.randomNumbers(7);
+
+        // 旅宿業者代註冊消費者，需要產生隨機密碼
+        if (consumerStat.equals(ConsumerConstants.STAT_REGISTED_PROXY_MOBILE)
+                || consumerStat.equals(ConsumerConstants.STAT_REGISTED_PROXY_NO_MOBILE)) {
+            user.setPassword(SecurityUtils.encryptPassword(genPwd));
+        }
+
+        // 插入使用者表
         result = userMapper.updateUser(updUser);
         if(result < 0){
             throw new CustomException(MessageUtils.message("pro.err.update.user.fail"));
         }
 
-        // TODO 處理預算表
+        // TODO 用MQ更新預算表
+        for (FundAmount fundAmount : fundAmountList) {
+
+            // 夜市
+            if (isNightMarketFundEnough && StoreTypeConstants.NIGHT_MARKET.equals(fundAmount.getStoreType())) {
+                fundAmount.setBalance(fundAmount.getBalance() - fundAmount.getPerFund());
+                fundAmountMapper.updateFundAmount(fundAmount);
+            }
+            // 餐廳
+            else if (isRestaurantFundEnough && StoreTypeConstants.RESTAURANT.equals(fundAmount.getStoreType())) {
+                fundAmount.setBalance(fundAmount.getBalance() - fundAmount.getPerFund());
+                fundAmountMapper.updateFundAmount(fundAmount);
+            }
+            // 商圈
+            else if (isShoppingAreaFundEnough && StoreTypeConstants.SHOPPING_AERA.equals(fundAmount.getStoreType())) {
+                fundAmount.setBalance(fundAmount.getBalance() - fundAmount.getPerFund());
+                fundAmountMapper.updateFundAmount(fundAmount);
+            }
+            // 藝文
+            else if (isArtFundEnough && StoreTypeConstants.ART.equals(fundAmount.getStoreType())) {
+                fundAmount.setBalance(fundAmount.getBalance() - fundAmount.getPerFund());
+                fundAmountMapper.updateFundAmount(fundAmount);
+            }
+
+        }
+        // 更新預算表的Redis
+        redisCache.setCacheList(Constants.FOUND_AMOUNT_KEY, fundAmountList);
+
+
+        // TODO 抵用券發送成功簡訊
+        // 自行註冊的消費者
+        if (consumerStat.equals(ConsumerConstants.STAT_REGISTED)) {
+            // 簡訊模板
+            String template = configService.selectConfigByKey("hostel.sendCoupon.template");
+            if (StringUtils.isEmpty(template)) {
+                throw new CustomException("尚未指定簡訊模板，請聯絡管理員，模板KEY: hostel.sendCoupon.template");
+            }
+
+            // 要發送的訊息
+            String msg = template;
+            System.out.println("自行註冊的消費者簡訊: " + msg);
+        }
+        // 旅宿業者代註冊的消費者
+        else if (consumerStat.equals(ConsumerConstants.STAT_REGISTED_PROXY_MOBILE)
+                || consumerStat.equals(ConsumerConstants.STAT_REGISTED_PROXY_NO_MOBILE)) {
+
+            // 簡訊模板
+            String template = configService.selectConfigByKey("hostel.sendCoupon.proxy.template");
+            if (StringUtils.isEmpty(template)) {
+                throw new CustomException("尚未指定簡訊模板，請聯絡管理員，模板KEY: hostel.sendCoupon.proxy.template");
+            }
+
+            // 要發送的訊息
+            String msg = StrUtil.format(template, user.getUsername(), genPwd);
+            System.out.println("代註冊的消費者簡訊: " + msg);
+        }
+
     }
 
     /**
@@ -483,5 +575,39 @@ public class CouponServiceImpl implements ICouponService {
     @Override
     public List<Map<String,Object>> getTotalAmtByStoreId(String beginDate, String endDate) {
         return couponConsumeMapper.getTotalAmtByStoreId(beginDate,endDate);
+    }
+
+    /**
+     * 檢查預算是否足夠
+     */
+    private Map checkFundEnough(List<FundAmount> fundAmountList) {
+
+        Map<String, Boolean> result = new HashMap<>();
+
+        // 檢測預算是否足夠
+        for (FundAmount fundAmount : fundAmountList) {
+            // 夜市
+            if (fundAmount.getStoreType().equals(StoreTypeConstants.NIGHT_MARKET)) {
+                Boolean isNightMarketFundEnough = fundAmount.getBalance() - fundAmount.getPerFund() > 0;
+                result.put(StoreTypeConstants.NIGHT_MARKET, isNightMarketFundEnough);
+            }
+            // 餐廳
+            else if (fundAmount.getStoreType().equals(StoreTypeConstants.RESTAURANT)) {
+                Boolean isRestaurantFundEnough = fundAmount.getBalance() - fundAmount.getPerFund() > 0;
+                result.put(StoreTypeConstants.RESTAURANT, isRestaurantFundEnough);
+            }
+            // 商圈
+            else if (fundAmount.getStoreType().equals(StoreTypeConstants.SHOPPING_AERA)) {
+                Boolean isShoppingAreaFundEnough = fundAmount.getBalance() - fundAmount.getPerFund() > 0;
+                result.put(StoreTypeConstants.SHOPPING_AERA, isShoppingAreaFundEnough);
+            }
+            // 藝文
+            else if (fundAmount.getStoreType().equals(StoreTypeConstants.ART)) {
+                Boolean isArtFundEnough = fundAmount.getBalance() - fundAmount.getPerFund() > 0;
+                result.put(StoreTypeConstants.ART, isArtFundEnough);
+            }
+        }
+
+        return result;
     }
 }

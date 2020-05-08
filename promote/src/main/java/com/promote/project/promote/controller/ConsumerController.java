@@ -84,7 +84,7 @@ public class ConsumerController extends BaseController {
 
         // 必填欄位檢核，姓名、身分證、生日
         if ( StringUtils.isEmpty(user.getConsumerInfo().getName()) || StringUtils.isEmpty(user.getIdentity()) ||
-                 StringUtils.isEmpty(user.getConsumerInfo().getBirthday())) {
+                 StringUtils.isNull(user.getConsumerInfo().getBirthday())) {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
 
@@ -111,18 +111,6 @@ public class ConsumerController extends BaseController {
         return AjaxResult.success();
     }
 
-    /**
-     * 取得消費者基本資料
-     *
-     * @return 結果
-     */
-    /*@GetMapping("/info")
-    public AjaxResult getConsumerInfo() {
-        String json = JSON.toJSONString(SecurityUtils.getLoginUser().getUser(),true);
-        SysUser user = JSON.parseObject(json, SysUser.class);
-        user.setPassword(null);
-        return AjaxResult.success(user);
-    }*/
 
     /**
      * 修改消費者基本資料
