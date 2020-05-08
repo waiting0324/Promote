@@ -239,9 +239,16 @@
  		update sys_user set password = #{newPwd} where user_id = #{userId} and birthday = #{birthDay}
 	</update>
 
-    <select id="selectUserByIdBirthday" parameterType="SysUser" resultMap="SysUserResult">
-        <include refid="selectUserVo"/>
-        where u.identity = #{identity} and u.birthday = #{birthday}
+    <select id="selectUserByIdentityAndBirthday" resultMap="SysUserResult">
+        SELECT
+            u.user_id,
+            u.identity,
+            c.birthday
+        FROM
+            sys_user u
+            LEFT JOIN pro_consumer_info c ON u.user_id = c.user_id
+        WHERE
+            u.identity = #{identity} and c.birthday = #{birthday}
     </select>
 
 

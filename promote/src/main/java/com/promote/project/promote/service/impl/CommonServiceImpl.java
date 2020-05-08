@@ -22,9 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -222,8 +219,8 @@ public class CommonServiceImpl implements ICommonService {
             redisCache.setCacheObject(verifyKey, verifyCode, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
 
             // 更新此消費者狀態
-            consumerInfo.setConsumerStat(ConsumerConstants.STAT_CONFIRM);
-            consumerInfoMapper.updateConsumerInfo(consumerInfo);
+            /*consumerInfo.setConsumerStat(ConsumerConstants.STAT_CONFIRM);
+            consumerInfoMapper.updateConsumerInfo(consumerInfo);*/
         } else {
             throw new CustomException("驗證方式選擇錯誤");
         }

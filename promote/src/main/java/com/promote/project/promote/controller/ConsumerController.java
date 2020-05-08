@@ -60,16 +60,31 @@ public class ConsumerController extends BaseController {
 
         Map<String, Object> params = user.getParams();
 
-        // 校驗同意條款
-        String isAgreeTerms = (String) params.get("isAgreeTerms");
-        if (StringUtils.isEmpty(isAgreeTerms) || !("1".equals(isAgreeTerms))) {
-            return AjaxResult.error(MessageUtils.message("pro.err.terms.not.check"));
+        Boolean isProxy = (Boolean) params.get("isProxy");
+        // 正常註冊(非代註冊)才需檢核欄位
+        if (!isProxy) {
+
+            // 帳號、密碼、手機
+            if (StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(user.getPassword()) ||
+                    StringUtils.isEmpty(user.getMobile())) {
+                return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
+            }
+
+            // 校驗同意條款
+            String isAgreeTerms = (String) params.get("isAgreeTerms");
+            if (StringUtils.isEmpty(isAgreeTerms) || !("1".equals(isAgreeTerms))) {
+                return AjaxResult.error(MessageUtils.message("pro.err.terms.not.check"));
+            }
+
+            // 密碼規則檢核
+            if (!user.getPassword().matches(Constants.PASSWORD_REGEX)) {
+                AjaxResult.error("密碼不符合8-20字元的英數字規則");
+            }
         }
 
-        // 必填欄位檢核
-        if (StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(user.getPassword()) ||
-                StringUtils.isEmpty(user.getConsumerInfo().getName()) || StringUtils.isEmpty(user.getIdentity()) ||
-                StringUtils.isEmpty(user.getMobile()) || StringUtils.isEmpty(user.getConsumerInfo().getBirthday())) {
+        // 必填欄位檢核，姓名、身分證、生日
+        if ( StringUtils.isEmpty(user.getConsumerInfo().getName()) || StringUtils.isEmpty(user.getIdentity()) ||
+                 StringUtils.isEmpty(user.getConsumerInfo().getBirthday())) {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
 
@@ -92,7 +107,7 @@ public class ConsumerController extends BaseController {
             }
         }
 
-        consumerService.regist(user);
+        consumerService.regist(user, isProxy);
         return AjaxResult.success();
     }
 

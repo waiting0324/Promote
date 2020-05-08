@@ -1,5 +1,6 @@
 package com.promote.project.promote.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.promote.framework.aspectj.lang.annotation.Excel;
 import com.promote.framework.web.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author promote
  * @date 2020-04-27
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProNews extends BaseEntity
 {
     private static final long serialVersionUID = 1L;

@@ -183,7 +183,6 @@ public class SysHostelServiceImpl implements ISysHostelService {
 
         // 插入消費者基本資料表
         consumerInfoMapper.insertConsumerInfo(insertConsumerInfo);
-
     }
 
 }

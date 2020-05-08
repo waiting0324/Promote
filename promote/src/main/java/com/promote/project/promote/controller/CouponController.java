@@ -1,6 +1,5 @@
 package com.promote.project.promote.controller;
 
-import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.common.utils.poi.ExcelUtil;
@@ -107,12 +106,11 @@ public class CouponController extends BaseController {
     public AjaxResult sendCoupon(@RequestBody SysUser user) {
         Map<String, Object> params = user.getParams();
         String code = (String) params.get("code");
-        if (StringUtils.isNotEmpty(code)) {
-            couponService.sendCoupon(user, code);
-            return AjaxResult.success();
-        }
-        return AjaxResult.error(MessageUtils.message("user.jcaptcha.not.exist"));
+
+        couponService.sendCoupon(user, code);
+        return AjaxResult.success();
     }
+
 
     /**
      * 消費者取得可使用的抵用券

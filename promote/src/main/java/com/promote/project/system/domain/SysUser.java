@@ -1,5 +1,6 @@
 package com.promote.project.system.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.promote.framework.aspectj.lang.annotation.Excel;
 import com.promote.framework.aspectj.lang.annotation.Excel.ColumnType;
@@ -22,6 +23,7 @@ import java.util.List;
  *
  * @author ruoyi
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SysUser extends BaseEntity {
     private static final long serialVersionUID = 1L;
 

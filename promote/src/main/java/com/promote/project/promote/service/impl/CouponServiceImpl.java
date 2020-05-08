@@ -12,7 +12,6 @@ import com.promote.common.utils.MessageUtils;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
-import com.promote.framework.security.LoginUser;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.promote.domain.Coupon;
@@ -133,14 +132,14 @@ public class CouponServiceImpl implements ICouponService {
     @Transactional
     public void sendCoupon(SysUser user, String code) {
 
-        // 檢驗是否有消費者ID
+        // 檢驗是否有消費者帳號
         if (StringUtils.isNull(user.getUsername())) {
             throw new CustomException("未指定消費者帳號");
         }
         Long userId = userMapper.selectUserByUsername(user.getUsername()).getUserId();
         String consumerStat = consumerInfoMapper.selectConsumerInfoById(userId).getConsumerStat();
 
-        //校驗是否有輸入手機號碼
+        // 校驗是否有輸入手機號碼
         if (StringUtils.isEmpty(user.getMobile())) {
             throw new CustomException("未輸入手機號碼");
         }
@@ -219,7 +218,7 @@ public class CouponServiceImpl implements ICouponService {
         }
         // 消費者選擇使用紙本方式發放抵用券
         else if (CouponConstants.TYPE_PAPAER.equals(user.getConsumerInfo().getCouponType())) {
-            // TODO 連接KIOSK
+            // TODO 設定KIOSK兌換碼
         } else {
             throw new CustomException("消費者選擇發放抵用券的方式不正確");
         }
@@ -245,6 +244,8 @@ public class CouponServiceImpl implements ICouponService {
         if(result < 0){
             throw new CustomException(MessageUtils.message("pro.err.update.user.fail"));
         }
+
+        // TODO 處理預算表
     }
 
     /**

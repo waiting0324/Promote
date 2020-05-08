@@ -129,12 +129,12 @@ public interface SysUserMapper {
     public int resetPwd(@Param("userId") Long userId, @Param("birthDay") String birthDay, @Param("newPwd") String newPwd);
 
     /**
-     * 通過使用者帳號及生日查詢使用者
+     * 通過使用者身分證及生日查詢使用者
      *
      * @param sysUser 使用者資料
      * @return 結果
      */
-    public SysUser selectUserByIdBirthday(SysUser sysUser);
+    public SysUser selectUserByIdentityAndBirthday(@Param("identity") String identity, @Param("birthday") String birthday);
 
 
     /**

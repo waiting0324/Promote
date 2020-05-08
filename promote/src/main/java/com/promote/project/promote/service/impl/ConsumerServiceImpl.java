@@ -60,12 +60,25 @@ public class ConsumerServiceImpl implements IConsumerService {
      */
     @Override
     @Transactional
-    public void regist(SysUser user) {
+    public void regist(SysUser user, Boolean isProxy) {
 
 
+        // 旅宿業者代註冊，將身分證當成帳號
+        if (isProxy) {
+            user.setUsername(user.getIdentity());
+        }
+
+        // 檢核帳號是否重複
         if (StringUtils.isNotNull(userMapper.selectUserByUsername(user.getUsername()))) {
             throw new CustomException("該帳號已被使用");
         }
+
+        // 檢核身分證與生日是否重複
+        if (StringUtils.isNotNull(userMapper.selectUserByIdentityAndBirthday(user.getIdentity(),
+                user.getConsumerInfo().getBirthday()))) {
+            throw new CustomException("該身分證已重複註冊");
+        }
+
 
         // 設定使用者資訊
         SysUser insertUser = new SysUser();
@@ -85,12 +98,31 @@ public class ConsumerServiceImpl implements IConsumerService {
         ConsumerInfo consumerInfo = new ConsumerInfo();
         consumerInfo.setUserId(insertUser.getUserId());
         consumerInfo.setName(user.getConsumerInfo().getName());
-//        consumerInfo.setIdentity(user.getIdentity());
         consumerInfo.setBirthday(user.getConsumerInfo().getBirthday());
-        // 狀態設為註冊
-        consumerInfo.setConsumerStat(ConsumerConstants.STAT_REGISTED);
-        // 默認紙本列印抵用券
-        consumerInfo.setCouponType(CouponConstants.TYPE_PAPAER);
+
+        // 非旅宿業者代註冊
+        if (!isProxy) {
+            // 狀態設為 一般註冊
+            consumerInfo.setConsumerStat(ConsumerConstants.STAT_REGISTED);
+            // 默認紙本列印抵用券
+            consumerInfo.setCouponType(CouponConstants.TYPE_ELEC);
+        }
+        // 旅宿業者代註冊
+        else {
+            // 狀態設為 旅宿業者代註冊(無手機)
+            if (user.getMobile() == null) {
+                consumerInfo.setConsumerStat(ConsumerConstants.STAT_REGISTED_PROXY_NO_MOBILE);
+                // 默認紙本列印抵用券
+                consumerInfo.setCouponType(CouponConstants.TYPE_PAPAER);
+            }
+            // 旅宿業者代註冊(有手機)
+            else {
+                consumerInfo.setConsumerStat(ConsumerConstants.STAT_REGISTED_PROXY_MOBILE);
+                // 默認紙本列印抵用券
+                consumerInfo.setCouponType(CouponConstants.TYPE_ELEC);
+            }
+        }
+
         // 未列印
         consumerInfo.setCouponPrintType(CouponConstants.UN_PRINTED);
 

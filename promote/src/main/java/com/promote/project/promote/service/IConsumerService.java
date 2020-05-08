@@ -1,7 +1,6 @@
 package com.promote.project.promote.service;
 
 import com.promote.framework.security.LoginUser;
-import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.system.domain.SysUser;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public interface IConsumerService {
     /**
      * 消費者註冊
      */
-    public void regist(SysUser user);
+    public void regist(SysUser user, Boolean isProxy);
 
     /**
      * 修改消費者基本資料

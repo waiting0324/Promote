@@ -8,9 +8,21 @@ package com.promote.common.constant;
 public class ConsumerConstants {
 
     /**
-     * 狀態: 註冊
+     * 狀態: 自行註冊
      */
-    public static final String STAT_REGISTED = "1";
+    public static final String STAT_REGISTED = "0";
+
+
+    /**
+     * 狀態: 旅宿業者代註冊(有手機)
+     */
+    public static final String STAT_REGISTED_PROXY_MOBILE = "1";
+
+
+    /**
+     * 狀態: 旅宿業者代註冊(無手機)
+     */
+    public static final String STAT_REGISTED_PROXY_NO_MOBILE = "2";
 
     /**
      * 狀態: 旅宿業確認 (已發送抵用券驗證碼)
@@ -23,7 +35,12 @@ public class ConsumerConstants {
     public static final String STAT_SEND = "3";
 
     /**
-     * 狀態: 已列印紙本抵用券
+     * 狀態: 紙本抵用券列印中
      */
-    public static final String STAT_PRINT = "4";
+    public static final String STAT_PRINTING = "4";
+
+    /**
+     * 狀態: 紙本抵用券已列印
+     */
+    public static final String STAT_PRINT = "5";
 }
