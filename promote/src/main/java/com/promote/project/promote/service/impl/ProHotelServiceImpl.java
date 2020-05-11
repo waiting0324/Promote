@@ -122,7 +122,7 @@ public class ProHotelServiceImpl implements IProHotelService {
         List<SysUserRole> userRoleList = new ArrayList<>();
         SysUserRole ur = new SysUserRole();
         ur.setUserId(user.getUserId());
-        ur.setRoleId(RoleConstants.HOSTEL_ROLE_ID);
+        ur.setRoleId(RoleConstants.HOTEL_ROLE_ID);
         userRoleList.add(ur);
         userRoleMapper.batchUserRole(userRoleList);
 

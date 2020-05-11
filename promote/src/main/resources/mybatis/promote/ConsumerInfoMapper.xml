@@ -11,7 +11,7 @@
         <result property="consumerStat"    column="consumer_stat"    />
         <result property="couponType"    column="coupon_type"    />
         <result property="printCode"    column="print_code"    />
-        <result property="hostelId"    column="hostel_id"    />
+        <result property="hotelId"    column="hotel_id"    />
         <result property="issueDate"    column="issue_date"    />
         <result property="receiveDate"    column="receive_date"    />
         <result property="updateTime"    column="update_time"    />
@@ -19,7 +19,7 @@
     </resultMap>
 
     <sql id="selectConsumerInfoVo">
-        select user_id, name, birthday, consumer_stat, coupon_type, print_code, hostel_id, issue_date, receive_date, update_time, create_time from pro_consumer_info
+        select user_id, name, birthday, consumer_stat, coupon_type, print_code, hotel_id, issue_date, receive_date, update_time, create_time from pro_consumer_info
     </sql>
 
     <select id="selectConsumerInfoList" parameterType="ConsumerInfo" resultMap="ConsumerInfoResult">
@@ -30,7 +30,7 @@
             <if test="consumerStat != null  and consumerStat != ''"> and consumer_stat = #{consumerStat}</if>
             <if test="couponType != null  and couponType != ''"> and coupon_type = #{couponType}</if>
             <if test="printCode != null  and printCode != ''"> and print_code = #{printCode}</if>
-            <if test="hostelId != null "> and hostel_id = #{hostelId}</if>
+            <if test="hotelId != null "> and hotel_id = #{hotelId}</if>
             <if test="issueDate != null "> and issue_date = #{issueDate}</if>
             <if test="receiveDate != null "> and receive_date = #{receiveDate}</if>
         </where>
@@ -50,7 +50,7 @@
             <if test="consumerStat != null  and consumerStat != ''">consumer_stat,</if>
             <if test="couponType != null  and couponType != ''">coupon_type,</if>
             <if test="printCode != null  and printCode != ''">print_code,</if>
-            <if test="hostelId != null ">hostel_id,</if>
+            <if test="hotelId != null ">hotel_id,</if>
             <if test="issueDate != null ">issue_date,</if>
             <if test="receiveDate != null ">receive_date,</if>
             <if test="updateTime != null ">update_time,</if>
@@ -63,7 +63,7 @@
             <if test="consumerStat != null  and consumerStat != ''">#{consumerStat},</if>
             <if test="couponType != null  and couponType != ''">#{couponType},</if>
             <if test="printCode != null  and printCode != ''">#{printCode},</if>
-            <if test="hostelId != null ">#{hostelId},</if>
+            <if test="hotelId != null ">#{hotelId},</if>
             <if test="issueDate != null ">#{issueDate},</if>
             <if test="receiveDate != null ">#{receiveDate},</if>
             <if test="updateTime != null ">#{updateTime},</if>
@@ -79,7 +79,7 @@
             <if test="consumerStat != null  and consumerStat != ''">consumer_stat = #{consumerStat},</if>
             <if test="couponType != null  and couponType != ''">coupon_type = #{couponType},</if>
             <if test="printCode != null  and printCode != ''">print_code = #{printCode},</if>
-            <if test="hostelId != null ">hostel_id = #{hostelId},</if>
+            <if test="hotelId != null ">hotel_id = #{hotelId},</if>
             <if test="issueDate != null ">issue_date = #{issueDate},</if>
             <if test="receiveDate != null ">receive_date = #{receiveDate},</if>
             update_time = sysdate

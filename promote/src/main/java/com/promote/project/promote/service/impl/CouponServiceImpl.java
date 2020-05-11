@@ -1,5 +1,6 @@
 package com.promote.project.promote.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.promote.common.constant.Constants;
@@ -25,8 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -139,6 +138,9 @@ public class CouponServiceImpl implements ICouponService {
         if (StringUtils.isNull(user.getUsername())) {
             throw new CustomException("未指定消費者帳號");
         }
+        if (StringUtils.isNull(userMapper.selectUserByUsername(user.getUsername()))) {
+            throw new CustomException("找不到此消費者");
+        }
         Long userId = userMapper.selectUserByUsername(user.getUsername()).getUserId();
         String consumerStat = consumerInfoMapper.selectConsumerInfoById(userId).getConsumerStat();
         ConsumerInfo consumerInfo = new ConsumerInfo();
@@ -157,7 +159,7 @@ public class CouponServiceImpl implements ICouponService {
         // 從Redis中取出驗證碼
         String verifyKey = Constants.VERI_COUPON_SEND_CODE_KEY + user.getUsername();
         String captcha = redisCache.getCacheObject(verifyKey);
-        redisCache.deleteObject(verifyKey);
+        //redisCache.deleteObject(verifyKey);
 
         // 比對驗證碼
         if (captcha == null)
@@ -201,7 +203,7 @@ public class CouponServiceImpl implements ICouponService {
 
                 // 設定抵用券的基本資料
                 Coupon coupon = new Coupon();
-                coupon.setId(LocalDate.now().format(DateTimeFormatter.ofPattern("MMdd")) + UUID.randomUUID());
+                coupon.setId(IdUtil.objectId().substring(4, 24));
                 coupon.setUserId(userId);
                 coupon.setIsUsed("0");
                 coupon.setIssueDate(nowDate);
@@ -251,7 +253,7 @@ public class CouponServiceImpl implements ICouponService {
         consumerInfo.setUserId(userId);
         consumerInfo.setConsumerStat(ConsumerConstants.STAT_SEND);
         consumerInfo.setCouponPrintType(user.getConsumerInfo().getCouponType());
-        consumerInfo.setHostelId(SecurityUtils.getLoginUser().getUser().getUserId());
+        consumerInfo.setHotelId(SecurityUtils.getLoginUser().getUser().getUserId());
         consumerInfo.setIssueDate(nowDate);
 
         // 更新消費者資料
@@ -287,22 +289,30 @@ public class CouponServiceImpl implements ICouponService {
             // 夜市
             if (isNightMarketFundEnough && StoreTypeConstants.NIGHT_MARKET.equals(fundAmount.getStoreType())) {
                 fundAmount.setBalance(fundAmount.getBalance() - fundAmount.getPerFund());
-                fundAmountMapper.updateFundAmount(fundAmount);
+                if (fundAmountMapper.updateFundAmount(fundAmount) == 0) {
+                    throw new CustomException("更新夜市預算表失敗");
+                }
             }
             // 餐廳
             else if (isRestaurantFundEnough && StoreTypeConstants.RESTAURANT.equals(fundAmount.getStoreType())) {
                 fundAmount.setBalance(fundAmount.getBalance() - fundAmount.getPerFund());
-                fundAmountMapper.updateFundAmount(fundAmount);
+                if (fundAmountMapper.updateFundAmount(fundAmount) == 0) {
+                    throw new CustomException("更新餐廳預算表失敗");
+                }
             }
             // 商圈
             else if (isShoppingAreaFundEnough && StoreTypeConstants.SHOPPING_AERA.equals(fundAmount.getStoreType())) {
                 fundAmount.setBalance(fundAmount.getBalance() - fundAmount.getPerFund());
-                fundAmountMapper.updateFundAmount(fundAmount);
+                if (fundAmountMapper.updateFundAmount(fundAmount) == 0) {
+                    throw new CustomException("更新商圈預算表失敗");
+                }
             }
             // 藝文
             else if (isArtFundEnough && StoreTypeConstants.ART.equals(fundAmount.getStoreType())) {
                 fundAmount.setBalance(fundAmount.getBalance() - fundAmount.getPerFund());
-                fundAmountMapper.updateFundAmount(fundAmount);
+                if (fundAmountMapper.updateFundAmount(fundAmount) == 0) {
+                    throw new CustomException("更新藝文預算表失敗");
+                }
             }
 
         }

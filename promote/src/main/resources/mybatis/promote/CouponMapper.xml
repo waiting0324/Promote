@@ -69,10 +69,10 @@
     </insert>
 
     <insert id="insertCouponList" parameterType="java.util.List">
-        insert into pro_coupon (id, fund_type, user_id, is_used, issue_date,
+        insert into pro_coupon (id, fund_type, user_id, is_used,
             store_type, amount, create_time) values
         <foreach item="item" collection="list" separator=",">
-            (#{item.id}, #{item.fundType}, #{item.userId}, #{item.isUsed}, #{item.issueDate},
+            (#{item.id}, #{item.fundType}, #{item.userId}, #{item.isUsed},
             #{item.storeType},#{item.amount},sysdate)
         </foreach>
     </insert>
