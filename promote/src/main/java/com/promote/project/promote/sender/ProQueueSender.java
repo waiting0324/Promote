@@ -28,15 +28,15 @@ public class ProQueueSender {
     public void send(String className,Object entity) {
         String json = JSON.toJSONString(entity,true);
         json =  className + ";" + json;
-        try {
-            Object obj = JSON.parseObject(json.substring(json.indexOf(";") + 1),Class.forName(json.substring(0,json.indexOf(";"))) );
-            if(obj instanceof SysOperLog){
-                SysOperLog sysOperLog = (SysOperLog)obj;
-                System.out.println(sysOperLog.getMethod());
-            }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-//        jmsOperations.convertAndSend("queueName", json);
+//        try {
+//            Object obj = JSON.parseObject(json.substring(json.indexOf(";") + 1),Class.forName(json.substring(0,json.indexOf(";"))) );
+//            if(obj instanceof SysOperLog){
+//                SysOperLog sysOperLog = (SysOperLog)obj;
+//                System.out.println(sysOperLog.getMethod());
+//            }
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+        jmsOperations.convertAndSend("queueName", json);
     }
 }

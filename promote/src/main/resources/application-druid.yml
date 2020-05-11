@@ -3,12 +3,16 @@ spring:
     datasource:
         type: com.alibaba.druid.pool.DruidDataSource
         driverClassName: com.ibm.db2.jcc.DB2Driver
+#        driverClassName: com.mysql.cj.jdbc.Driver
         druid:
             # 主庫資料來源
             master:
                 url: jdbc:db2://10.89.1.161:50007/VPREC:currentSchema=PRECMGR;
                 username: precweb
                 password: tvprec2AD
+#                url: jdbc:mysql://localhost:3306/ry_vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
+#                username: root
+#                password: tgdkab309
             # 從庫資料來源
             slave:
                 # 從資料來源開關/預設關閉
@@ -32,6 +36,7 @@ spring:
             maxEvictableIdleTimeMillis: 900000
             # 配置檢測連線是否有效
             validationQuery: SELECT 1 FROM PRO_NEWS
+#            validationQuery: SELECT 1 FROM DUAL
             testWhileIdle: true
             testOnBorrow: false
             testOnReturn: false
