@@ -9,10 +9,7 @@ import com.promote.common.constant.StoreTypeConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.exception.user.CaptchaExpireException;
-import com.promote.common.utils.DateUtils;
-import com.promote.common.utils.MessageUtils;
-import com.promote.common.utils.SecurityUtils;
-import com.promote.common.utils.StringUtils;
+import com.promote.common.utils.*;
 import com.promote.framework.redis.RedisCache;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.domain.*;
@@ -25,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -139,6 +134,9 @@ public class CouponServiceImpl implements ICouponService {
         if (StringUtils.isNull(user.getUsername())) {
             throw new CustomException("未指定消費者帳號");
         }
+        if (StringUtils.isNull(userMapper.selectUserByUsername(user.getUsername()))) {
+            throw new CustomException("找不到此消費者");
+        }
         Long userId = userMapper.selectUserByUsername(user.getUsername()).getUserId();
         String consumerStat = consumerInfoMapper.selectConsumerInfoById(userId).getConsumerStat();
         ConsumerInfo consumerInfo = new ConsumerInfo();
@@ -191,6 +189,9 @@ public class CouponServiceImpl implements ICouponService {
         // 藝文預算是否足夠
         boolean isArtFundEnough = fundMap.get(StoreTypeConstants.ART);
 
+        // 抵用券ID
+        Map<String, LinkedList<String>> couponIds = IdUtils.generateTicketNo(SecurityUtils.getLoginUser().getUser().getUserId() + ""
+                , new String[]{"S", "T", "B", "C"});
 
         // 消費者選擇使用電子(虛擬)方式發放抵用券
         if (CouponConstants.TYPE_ELEC.equals(user.getConsumerInfo().getCouponType())) {
@@ -201,9 +202,9 @@ public class CouponServiceImpl implements ICouponService {
 
                 // 設定抵用券的基本資料
                 Coupon coupon = new Coupon();
-                coupon.setId(LocalDate.now().format(DateTimeFormatter.ofPattern("MMdd")) + UUID.randomUUID());
+
                 coupon.setUserId(userId);
-                coupon.setIsUsed("0");
+                coupon.setIsUsed(CouponConstants.UN_USED);
                 coupon.setIssueDate(nowDate);
                 coupon.setAmount(CouponConstants.COUPON_AMOUNT);
 
@@ -211,24 +212,28 @@ public class CouponServiceImpl implements ICouponService {
                 if (i <= 3 && isNightMarketFundEnough) {
                     coupon.setStoreType(StoreTypeConstants.NIGHT_MARKET);
                     // 中辦
+                    coupon.setId(couponIds.get(CouponConstants.FUND_TYPE_CENTER_OFFICE).pop());
                     coupon.setFundType(CouponConstants.FUND_TYPE_CENTER_OFFICE);
                 }
                 // 餐廳
                 else if (4 <= i && i <= 7 && isRestaurantFundEnough) {
                     coupon.setStoreType(StoreTypeConstants.RESTAURANT);
                     // 商業司
+                    coupon.setId(couponIds.get(CouponConstants.FUND_TYPE_BUSINESS_DEPARTMENT).pop());
                     coupon.setFundType(CouponConstants.FUND_TYPE_BUSINESS_DEPARTMENT);
                 }
                 // 商圈
                 else if (8 <= i && i <= 11 && isShoppingAreaFundEnough) {
                     coupon.setStoreType(StoreTypeConstants.SHOPPING_AERA);
                     // 中企
+                    coupon.setId(couponIds.get(CouponConstants.FUND_TYPE_SME).pop());
                     coupon.setFundType(CouponConstants.FUND_TYPE_SME);
                 }
                 // 藝文
                 else if (12 <= i && i <= 15 && isArtFundEnough) {
                     coupon.setStoreType(StoreTypeConstants.ART);
                     // 文化部
+                    coupon.setId(couponIds.get(CouponConstants.FUND_TYPE_MINISTRY_CULTURE).pop());
                     coupon.setFundType(CouponConstants.FUND_TYPE_MINISTRY_CULTURE);
                 }
 
@@ -251,7 +256,7 @@ public class CouponServiceImpl implements ICouponService {
         consumerInfo.setUserId(userId);
         consumerInfo.setConsumerStat(ConsumerConstants.STAT_SEND);
         consumerInfo.setCouponPrintType(user.getConsumerInfo().getCouponType());
-        consumerInfo.setHostelId(SecurityUtils.getLoginUser().getUser().getUserId());
+        consumerInfo.setHotelId(SecurityUtils.getLoginUser().getUser().getUserId());
         consumerInfo.setIssueDate(nowDate);
 
         // 更新消費者資料
@@ -287,22 +292,30 @@ public class CouponServiceImpl implements ICouponService {
             // 夜市
             if (isNightMarketFundEnough && StoreTypeConstants.NIGHT_MARKET.equals(fundAmount.getStoreType())) {
                 fundAmount.setBalance(fundAmount.getBalance() - fundAmount.getPerFund());
-                fundAmountMapper.updateFundAmount(fundAmount);
+                if (fundAmountMapper.updateFundAmount(fundAmount) == 0) {
+                    throw new CustomException("更新夜市預算表失敗");
+                }
             }
             // 餐廳
             else if (isRestaurantFundEnough && StoreTypeConstants.RESTAURANT.equals(fundAmount.getStoreType())) {
                 fundAmount.setBalance(fundAmount.getBalance() - fundAmount.getPerFund());
-                fundAmountMapper.updateFundAmount(fundAmount);
+                if (fundAmountMapper.updateFundAmount(fundAmount) == 0) {
+                    throw new CustomException("更新餐廳預算表失敗");
+                }
             }
             // 商圈
             else if (isShoppingAreaFundEnough && StoreTypeConstants.SHOPPING_AERA.equals(fundAmount.getStoreType())) {
                 fundAmount.setBalance(fundAmount.getBalance() - fundAmount.getPerFund());
-                fundAmountMapper.updateFundAmount(fundAmount);
+                if (fundAmountMapper.updateFundAmount(fundAmount) == 0) {
+                    throw new CustomException("更新商圈預算表失敗");
+                }
             }
             // 藝文
             else if (isArtFundEnough && StoreTypeConstants.ART.equals(fundAmount.getStoreType())) {
                 fundAmount.setBalance(fundAmount.getBalance() - fundAmount.getPerFund());
-                fundAmountMapper.updateFundAmount(fundAmount);
+                if (fundAmountMapper.updateFundAmount(fundAmount) == 0) {
+                    throw new CustomException("更新藝文預算表失敗");
+                }
             }
 
         }

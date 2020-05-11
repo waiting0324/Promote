@@ -30,6 +30,7 @@ public class ConsumerInfo extends BaseEntity
 
     /** 生日 */
     @Excel(name = "生日")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date birthday;
 
     /** 消費者狀態
@@ -54,7 +55,7 @@ public class ConsumerInfo extends BaseEntity
 
     /** 發放抵用券的旅宿業者 */
     @Excel(name = "發放抵用券的旅宿業者")
-    private Long hostelId;
+    private Long hotelId;
 
     /** 抵用券發放時間 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -129,14 +130,14 @@ public class ConsumerInfo extends BaseEntity
     {
         return printCode;
     }
-    public void setHostelId(Long hostelId)
+    public void setHotelId(Long hotelId)
     {
-        this.hostelId = hostelId;
+        this.hotelId = hotelId;
     }
 
-    public Long getHostelId()
+    public Long getHotelId()
     {
-        return hostelId;
+        return hotelId;
     }
     public void setIssueDate(Date issueDate)
     {
@@ -167,7 +168,7 @@ public class ConsumerInfo extends BaseEntity
                 .append("couponType", getCouponType())
                 .append("couponPrintType", getCouponPrintType())
                 .append("printCode", getPrintCode())
-                .append("hostelId", getHostelId())
+                .append("hostelId", getHotelId())
                 .append("issueDate", getIssueDate())
                 .append("receiveDate", getReceiveDate())
                 .append("updateTime", getUpdateTime())

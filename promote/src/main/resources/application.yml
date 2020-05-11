@@ -136,19 +136,19 @@ email:
 
 ftp:
   # FTP 遠端地址
-  host: 127.0.0.1
+  host: 203.66.68.1
   # FTP 端口
-  port: 21
+  port: 2222
   # FTP 登入帳號
-  username: ftpUser
+  username: tradevan
   # FTP 登入密碼
-  password: s89236001
+  password: +m4DE_qW49tjX&g
   # 遠端資料夾路徑
   remoteDir: /
   # 本地暫存資料夾
-  localTempDir: D:\FTP\temp
+  localTempDir: D:\FTP\temp\
   # 本地儲存已處理檔案
-  localStoreDir: D:\FTP\store
+  localStoreDir: D:\FTP\store\
 
 # IMB MQ配置
 ibm:

@@ -1,7 +1,7 @@
 package com.promote.project.promote.task;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.extra.ftp.Ftp;
+import cn.hutool.extra.ssh.Sftp;
 import cn.hutool.poi.excel.sax.Excel03SaxReader;
 import cn.hutool.poi.excel.sax.Excel07SaxReader;
 import cn.hutool.poi.excel.sax.handler.RowHandler;
@@ -85,18 +85,41 @@ public class PromoteTask {
     public void ftpFetchFile() throws Exception {
 
         // FTP 連接
-        Ftp ftp = new Ftp(host, port, username, password, Charset.forName("utf8"));
+        Sftp ftp = new Sftp(host, port, username, password, Charset.forName("utf8"));
 
         // 讀取檔案列表
-        List<String> hostelFiles = ftp.ls(remoteDir + "hostellist");
-        List<String> storeFiles = ftp.ls(remoteDir + "storelist");
+        String remoteHotelDir = remoteDir + "whitelisting/hotellist/";
+        String remoteStoreDir = remoteDir + "whitelisting/storelist/";
+        String remoteDiffDir = remoteDir + "records/business_update/";
+        String localTempHotelDir = localTempDir + "whitelisting/hotellist/";
+        String localTempStoreDir = localTempDir + "whitelisting/storelist/";
+        String localTempDiffDir = localTempDir + "records/business_update/";
+
+        List<String> hotelFiles = ftp.ls(remoteHotelDir);
+        List<String> storeFiles = ftp.ls(remoteStoreDir);
+        List<String> diffFiles = ftp.ls(remoteDiffDir);
 
         // 循環下載所有檔案
-        for (String fileName : hostelFiles) {
-            ftp.download(remoteDir, fileName, FileUtil.file(localTempDir + "/hostellist/" + fileName));
+        // 旅宿業者
+        for (String fileName : hotelFiles) {
+            if (!FileUtil.isDirectory(localTempHotelDir)) {
+                FileUtil.mkdir(localTempHotelDir);
+            }
+            ftp.download(remoteHotelDir + fileName, FileUtil.file(localTempHotelDir + fileName));
         }
+        // 商家
         for (String fileName : storeFiles) {
-            ftp.download(remoteDir, fileName, FileUtil.file(localTempDir + "/storelist/" + fileName));
+            if (!FileUtil.isDirectory(localTempStoreDir)) {
+                FileUtil.mkdir(localTempStoreDir);
+            }
+            ftp.download(remoteStoreDir + fileName, FileUtil.file(localTempStoreDir + fileName));
+        }
+        // 異動檔
+        for (String fileName : diffFiles) {
+            if (!FileUtil.isDirectory(localTempDiffDir)) {
+                FileUtil.mkdir(localTempDiffDir);
+            }
+            ftp.download(remoteDiffDir + fileName, FileUtil.file(localTempDiffDir + fileName));
         }
 
         // 刪除遠端資料
@@ -105,17 +128,18 @@ public class PromoteTask {
         // 關閉FTP連接
         ftp.close();
 
+
         // 開始將Excel檔案匯入資料庫
 
         // 旅宿業者
-        File[] localFiles = FileUtil.ls(localTempDir + "/hostellist");
+        File[] localFiles = FileUtil.ls(localTempHotelDir);
         for (File localFile : localFiles) {
 //            this.dealDiffData(localFile.getPath(), true);
             this.dealWhitelistFile(localFile.getPath(), true);
         }
 
         // 商家
-        localFiles = FileUtil.ls(localTempDir + "/storelist");
+        localFiles = FileUtil.ls(localTempStoreDir);
         for (File localFile : localFiles) {
 //            this.dealDiffData(localFile.getPath(), false);
             this.dealWhitelistFile(localFile.getPath(), false);

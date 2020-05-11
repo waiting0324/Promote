@@ -10,7 +10,7 @@ public class RoleConstants {
     /**
      * 旅宿業者
      */
-    public static final Long HOSTEL_ROLE_ID = 3L;
+    public static final Long HOTEL_ROLE_ID = 3L;
 
     /**
      * 商家

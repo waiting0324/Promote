@@ -83,7 +83,7 @@ public class UserDetailsServiceImpl implements UserDetailsService
         List<SysRole> roles = user.getRoles();
         for (SysRole role : roles) {
             // 旅宿業者
-            if (RoleConstants.HOSTEL_ROLE_ID.equals(role.getRoleId())) {
+            if (RoleConstants.HOTEL_ROLE_ID.equals(role.getRoleId())) {
                 user.setHotelInfo(hotelInfoMapper.selectHotelInfoById(user.getUserId()));
             }
             // 商家
