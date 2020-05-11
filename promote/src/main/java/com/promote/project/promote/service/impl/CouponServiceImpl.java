@@ -1,6 +1,5 @@
 package com.promote.project.promote.service.impl;
 
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.promote.common.constant.Constants;
@@ -10,10 +9,7 @@ import com.promote.common.constant.StoreTypeConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.exception.user.CaptchaExpireException;
-import com.promote.common.utils.DateUtils;
-import com.promote.common.utils.MessageUtils;
-import com.promote.common.utils.SecurityUtils;
-import com.promote.common.utils.StringUtils;
+import com.promote.common.utils.*;
 import com.promote.framework.redis.RedisCache;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.domain.*;
@@ -193,6 +189,8 @@ public class CouponServiceImpl implements ICouponService {
         // 藝文預算是否足夠
         boolean isArtFundEnough = fundMap.get(StoreTypeConstants.ART);
 
+        Map<String, LinkedList<String>> couponIds = IdUtils.generateTicketNo(SecurityUtils.getLoginUser().getUser().getUserId() + ""
+                , new String[]{"S", "T", "B", "C"});
 
         // 消費者選擇使用電子(虛擬)方式發放抵用券
         if (CouponConstants.TYPE_ELEC.equals(user.getConsumerInfo().getCouponType())) {
@@ -203,9 +201,9 @@ public class CouponServiceImpl implements ICouponService {
 
                 // 設定抵用券的基本資料
                 Coupon coupon = new Coupon();
-                coupon.setId(IdUtil.objectId().substring(4, 24));
+
                 coupon.setUserId(userId);
-                coupon.setIsUsed("0");
+                coupon.setIsUsed(CouponConstants.UN_USED);
                 coupon.setIssueDate(nowDate);
                 coupon.setAmount(CouponConstants.COUPON_AMOUNT);
 
@@ -213,24 +211,28 @@ public class CouponServiceImpl implements ICouponService {
                 if (i <= 3 && isNightMarketFundEnough) {
                     coupon.setStoreType(StoreTypeConstants.NIGHT_MARKET);
                     // 中辦
+                    coupon.setId(couponIds.get(CouponConstants.FUND_TYPE_CENTER_OFFICE).pop());
                     coupon.setFundType(CouponConstants.FUND_TYPE_CENTER_OFFICE);
                 }
                 // 餐廳
                 else if (4 <= i && i <= 7 && isRestaurantFundEnough) {
                     coupon.setStoreType(StoreTypeConstants.RESTAURANT);
                     // 商業司
+                    coupon.setId(couponIds.get(CouponConstants.FUND_TYPE_BUSINESS_DEPARTMENT).pop());
                     coupon.setFundType(CouponConstants.FUND_TYPE_BUSINESS_DEPARTMENT);
                 }
                 // 商圈
                 else if (8 <= i && i <= 11 && isShoppingAreaFundEnough) {
                     coupon.setStoreType(StoreTypeConstants.SHOPPING_AERA);
                     // 中企
+                    coupon.setId(couponIds.get(CouponConstants.FUND_TYPE_SME).pop());
                     coupon.setFundType(CouponConstants.FUND_TYPE_SME);
                 }
                 // 藝文
                 else if (12 <= i && i <= 15 && isArtFundEnough) {
                     coupon.setStoreType(StoreTypeConstants.ART);
                     // 文化部
+                    coupon.setId(couponIds.get(CouponConstants.FUND_TYPE_MINISTRY_CULTURE).pop());
                     coupon.setFundType(CouponConstants.FUND_TYPE_MINISTRY_CULTURE);
                 }
 
