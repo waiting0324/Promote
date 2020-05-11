@@ -6,7 +6,7 @@ import com.promote.common.utils.StringUtils;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
-import com.promote.project.promote.service.ISysHostelService;
+import com.promote.project.promote.service.IProHotelService;
 import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,10 +23,10 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/hostel")
-public class HostelController extends BaseController {
+public class HotelController extends BaseController {
 
     @Autowired
-    private ISysHostelService hostelService;
+    private IProHotelService hostelService;
 
     @Autowired
     private TokenService tokenService;

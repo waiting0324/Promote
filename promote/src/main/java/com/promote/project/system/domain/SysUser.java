@@ -8,7 +8,7 @@ import com.promote.framework.aspectj.lang.annotation.Excel.Type;
 import com.promote.framework.aspectj.lang.annotation.Excels;
 import com.promote.framework.web.domain.BaseEntity;
 import com.promote.project.promote.domain.ConsumerInfo;
-import com.promote.project.promote.domain.HostelInfo;
+import com.promote.project.promote.domain.HotelInfo;
 import com.promote.project.promote.domain.StoreInfo;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -130,7 +130,7 @@ public class SysUser extends BaseEntity {
     /**
      * 旅宿資訊
      */
-    private HostelInfo hostelInfo;
+    private HotelInfo hotelInfo;
 
     /**
      * 商家資訊
@@ -145,12 +145,12 @@ public class SysUser extends BaseEntity {
         this.consumerInfo = consumerInfo;
     }
 
-    public HostelInfo getHostelInfo() {
-        return hostelInfo;
+    public HotelInfo getHotelInfo() {
+        return hotelInfo;
     }
 
-    public void setHostelInfo(HostelInfo hostelInfo) {
-        this.hostelInfo = hostelInfo;
+    public void setHotelInfo(HotelInfo hotelInfo) {
+        this.hotelInfo = hotelInfo;
     }
 
     public StoreInfo getStoreInfo() {

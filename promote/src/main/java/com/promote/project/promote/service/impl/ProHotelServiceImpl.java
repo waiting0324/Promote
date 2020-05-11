@@ -10,12 +10,12 @@ import com.promote.framework.security.LoginUser;
 import com.promote.framework.security.service.SysLoginService;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.domain.AjaxResult;
-import com.promote.project.promote.domain.HostelInfo;
+import com.promote.project.promote.domain.HotelInfo;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.mapper.ConsumerInfoMapper;
-import com.promote.project.promote.mapper.HostelInfoMapper;
+import com.promote.project.promote.mapper.HotelInfoMapper;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
-import com.promote.project.promote.service.ISysHostelService;
+import com.promote.project.promote.service.IProHotelService;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.domain.SysUserRole;
 import com.promote.project.system.mapper.SysUserMapper;
@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,7 +35,7 @@ import java.util.List;
  * @author ruoyi
  */
 @Service
-public class SysHostelServiceImpl implements ISysHostelService {
+public class ProHotelServiceImpl implements IProHotelService {
 
     @Autowired
     private ProWhitelistMapper proWhitelistMapper;
@@ -46,7 +47,7 @@ public class SysHostelServiceImpl implements ISysHostelService {
     private SysUserRoleMapper userRoleMapper;
 
     @Autowired
-    private HostelInfoMapper hostelInfoMapper;
+    private HotelInfoMapper hotelInfoMapper;
 
     @Autowired
     private ConsumerInfoMapper consumerInfoMapper;
@@ -101,18 +102,20 @@ public class SysHostelServiceImpl implements ISysHostelService {
         // 插入User表
         userMapper.insertUser(user);
 
-        HostelInfo hostelInfo = new HostelInfo();
-        hostelInfo.setUserId(user.getUserId());
-        hostelInfo.setName(white.getName());
-        hostelInfo.setAddress(white.getAddress());
-        hostelInfo.setLatitude(white.getLatitude());
-        hostelInfo.setLongitude(white.getLongitude());
-        hostelInfo.setAgreeTime(nowDate);
+        HotelInfo hotelInfo = new HotelInfo();
+        hotelInfo.setUserId(user.getUserId().intValue());
+        hotelInfo.setName(white.getName());
+        hotelInfo.setAddress(white.getAddress());
+        hotelInfo.setLatitude(white.getLatitude());
+        hotelInfo.setLongitude(white.getLongitude());
+        hotelInfo.setAgreeTime(new Timestamp(nowDate.getTime()));
+        hotelInfo.setIsAgreeTerms("1");
+        hotelInfo.setIsSupportCoupon("1");
         // TODO isSupportCoupon
         // TODO isAgreeTerms
 
         // 插入旅宿業者資訊表
-        hostelInfoMapper.insertHostelInfo(hostelInfo);
+        hotelInfoMapper.insertHotelInfo(hotelInfo);
 
 
         // 處理角色問題
