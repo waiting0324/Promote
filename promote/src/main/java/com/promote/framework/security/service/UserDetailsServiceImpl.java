@@ -6,7 +6,7 @@ import com.promote.common.exception.BaseException;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.security.LoginUser;
 import com.promote.project.promote.mapper.ConsumerInfoMapper;
-import com.promote.project.promote.mapper.HostelInfoMapper;
+import com.promote.project.promote.mapper.HotelInfoMapper;
 import com.promote.project.promote.mapper.StoreInfoMapper;
 import com.promote.project.system.domain.SysRole;
 import com.promote.project.system.domain.SysUser;
@@ -38,7 +38,7 @@ public class UserDetailsServiceImpl implements UserDetailsService
     private SysPermissionService permissionService;
 
     @Autowired
-    private HostelInfoMapper hostelInfoMapper;
+    private HotelInfoMapper hotelInfoMapper;
 
     @Autowired
     private StoreInfoMapper storeInfoMapper;
@@ -84,7 +84,7 @@ public class UserDetailsServiceImpl implements UserDetailsService
         for (SysRole role : roles) {
             // 旅宿業者
             if (RoleConstants.HOSTEL_ROLE_ID.equals(role.getRoleId())) {
-                user.setHostelInfo(hostelInfoMapper.selectHostelInfoById(user.getUserId()));
+                user.setHotelInfo(hotelInfoMapper.selectHotelInfoById(user.getUserId()));
             }
             // 商家
             else if (RoleConstants.STORE_ROLE_ID.equals(role.getRoleId())) {

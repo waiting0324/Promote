@@ -1,12 +1,11 @@
 package com.promote.project.promote.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.promote.framework.aspectj.lang.annotation.Excel;
 import com.promote.framework.web.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * 旅宿業基本資料物件 pro_hostel_info
@@ -15,50 +14,42 @@ import java.util.Date;
  * @date 2020-04-27
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class HostelInfo extends BaseEntity
+public class HotelInfo extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** 旅宿業者的user_id */
-    private Long userId;
+    private Integer userId;
 
     /** 旅宿業者名稱 */
-    @Excel(name = "旅宿業者名稱")
     private String name;
 
     /** 是否協助發放抵用券( 0不協助 1協助 ) */
-    @Excel(name = "是否協助發放抵用券( 0不協助 1協助 )")
     private String isSupportCoupon;
 
     /** 同意條款時間 */
-    @Excel(name = "同意條款時間", width = 30, dateFormat = "yyyy-MM-dd")
-    private Date agreeTime;
+    private Timestamp agreeTime;
 
     /** 是否同意註冊條款 ( 0不同意 1同意 ) */
-    @Excel(name = "是否同意註冊條款 ( 0不同意 1同意 )")
     private String isAgreeTerms;
 
     /** 地址 */
-    @Excel(name = "地址")
     private String address;
 
     /** 緯度 */
-    @Excel(name = "緯度")
     private Double latitude;
 
     /** 經度 */
-    @Excel(name = "經度")
     private Double longitude;
 
-    public void setUserId(Long userId)
-    {
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
-    public Long getUserId()
-    {
-        return userId;
-    }
     public void setName(String name)
     {
         this.name = name;
@@ -103,15 +94,15 @@ public class HostelInfo extends BaseEntity
     {
         return isSupportCoupon;
     }
-    public void setAgreeTime(Date agreeTime)
-    {
+
+    public Timestamp getAgreeTime() {
+        return agreeTime;
+    }
+
+    public void setAgreeTime(Timestamp agreeTime) {
         this.agreeTime = agreeTime;
     }
 
-    public Date getAgreeTime()
-    {
-        return agreeTime;
-    }
     public void setIsAgreeTerms(String isAgreeTerms)
     {
         this.isAgreeTerms = isAgreeTerms;

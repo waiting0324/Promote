@@ -5,7 +5,7 @@ package com.promote.project.promote.service;
  *
  * @author 曾培晃
  */
-public interface ISysHostelService {
+public interface IProHotelService {
 
     /**
      * 旅宿業者註冊

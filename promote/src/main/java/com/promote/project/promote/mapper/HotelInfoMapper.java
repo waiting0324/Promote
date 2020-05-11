@@ -1,6 +1,6 @@
 package com.promote.project.promote.mapper;
 
-import com.promote.project.promote.domain.HostelInfo;
+import com.promote.project.promote.domain.HotelInfo;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * @author 6550 劉威廷
  * @date 2020-04-27
  */
-public interface HostelInfoMapper
+public interface HotelInfoMapper
 {
     /**
      * 查詢旅宿業基本資料
@@ -18,31 +18,31 @@ public interface HostelInfoMapper
      * @param userId 旅宿業基本資料ID
      * @return 旅宿業基本資料
      */
-    public HostelInfo selectHostelInfoById(Long userId);
+    public HotelInfo selectHotelInfoById(Long userId);
 
     /**
      * 查詢旅宿業基本資料列表
      *
-     * @param hostelInfo 旅宿業基本資料
+     * @param hotelInfo 旅宿業基本資料
      * @return 旅宿業基本資料集合
      */
-    public List<HostelInfo> selectHostelInfoList(HostelInfo hostelInfo);
+    public List<HotelInfo> selectHotelInfoList(HotelInfo hotelInfo);
 
     /**
      * 新增旅宿業基本資料
      *
-     * @param hostelInfo 旅宿業基本資料
+     * @param hotelInfo 旅宿業基本資料
      * @return 結果
      */
-    public int insertHostelInfo(HostelInfo hostelInfo);
+    public int insertHotelInfo(HotelInfo hotelInfo);
 
     /**
      * 修改旅宿業基本資料
      *
-     * @param hostelInfo 旅宿業基本資料
+     * @param hotelInfo 旅宿業基本資料
      * @return 結果
      */
-    public int updateHostelInfo(HostelInfo hostelInfo);
+    public int updateHotelInfo(HotelInfo hotelInfo);
 
     /**
      * 刪除旅宿業基本資料
@@ -50,7 +50,7 @@ public interface HostelInfoMapper
      * @param userId 旅宿業基本資料ID
      * @return 結果
      */
-    public int deleteHostelInfoById(Long userId);
+    public int deleteHotelInfoById(Long userId);
 
     /**
      * 批量刪除旅宿業基本資料
@@ -58,5 +58,5 @@ public interface HostelInfoMapper
      * @param userIds 需要刪除的資料ID
      * @return 結果
      */
-    public int deleteHostelInfoByIds(Long[] userIds);
+    public int deleteHotelInfoByIds(Long[] userIds);
 }
