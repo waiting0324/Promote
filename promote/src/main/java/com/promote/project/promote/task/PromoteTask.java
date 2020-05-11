@@ -1,7 +1,7 @@
 package com.promote.project.promote.task;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.extra.ftp.Ftp;
+import cn.hutool.extra.ssh.Sftp;
 import cn.hutool.poi.excel.sax.Excel03SaxReader;
 import cn.hutool.poi.excel.sax.Excel07SaxReader;
 import cn.hutool.poi.excel.sax.handler.RowHandler;
@@ -68,13 +68,13 @@ public class PromoteTask {
     // 與FTP相關配置 結束
 
     //白名單成功筆數
-    private Integer proWhitelistSuccessCnt = 0 ;
+    private Integer proWhitelistSuccessCnt = 0;
     //白名單失敗筆數
-    private Integer proWhitelistFailCnt= 0 ;
+    private Integer proWhitelistFailCnt = 0;
     //旅宿,店家白名單成功筆數
-    private Integer whitelistSuccessCnt= 0 ;
+    private Integer whitelistSuccessCnt = 0;
     //旅宿,店家白名單失敗筆數
-    private Integer whitelistFailCnt= 0 ;
+    private Integer whitelistFailCnt = 0;
 
 //    private int count = 0; //測試用
 
@@ -85,18 +85,41 @@ public class PromoteTask {
     public void ftpFetchFile() throws Exception {
 
         // FTP 連接
-        Ftp ftp = new Ftp(host, port, username, password, Charset.forName("utf8"));
+        Sftp ftp = new Sftp(host, port, username, password, Charset.forName("utf8"));
 
         // 讀取檔案列表
-        List<String> hostelFiles = ftp.ls(remoteDir + "hostellist");
-        List<String> storeFiles = ftp.ls(remoteDir + "storelist");
+        String remoteHotelDir = remoteDir + "whitelisting/hotellist/";
+        String remoteStoreDir = remoteDir + "whitelisting/storelist/";
+        String remoteDiffDir = remoteDir + "records/business_update/";
+        String localTempHotelDir = localTempDir + "whitelisting/hotellist/";
+        String localTempStoreDir = localTempDir + "whitelisting/storelist/";
+        String localTempDiffDir = localTempDir + "records/business_update/";
+
+        List<String> hotelFiles = ftp.ls(remoteHotelDir);
+        List<String> storeFiles = ftp.ls(remoteStoreDir);
+        List<String> diffFiles = ftp.ls(remoteDiffDir);
 
         // 循環下載所有檔案
-        for (String fileName : hostelFiles) {
-            ftp.download(remoteDir, fileName, FileUtil.file(localTempDir + "/hostellist/" + fileName));
+        // 旅宿業者
+        for (String fileName : hotelFiles) {
+            if (!FileUtil.isDirectory(localTempHotelDir)) {
+                FileUtil.mkdir(localTempHotelDir);
+            }
+            ftp.download(remoteHotelDir + fileName, FileUtil.file(localTempHotelDir + fileName));
         }
+        // 商家
         for (String fileName : storeFiles) {
-            ftp.download(remoteDir, fileName, FileUtil.file(localTempDir + "/storelist/" + fileName));
+            if (!FileUtil.isDirectory(localTempStoreDir)) {
+                FileUtil.mkdir(localTempStoreDir);
+            }
+            ftp.download(remoteStoreDir + fileName, FileUtil.file(localTempStoreDir + fileName));
+        }
+        // 異動檔
+        for (String fileName : diffFiles) {
+            if (!FileUtil.isDirectory(localTempDiffDir)) {
+                FileUtil.mkdir(localTempDiffDir);
+            }
+            ftp.download(remoteDiffDir + fileName, FileUtil.file(localTempDiffDir + fileName));
         }
 
         // 刪除遠端資料
@@ -105,16 +128,17 @@ public class PromoteTask {
         // 關閉FTP連接
         ftp.close();
 
+
         // 開始將Excel檔案匯入資料庫
 
         // 旅宿業者
-        File[] localFiles = FileUtil.ls(localTempDir + "/hostellist");
+        File[] localFiles = FileUtil.ls(localTempHotelDir);
         for (File localFile : localFiles) {
             this.dealDiffData(localFile.getPath(), true);
         }
 
         // 商家
-        localFiles = FileUtil.ls(localTempDir + "/storelist");
+        localFiles = FileUtil.ls(localTempStoreDir);
         for (File localFile : localFiles) {
             this.dealDiffData(localFile.getPath(), false);
         }
@@ -222,10 +246,10 @@ public class PromoteTask {
                 operLogServic.insertOperlog(failLog);
             }
             //成功,失敗Count清成0
-            proWhitelistSuccessCnt = 0 ;
-            proWhitelistFailCnt= 0 ;
-            whitelistSuccessCnt= 0 ;
-            whitelistFailCnt= 0 ;
+            proWhitelistSuccessCnt = 0;
+            proWhitelistFailCnt = 0;
+            whitelistSuccessCnt = 0;
+            whitelistFailCnt = 0;
         }
     }
 
@@ -274,9 +298,9 @@ public class PromoteTask {
                         ProWhitelist proWhitelist = proWhitelistService.selectProWhitelistByIdType(id, type.toString());
                         HotelWhitelist hotelWhitelist = null;
                         StoreWhitelist storeWhitelist = null;
-                        if(type == 1){
+                        if (type == 1) {
                             hotelWhitelist = hotelWhitelistService.getHotelWhitelistById(id);
-                        }else if(type == 2){
+                        } else if (type == 2) {
                             storeWhitelist = storeWhitelistService.getStoreWhitelistById(id);
                         }
                         boolean needInsertProWhitelist = false;
@@ -285,11 +309,11 @@ public class PromoteTask {
                             needInsertProWhitelist = true;
                             proWhitelist = new ProWhitelist();
                         }
-                        if(type == 1 && StringUtils.isNull(hotelWhitelist)){
+                        if (type == 1 && StringUtils.isNull(hotelWhitelist)) {
                             needInsertWhitelist = true;
                             hotelWhitelist = new HotelWhitelist();
                         }
-                        if(type == 2 && StringUtils.isNull(storeWhitelist)){
+                        if (type == 2 && StringUtils.isNull(storeWhitelist)) {
                             needInsertWhitelist = true;
                             storeWhitelist = new StoreWhitelist();
                         }
@@ -397,7 +421,7 @@ public class PromoteTask {
 //                                    count++;
 //                                    throw new Exception();
 //                                }
-                                int result = type == 1 ? hotelWhitelistService.updateHotelWhitelist(hotelWhitelist) :storeWhitelistService.updateStoreWhitelist(storeWhitelist);
+                                int result = type == 1 ? hotelWhitelistService.updateHotelWhitelist(hotelWhitelist) : storeWhitelistService.updateStoreWhitelist(storeWhitelist);
                             }
                             whitelistSuccessCnt++;
 //                            count++; //測試用
@@ -460,9 +484,9 @@ public class PromoteTask {
             for (Map<String, Object> storeTotalAmtMap : storeTotalAmtList) {
                 Long storeId = (Long) storeTotalAmtMap.get("storeId");
                 Long totalAmt = (Long) storeTotalAmtMap.get("totalAmt");
-                try{
-                    dailyConsumeService.insertDailyConsume(DateUtils.dateTime("yyyy-MM-dd", beginDate),storeId,totalAmt);
-                }catch(Exception e){
+                try {
+                    dailyConsumeService.insertDailyConsume(DateUtils.dateTime("yyyy-MM-dd", beginDate), storeId, totalAmt);
+                } catch (Exception e) {
                     SysOperLog failLog = new SysOperLog();
                     failLog.setTitle("定時任務");
                     failLog.setBusinessType(1);

@@ -22,7 +22,7 @@ public class PromoteTaskTest {
 
     @Test
     public void testFtp() throws Exception {
-//        promoteTask.ftpFetchFile();
-        promoteTask.dealDiffData("d:/hostel.xlsx",true);
+        promoteTask.ftpFetchFile();
+//        promoteTask.dealDiffData("d:/hostel.xlsx",true);
     }
 }

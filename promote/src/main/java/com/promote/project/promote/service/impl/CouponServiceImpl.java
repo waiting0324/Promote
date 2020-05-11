@@ -155,7 +155,7 @@ public class CouponServiceImpl implements ICouponService {
         // 從Redis中取出驗證碼
         String verifyKey = Constants.VERI_COUPON_SEND_CODE_KEY + user.getUsername();
         String captcha = redisCache.getCacheObject(verifyKey);
-        //redisCache.deleteObject(verifyKey);
+        redisCache.deleteObject(verifyKey);
 
         // 比對驗證碼
         if (captcha == null)
@@ -189,6 +189,7 @@ public class CouponServiceImpl implements ICouponService {
         // 藝文預算是否足夠
         boolean isArtFundEnough = fundMap.get(StoreTypeConstants.ART);
 
+        // 抵用券ID
         Map<String, LinkedList<String>> couponIds = IdUtils.generateTicketNo(SecurityUtils.getLoginUser().getUser().getUserId() + ""
                 , new String[]{"S", "T", "B", "C"});
 
