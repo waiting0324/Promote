@@ -87,8 +87,8 @@ public class ConsumerServiceImpl implements IConsumerService {
         if (!isProxy) {
             insertUser.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
         }
-        insertUser.setMobile(user.getMobile().replace("-", ""));
-        insertUser.setIdentity(user.getIdentity());
+        insertUser.setMobile(user.getConsumer().getMobile());
+        insertUser.setIdentity(user.getConsumer().getIdentity());
 
         // 插入User表
         int result = userMapper.insertUser(insertUser);
@@ -102,6 +102,7 @@ public class ConsumerServiceImpl implements IConsumerService {
         consumerInfo.setUserId(insertUser.getUserId());
         consumerInfo.setName(user.getConsumer().getName());
         consumerInfo.setBirthday(user.getConsumer().getBirthday());
+        consumerInfo.setHotelId(user.getConsumer().getHotelId());
 
         // 非旅宿業者代註冊
         if (!isProxy) {

@@ -1,6 +1,7 @@
 package com.promote.project.promote.controller;
 
 import com.promote.common.constant.Constants;
+import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.utils.MessageUtils;
@@ -148,7 +149,7 @@ public class ProCommonController extends BaseController {
 
                 // 帳號、密碼、手機
                 if (StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(user.getPassword()) ||
-                        StringUtils.isEmpty(user.getMobile())) {
+                        StringUtils.isEmpty(user.getConsumer().getMobile())) {
                     return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
                 }
 
@@ -159,11 +160,10 @@ public class ProCommonController extends BaseController {
             }
 
             // 必填欄位檢核，姓名、身分證、生日
-            if ( StringUtils.isEmpty(user.getConsumer().getName()) || StringUtils.isEmpty(user.getIdentity()) ||
+            if ( StringUtils.isEmpty(user.getConsumer().getName()) || StringUtils.isEmpty(user.getConsumer().getIdentity()) ||
                     StringUtils.isNull(user.getConsumer().getBirthday())) {
                 return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
             }
-
 
             consumerService.regist(user, isProxy);
         }
@@ -202,10 +202,18 @@ public class ProCommonController extends BaseController {
         AjaxResult ajax = AjaxResult.success();
 
         // 生成令牌
-        LoginUser loginUser = loginService.login(user.getUsername(), user.getPassword(), "", "");
+        LoginUser loginUser = loginService.login(user.getUsername(), user.getPassword());
         String token = tokenService.createToken(loginUser);
         ajax.put(Constants.TOKEN, token);
-        ajax.put("role", loginUser.getUser().getRoles().get(0).getRoleKey());
+
+        Long roleId = loginUser.getUser().getRoles().get(0).getRoleId();
+        if (RoleConstants.HOTEL_ROLE_ID.equals(roleId)) {
+            ajax.put("role", "H");
+        } else if (RoleConstants.STORE_ROLE_ID.equals(roleId)) {
+            ajax.put("role", "S");
+        } else if (RoleConstants.CONSUMER_ROLE_ID.equals(roleId)) {
+            ajax.put("role", "C");
+        }
 
         return ajax;
     }

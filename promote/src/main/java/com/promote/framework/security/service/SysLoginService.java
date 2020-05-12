@@ -37,27 +37,13 @@ public class SysLoginService
     /**
      * 登入驗證
      * 
+     * @param captcha 驗證碼
      * @param username 使用者名稱
      * @param password 密碼
-     * @param captcha 驗證碼
-     * @param uuid 唯一標識
      * @return 結果
      */
-    public LoginUser login(String username, String password, String code, String uuid)
+    public LoginUser login(String username, String password)
     {
-       /* String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
-        String captcha = redisCache.getCacheObject(verifyKey);
-        redisCache.deleteObject(verifyKey);
-        if (captcha == null)
-        {
-            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.expire")));
-            throw new CaptchaExpireException();
-        }
-        if (!code.equalsIgnoreCase(captcha))
-        {
-            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error")));
-            throw new CaptchaException();
-        }*/
         // 使用者驗證
         Authentication authentication = null;
         try

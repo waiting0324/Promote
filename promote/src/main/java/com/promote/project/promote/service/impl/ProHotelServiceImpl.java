@@ -146,7 +146,7 @@ public class ProHotelServiceImpl implements IProHotelService {
 
         // 非第一次登入，則正常進行登入
         AjaxResult ajax = AjaxResult.success();
-        LoginUser loginUser = loginService.login(username, password, "", "");
+        LoginUser loginUser = loginService.login(username, password);
         String token = tokenService.createToken(loginUser);
         ajax.put(Constants.TOKEN, token);
 
