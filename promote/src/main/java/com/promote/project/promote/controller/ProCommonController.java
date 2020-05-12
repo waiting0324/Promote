@@ -1,6 +1,7 @@
 package com.promote.project.promote.controller;
 
 import com.promote.common.constant.Constants;
+import com.promote.common.constant.RoleConstants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.utils.MessageUtils;
@@ -199,10 +200,18 @@ public class ProCommonController extends BaseController {
         AjaxResult ajax = AjaxResult.success();
 
         // 生成令牌
-        LoginUser loginUser = loginService.login(user.getUsername(), user.getPassword(), "", "");
+        LoginUser loginUser = loginService.login(user.getUsername(), user.getPassword());
         String token = tokenService.createToken(loginUser);
         ajax.put(Constants.TOKEN, token);
-        ajax.put("role", loginUser.getUser().getRoles().get(0).getRoleKey());
+
+        Long roleId = loginUser.getUser().getRoles().get(0).getRoleId();
+        if (RoleConstants.HOTEL_ROLE_ID.equals(roleId)) {
+            ajax.put("role", "H");
+        } else if (RoleConstants.STORE_ROLE_ID.equals(roleId)) {
+            ajax.put("role", "S");
+        } else if (RoleConstants.CONSUMER_ROLE_ID.equals(roleId)) {
+            ajax.put("role", "C");
+        }
 
         return ajax;
     }
