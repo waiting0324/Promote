@@ -37,6 +37,6 @@ public class ProQueueSender {
 //        } catch (ClassNotFoundException e) {
 //            e.printStackTrace();
 //        }
-        jmsOperations.convertAndSend("queueName", json);
+//        jmsOperations.convertAndSend("queueName", json);
     }
 }
