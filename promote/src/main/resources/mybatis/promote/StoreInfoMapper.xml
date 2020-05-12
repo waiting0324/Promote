@@ -21,6 +21,21 @@
         <result property="createTime"    column="create_time"    />
     </resultMap>
 
+    <resultMap type="java.util.Map" id="StoreInfoByBnoUnameIdentity" >
+        <result property="userId"    column="user_id"    />
+        <result property="username"    column="username"    />
+        <result property="name"    column="name"    />
+        <result property="owner"    column="owner"    />
+        <result property="type"    column="type"    />
+        <result property="bankAccountName"    column="bank_account_name"    />
+        <result property="bankAccount"    column="bank_account"    />
+        <result property="bankAchCode"    column="bank_ach_code"    />
+        <result property="address"    column="address"    />
+        <result property="latitude"    column="latitude"    />
+        <result property="longitude"    column="longitude"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
     <sql id="selectStoreInfoVo">
         select user_id, name, type, bank_account_name, bank_account, bank_ach_code, address, latitude, longitude, is_agree_terms, agree_time, status, update_time, create_time from pro_store_info
     </sql>
@@ -114,4 +129,22 @@
         </foreach>
     </delete>
 
+    <select id="getByUnameIdentity" resultMap="StoreInfoByBnoUnameIdentity">
+        select store.user_id,user.username,store.name,store.owner,store.type,store.bank_account_name,store.bank_account,store.bank_ach_code,store.address,store.latitude,store.longitude,store.status
+        from pro_store_info store inner join sys_user user
+        on store.user_id = user.user_id
+        <where>
+            <if test="username != null  and username != ''"> and user.username = #{username}</if>
+            <if test="identity != null  and identity != ''"> and user.identity = #{identity}</if>
+        </where>
+    </select>
+
+    <select id="getByUsername" resultMap="StoreInfoByBnoUnameIdentity">
+        select store.user_id,user.username,store.name,store.owner,store.type,store.bank_account_name,store.bank_account,store.bank_ach_code,store.address,store.latitude,store.longitude,store.status
+        from pro_store_info store inner join sys_user user
+        on store.user_id = user.user_id
+        <where>
+            <if test="username != null  and username != ''"> and user.username = #{username}</if>
+        </where>
+    </select>
 </mapper>

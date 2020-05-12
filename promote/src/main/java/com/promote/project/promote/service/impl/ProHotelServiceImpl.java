@@ -28,6 +28,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 旅宿業者 服務層實現
@@ -150,6 +151,22 @@ public class ProHotelServiceImpl implements IProHotelService {
         ajax.put(Constants.TOKEN, token);
 
         return token;
+    }
+
+    /**
+     *客服查詢旅宿
+     *
+     * @param username 帳號
+     * @param identity 身分證號或居留證號
+     * @return 結果
+     */
+    @Override
+    public Map<String, Object> getByUnameIdentity(String username, String identity) {
+        List<Map<String, Object>> list = hotelInfoMapper.getByUnameIdentity(username, identity);
+        if(StringUtils.isNotNull(list) && list.size() > 0){
+            return list.get(0);
+        }
+        return null;
     }
 
 

@@ -17,6 +17,7 @@ import com.promote.project.promote.service.ICommonService;
 import com.promote.project.promote.service.IConsumerService;
 import com.promote.project.promote.service.IProHotelService;
 import com.promote.project.promote.service.IProStoreService;
+import com.promote.project.system.domain.SysRole;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -279,11 +281,77 @@ public class ProCommonController extends BaseController {
      *
      * @return 結果
      */
-    @GetMapping("/user/info")
-    public AjaxResult getUserInfo() {
-        SysUser user = SecurityUtils.getLoginUser().getUser();
-        user.setPassword(null);
-        return AjaxResult.success(user);
-    }
+//    @GetMapping("/user/info")
+//    public AjaxResult getUserInfo() {
+//        SysUser user = SecurityUtils.getLoginUser().getUser();
+//        user.setPassword(null);
+//        return AjaxResult.success(user);
+//    }
 
+    /**
+     * 基本資料查詢
+     *
+     * @return 結果
+     */
+    @PostMapping("/profile/getUserProfile")
+    public AjaxResult getUserProfile(@RequestBody Map<String, Object> request) {
+        String userType = (String)request.get("userType");
+        String username = (String)request.get("username");
+        String identity = (String)request.get("identity");
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        //判斷角色
+        String role = user.getRoles().get(0).getRoleKey();
+        if("6".equals(role)){
+            //客服
+            if(StringUtils.isEmpty(userType)){
+                return AjaxResult.error("資料類型需輸入");
+            }
+            if(StringUtils.isEmpty(username) && StringUtils.isEmpty(identity)){
+                return AjaxResult.error("帳號,統編/身分證號/居留證號至少需輸入一項");
+            }
+            if("S".equalsIgnoreCase(userType)){
+                //查店家
+                List<Map<String, Object>> list = storeService.getByUnameIdentity(username,identity);
+                if(StringUtils.isNull(list) || list.size() == 0){
+                    return AjaxResult.success("查無資料");
+                }
+                return AjaxResult.success("store",list);
+            }else if("C".equalsIgnoreCase(userType)){
+                //查消費者
+                List<Map<String, Object>> list = consumerService.getByUnameIdentity(username,identity);
+                if(StringUtils.isNull(list) || list.size() == 0){
+                    return AjaxResult.success("查無資料");
+                }
+                return AjaxResult.success("consumer",list);
+            }else if("H".equalsIgnoreCase(userType)){
+                //查旅宿業者
+                Map<String, Object> map = hostelService.getByUnameIdentity(username,identity);
+                if(StringUtils.isNull(map)){
+                    return AjaxResult.success("查無資料");
+                }
+                return AjaxResult.success("hotel",map);
+            }
+        }
+        if("3".equals(role)){
+            //旅宿業者查消費者
+            if(StringUtils.isEmpty(identity)){
+                return AjaxResult.error("身分證號/居留證號需輸入");
+            }
+            //查消費者
+            List<Map<String, Object>> list = consumerService.getByIdentity(identity);
+            if(StringUtils.isNull(list) || list.size() == 0){
+                return AjaxResult.success("查無資料");
+            }
+            return AjaxResult.success("consumer",list);
+        }
+        if("4".equals(role)){
+            //店家
+            return AjaxResult.success("store",storeService.getByUsername(user.getUsername()));
+        }
+        if("5".equals(role)){
+            //消費者
+            return AjaxResult.success("consumer",consumerService.getByUsername(user.getUsername()));
+        }
+        return AjaxResult.error("目前登入者無權進行基本資料查詢");
+    }
 }

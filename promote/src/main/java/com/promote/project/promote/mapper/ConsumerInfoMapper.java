@@ -1,7 +1,10 @@
 package com.promote.project.promote.mapper;
 
 import java.util.List;
+import java.util.Map;
+
 import com.promote.project.promote.domain.ConsumerInfo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 消費者基本資料Mapper介面
@@ -58,4 +61,29 @@ public interface ConsumerInfoMapper
      * @return 結果
      */
     public int deleteConsumerInfoByIds(Long[] userIds);
+
+    /**
+     *客服查詢消費者
+     *
+     * @param username 帳號
+     * @param identity 身分證號或居留證號
+     * @return 結果
+     */
+    List<Map<String, Object>> getByUnameIdentity(@Param("username") String username,@Param("identity") String identity);
+
+    /**
+     *旅宿業者查消費者
+     *
+     * @param identity 身分證號或居留證號
+     * @return 結果
+     */
+    List<Map<String, Object>> getByIdentity(String identity);
+
+    /**
+     *消費者查自己
+     *
+     * @param username 帳號
+     * @return 結果
+     */
+    List<Map<String, Object>> getByUsername(String username);
 }

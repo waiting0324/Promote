@@ -94,4 +94,13 @@ public interface IProWhitelistService
      * @return 白名單
      */
     public ProWhitelist selectProWhitelistByTaxNo(String taxNo);
+
+    /**
+     *根據資料類型及統編/身分證字號查找白名單資料
+     *
+     * @param type 資料類型 (1旅宿業者 2商家)
+     * @param taxNo 統編/身分證字號
+     * @return 結果
+     */
+    public ProWhitelist[] getByTypeTaxNo(String type,String taxNo);
 }

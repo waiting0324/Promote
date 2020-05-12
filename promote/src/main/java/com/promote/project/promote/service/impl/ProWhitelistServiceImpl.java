@@ -1,6 +1,7 @@
 package com.promote.project.promote.service.impl;
 
 import com.promote.common.utils.DateUtils;
+import com.promote.common.utils.StringUtils;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
 import com.promote.project.promote.service.IProWhitelistService;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -191,6 +193,34 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
 
         return white;
     }
+
+    /**
+     *根據資料類型及統編/身分證字號查找白名單資料
+     *
+     * @param type 資料類型 (1旅宿業者 2商家)
+     * @param taxNo 統編/身分證字號
+     * @return 結果
+     */
+    @Override
+    public ProWhitelist[] getByTypeTaxNo(String type, String taxNo) {
+        List<ProWhitelist> list = proWhitelistMapper.getByTypeTaxNo(type, taxNo);
+        if(StringUtils.isNotNull(list) && list.size() > 0){
+            for(ProWhitelist proWhitelist :list){
+                proWhitelist.setUsername(null);
+                proWhitelist.setPassword(null);
+                proWhitelist.setIsAgreeTerms(null);
+                proWhitelist.setIsRegisted(null);
+                proWhitelist.setIsNMarket(null);
+                proWhitelist.setIsTMarket(null);
+                proWhitelist.setIsFoodbeverage(null);
+                proWhitelist.setIsCulture(null);
+                proWhitelist.setIsSightseeing(null);
+            }
+            return list.toArray(new ProWhitelist[list.size()]);
+        }
+        return null;
+    }
+
 
 //    private RowHandler createRowHandler(Map<String,Integer> dataMap) {
 //        return new RowHandler() {

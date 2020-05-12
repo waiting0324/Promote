@@ -13,6 +13,10 @@ import com.promote.project.promote.domain.HotelWhitelist;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.domain.StoreWhitelist;
 import com.promote.project.promote.service.*;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -154,15 +158,16 @@ public class PromoteTask {
 
 
     /**
-     * 處理白名單匯入及差異檔
+     * 處理白名單匯入及差異檔(csv版)
      *
      * @param path     白名單路徑
      * @param isHostel 是否為旅宿業者
      */
     public void dealWhitelistFile(String path, Boolean isHostel) {
         if (StringUtils.isNotEmpty(path)) {
-            InputStreamReader inputStream = null;
-            BufferedReader reader = null;
+//            BufferedInputStream inputStream = null;
+//            BufferedReader reader = null;
+            CSVParser csvParser = null;
             Map<String, Integer> pair = new HashMap<String, Integer>();
             //白名單Field與白名單Excel映射關係
             if (isHostel) {
@@ -194,36 +199,132 @@ public class PromoteTask {
                 pair.put("isSightseeing", 14);
             }
             try {
-                inputStream = new InputStreamReader(new FileInputStream(path),"UTF-8");//檔案讀取路徑
-                reader = new BufferedReader(inputStream);
-                String line = null; //每一行
-                int lineIndex = 0;
-                //讀取開始
-                while ((line = reader.readLine()) != null) {
-                    if(lineIndex == 0){
-                        //標題不處理
-                        lineIndex++;
+                //parse csv
+                csvParser = new CSVParser(new FileReader(path), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
+                boolean isFirstLine = true;
+                List<String> titlelist = new ArrayList<String>();
+                for (CSVRecord record : csvParser) {
+                    List<String> rowlist = new ArrayList<String>();
+                    for (Iterator<String> iterator = record.iterator(); iterator.hasNext(); ) {
+                        rowlist.add(iterator.next());
+                    }
+                    if (isFirstLine) {
+                        isFirstLine = false;
+                        titlelist = rowlist;
                         continue;
                     }
-                    handlerRow(pair,Arrays.asList(line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)")));
+                    handlerRow(pair, rowlist, titlelist);
                 }
+//                inputStream = new BufferedInputStream(new FileInputStream(path));
+//                reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 5 * 1024 * 1024); //5MB緩存
+//                String line = null; //每一行
+//                int lineIndex = 0;
+//                int columnSize = 0;
+                //開始讀取
+//                while ((line = reader.readLine()) != null) {
+//                    if (lineIndex == 0) {
+//                        //標題不處理
+////                        columnSize = line.split(",").length;
+//                        lineIndex++;
+//                        continue;
+//                    }
+//                    line += ";";
+//                    String[] items = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+//                    if (items.length != columnSize) {
+//                        String restStr = null;
+//                        while ((restStr = reader.readLine()) != null) {
+//                            line = line.substring(0, line.lastIndexOf(";"));
+//                            line += (restStr + ";");
+//                            items = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+//                            if (items.length == columnSize) {
+//                                break;
+//                            }
+//                        }
+//                    }
+//                    int lastIndex = items.length - 1;
+//                    String lastItem = items[lastIndex];
+//                    items[lastIndex] = lastItem.substring(0, lastItem.lastIndexOf(";"));
+//                    handlerRow(pair, Arrays.asList(items));
+//                }
+
+                String mathodName = PromoteTask.class.getName() + ".dealDiffData(String path)";
+                Date now = DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime());
+                if (proWhitelistSuccessCnt > 0) {
+                    //白名單成功筆數寫log
+                    SysOperLog successLog = new SysOperLog();
+                    successLog.setTitle("定時任務");
+                    successLog.setMethod(mathodName);
+                    successLog.setOperatorType(1);
+                    successLog.setOperName("SYSTEM");
+                    successLog.setJsonResult("執行白名單(pro_whitelist)匯入- 共成功: " + proWhitelistSuccessCnt + "筆");
+                    successLog.setOperTime(now);
+                    operLogServic.insertOperlog(successLog);
+                }
+                if (proWhitelistFailCnt > 0) {
+                    //白名單失敗筆數寫log
+                    SysOperLog failLog = new SysOperLog();
+                    failLog.setTitle("定時任務");
+                    failLog.setMethod(mathodName);
+                    failLog.setOperatorType(1);
+                    failLog.setOperName("SYSTEM");
+                    failLog.setErrorMsg("執行白名單(pro_whitelist)匯入-共失敗: " + proWhitelistFailCnt + "筆");
+                    failLog.setOperTime(now);
+                    operLogServic.insertOperlog(failLog);
+                }
+
+                if (whitelistSuccessCnt > 0) {
+                    //旅宿or店家白名單成功筆數寫log
+                    SysOperLog successLog = new SysOperLog();
+                    successLog.setTitle("定時任務");
+                    successLog.setMethod(mathodName);
+                    successLog.setOperatorType(1);
+                    successLog.setOperName("SYSTEM");
+                    successLog.setJsonResult("執行" + (isHostel ? "旅宿白名單(hotel_whitelist)匯入- 共成功: " : "店家白名單(store_whitelist)匯入- 共成功: ") + whitelistSuccessCnt + "筆");
+                    successLog.setOperTime(now);
+                    operLogServic.insertOperlog(successLog);
+                }
+                if (whitelistFailCnt > 0) {
+                    //旅宿or店家白名單失敗筆數寫log
+                    SysOperLog failLog = new SysOperLog();
+                    failLog.setTitle("定時任務");
+                    failLog.setMethod(mathodName);
+                    failLog.setOperatorType(1);
+                    failLog.setOperName("SYSTEM");
+                    failLog.setErrorMsg("執行" + (isHostel ? "旅宿白名單(hotel_whitelist)匯入- 共失敗: " : "店家白名單(store_whitelist)匯入- 共失敗: ") + whitelistFailCnt + "筆");
+                    failLog.setOperTime(now);
+                    operLogServic.insertOperlog(failLog);
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                if (reader != null) {
+                //關閉串流
+//                if (reader != null) {
+//                    try {
+//                        reader.close();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                if (inputStream != null) {
+//                    try {
+//                        inputStream.close();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+                if (!csvParser.isClosed()) {
                     try {
-                        reader.close();
+                        csvParser.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
-                if (inputStream != null) {
-                    try {
-                        inputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+                //成功,失敗Count清成0
+                proWhitelistSuccessCnt = 0;
+                proWhitelistFailCnt = 0;
+                whitelistSuccessCnt = 0;
+                whitelistFailCnt = 0;
             }
         }
     }
@@ -231,11 +332,11 @@ public class PromoteTask {
     /**
      * 處理每一行數據
      *
-     * @param pair 白名單Field與白名單檔映射關係
+     * @param pair    白名單Field與白名單檔映射關係
      * @param rowlist 每一行數據
      */
-    private void handlerRow(Map<String, Integer> pair,List<String> rowlist) {
-        try{
+    private void handlerRow(Map<String, Integer> pair, List<String> rowlist, List<String> titlelist) {
+        try {
             Integer type = pair.get("type");
             String id = rowlist.get(pair.get("id")).toString();
             if (StringUtils.isEmpty(id)) {
@@ -307,8 +408,7 @@ public class PromoteTask {
                         }
                         String tempValue = rowlist.get(index);
                         //設定Excel的值到白名單Model
-                        String value = StringUtils.isNotNull(tempValue) ? tempValue.toString().trim() : null;
-//                        String value = StringUtils.isNotNull(tempValue) ? tempValue.toString().trim().replaceAll("\\u00A0+", "") : null;
+                        String value = StringUtils.isNotNull(tempValue) ? tempValue.trim().replaceAll("\\u00A0+", "") : null;
                         switch (typeClass.getName()) {
                             case "java.lang.Double":
                                 method.invoke(proWhitelist, StringUtils.isNotNull(value) ? Double.parseDouble(value) : null);
@@ -367,8 +467,7 @@ public class PromoteTask {
                     if (method != null) {
                         String tempValue = rowlist.get(i);
                         //設定Excel的值到白名單Model
-                        String value = StringUtils.isNotNull(tempValue) ? tempValue.toString().trim() : null;
-//                        String value = StringUtils.isNotNull(tempValue) ? tempValue.toString().trim().replaceAll("\\u00A0+", "") : null;
+                        String value = StringUtils.isNotNull(tempValue) ? tempValue.trim().replaceAll("\\u00A0+", "") : null;
                         switch (typeClass.getName()) {
                             case "java.lang.Double":
                                 method.invoke(type == 1 ? hotelWhitelist : storeWhitelist, StringUtils.isNotNull(value) ? Double.parseDouble(value) : null);
@@ -419,16 +518,35 @@ public class PromoteTask {
                 failLog.setErrorMsg(errMsg);
                 failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
                 operLogServic.insertOperlog(failLog);
+                File file = new File(type == 1 ? "d:\\hotel_whitelistErr.csv" : "d:\\store_whitelistErr.csv");
+                CSVPrinter csvPrinter = null;
+                if (!file.exists()) {
+                    file.createNewFile();
+                    csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
+                    //打印標題
+                    for (String title : titlelist) {
+                        csvPrinter.print(title);
+                    }
+                    csvPrinter.println();
+                }
+                if (csvPrinter == null) {
+                    csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
+                }
+                for(String item :rowlist){
+                    csvPrinter.print(item);
+                }
+                csvPrinter.println();
+                csvPrinter.flush();
+                csvPrinter.close();
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             //DO NOTHING
         }
     }
 
 
-
     /**
-     * 處理白名單匯入及差異檔
+     * 處理白名單匯入及差異檔(Excel版)
      *
      * @param path 白名單路徑
      */

@@ -1,8 +1,10 @@
 package com.promote.project.promote.mapper;
 
 import com.promote.project.promote.domain.HotelInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 旅宿業基本資料Mapper介面
@@ -59,4 +61,13 @@ public interface HotelInfoMapper
      * @return 結果
      */
     public int deleteHotelInfoByIds(Long[] userIds);
+
+    /**
+     * 客服查詢旅宿
+     *
+     * @param username 帳號
+     * @param identity 身分證號或居留證號
+     * @return 結果
+     */
+    List<Map<String, Object>> getByUnameIdentity(@Param("username") String username, @Param("identity") String identity);
 }

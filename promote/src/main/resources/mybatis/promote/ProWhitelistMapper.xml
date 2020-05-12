@@ -1,57 +1,58 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.promote.project.promote.mapper.ProWhitelistMapper">
-    
+
     <resultMap type="ProWhitelist" id="ProWhitelistResult">
-        <result property="id"    column="id"    />
-        <result property="owner"    column="owner"    />
-        <result property="name"    column="name"    />
-        <result property="taxNo"    column="tax_no"    />
-        <result property="username"    column="username"    />
-        <result property="password"    column="password"    />
-        <result property="address"    column="address"    />
-        <result property="latitude"    column="latitude"    />
-        <result property="longitude"    column="longitude"    />
-        <result property="phonenumber"    column="phonenumber"    />
-        <result property="email"    column="email"    />
-        <result property="isAgreeTerms"    column="is_agree_terms"    />
-        <result property="isRegisted"    column="is_registed"    />
-        <result property="type"    column="type"    />
-        <result property="isNMarket"    column="is_n_market"    />
-        <result property="isTMarket"    column="is_t_market"    />
-        <result property="isFoodbeverage"    column="is_foodbeverage"    />
-        <result property="isCulture"    column="is_culture"    />
-        <result property="isSightseeing"    column="is_sightseeing"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="createTime"    column="create_time"    />
+        <result property="id" column="id"/>
+        <result property="owner" column="owner"/>
+        <result property="name" column="name"/>
+        <result property="taxNo" column="tax_no"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="address" column="address"/>
+        <result property="latitude" column="latitude"/>
+        <result property="longitude" column="longitude"/>
+        <result property="phonenumber" column="phonenumber"/>
+        <result property="email" column="email"/>
+        <result property="isAgreeTerms" column="is_agree_terms"/>
+        <result property="isRegisted" column="is_registed"/>
+        <result property="type" column="type"/>
+        <result property="isNMarket" column="is_n_market"/>
+        <result property="isTMarket" column="is_t_market"/>
+        <result property="isFoodbeverage" column="is_foodbeverage"/>
+        <result property="isCulture" column="is_culture"/>
+        <result property="isSightseeing" column="is_sightseeing"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="storeNameMk" column="store_name_mk"/>
     </resultMap>
 
     <sql id="selectProWhitelistVo">
-        select id, owner, name, tax_no, username, password, address, latitude, longitude, phonenumber, email, is_agree_terms, is_registed, type, is_n_market, is_t_market, is_foodbeverage, is_culture, is_sightseeing, update_time, create_time from pro_whitelist
+        select id, owner, name, tax_no, username, password, address, latitude, longitude, phonenumber, email, is_agree_terms, is_registed, type, is_n_market, is_t_market, is_foodbeverage, is_culture, is_sightseeing, update_time, create_time, '' as store_name_mk from pro_whitelist
     </sql>
 
     <select id="selectProWhitelistList" parameterType="ProWhitelist" resultMap="ProWhitelistResult">
         <include refid="selectProWhitelistVo"/>
-        <where>  
-            <if test="owner != null  and owner != ''"> and owner = #{owner}</if>
-            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
-            <if test="taxNo != null  and taxNo != ''"> and tax_no = #{taxNo}</if>
-            <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
-            <if test="password != null  and password != ''"> and password = #{password}</if>
-            <if test="address != null  and address != ''"> and address = #{address}</if>
-            <if test="phonenumber != null  and phonenumber != ''"> and phonenumber = #{phonenumber}</if>
-            <if test="email != null  and email != ''"> and email = #{email}</if>
-            <if test="type != null  and type != ''"> and type = #{type}</if>
-            <if test="isNMarket != null  and isNMarket != ''"> and is_n_market = #{isNMarket}</if>
-            <if test="isTMarket != null  and isTMarket != ''"> and is_t_market = #{isTMarket}</if>
-            <if test="isFoodbeverage != null  and isFoodbeverage != ''"> and is_foodbeverage = #{isFoodbeverage}</if>
-            <if test="isCulture != null  and isCulture != ''"> and is_culture = #{isCulture}</if>
-            <if test="isSightseeing != null  and isSightseeing != ''"> and is_sightseeing = #{isSightseeing}</if>
+        <where>
+            <if test="owner != null  and owner != ''">and owner = #{owner}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="taxNo != null  and taxNo != ''">and tax_no = #{taxNo}</if>
+            <if test="username != null  and username != ''">and username like concat('%', #{username}, '%')</if>
+            <if test="password != null  and password != ''">and password = #{password}</if>
+            <if test="address != null  and address != ''">and address = #{address}</if>
+            <if test="phonenumber != null  and phonenumber != ''">and phonenumber = #{phonenumber}</if>
+            <if test="email != null  and email != ''">and email = #{email}</if>
+            <if test="type != null  and type != ''">and type = #{type}</if>
+            <if test="isNMarket != null  and isNMarket != ''">and is_n_market = #{isNMarket}</if>
+            <if test="isTMarket != null  and isTMarket != ''">and is_t_market = #{isTMarket}</if>
+            <if test="isFoodbeverage != null  and isFoodbeverage != ''">and is_foodbeverage = #{isFoodbeverage}</if>
+            <if test="isCulture != null  and isCulture != ''">and is_culture = #{isCulture}</if>
+            <if test="isSightseeing != null  and isSightseeing != ''">and is_sightseeing = #{isSightseeing}</if>
         </where>
     </select>
-    
+
     <select id="selectProWhitelistById" parameterType="String" resultMap="ProWhitelistResult">
         <include refid="selectProWhitelistVo"/>
         where id = #{id}
@@ -61,7 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectProWhitelistVo"/>
         where username = #{username} and password = #{password}
     </select>
-        
+
     <insert id="insertProWhitelist" parameterType="ProWhitelist">
         insert into pro_whitelist
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -84,7 +85,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="isSightseeing != null  and isSightseeing != ''">is_sightseeing,</if>
             <if test="updateTime != null ">update_time,</if>
             <if test="createTime != null ">create_time,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null ">#{id},</if>
             <if test="owner != null  and owner != ''">#{owner},</if>
@@ -105,7 +106,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="isSightseeing != null  and isSightseeing != ''">#{isSightseeing},</if>
             <if test="updateTime != null ">#{updateTime},</if>
             <if test="createTime != null ">#{createTime},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateProWhitelist" parameterType="ProWhitelist">
@@ -140,7 +141,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteProWhitelistByIds" parameterType="String">
-        delete from pro_whitelist where id in 
+        delete from pro_whitelist where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
@@ -155,5 +156,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectProWhitelistVo"/>
         where tax_no = #{taxNo}
     </select>
-    
+
+    <select id="getByTypeTaxNo" resultMap="resultMap">
+        <include refid="selectProWhitelistVo"/>
+        where type= #{type} and tax_no = #{taxNo}
+    </select>
 </mapper>

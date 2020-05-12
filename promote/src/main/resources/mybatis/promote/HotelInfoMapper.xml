@@ -17,6 +17,16 @@
         <result property="createTime"    column="create_time"    />
     </resultMap>
 
+    <resultMap type="java.util.Map" id="HotelInfoByUnameIdentity">
+        <result property="userId"    column="user_id"    />
+        <result property="username"    column="username"    />
+        <result property="businessNo"    column="identity"    />
+        <result property="name"    column="name"    />
+        <result property="address"    column="address"    />
+        <result property="latitude"    column="latitude"    />
+        <result property="longitude"    column="longitude"    />
+    </resultMap>
+
     <sql id="selectHotelInfoVo">
         select user_id, name, address, latitude, longitude, is_support_coupon, agree_time, is_agree_terms, update_time, create_time from pro_hotel_info
     </sql>
@@ -94,4 +104,13 @@
         </foreach>
     </delete>
 
+    <select id="getByUnameIdentity" resultMap="HotelInfoByUnameIdentity">
+        select hotel.user_id,user.username,user.identity,hotel.name,hotel.address,hotel.latitude,hotel.longitude
+        from pro_hotel_info hotel inner join sys_user user
+        on hotel.user_id = user.user_id
+        <where>
+            <if test="username != null  and username != ''"> and user.username = #{username}</if>
+            <if test="identity != null and identity != ''"> and user.identity = #{identity}</if>
+        </where>
+    </select>
 </mapper>

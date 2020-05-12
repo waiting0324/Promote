@@ -18,6 +18,16 @@
         <result property="createTime"    column="create_time"    />
     </resultMap>
 
+    <resultMap type="java.util.Map" id="ConsumerInfoByUnameIdentity">
+        <result property="userId"    column="user_id"    />
+        <result property="username"    column="username"    />
+        <result property="identity"    column="identity"    />
+        <result property="name"    column="name"    />
+        <result property="birthday"    column="birthday"    />
+        <result property="email"    column="email"    />
+        <result property="mobile"    column="mobile"    />
+    </resultMap>
+
     <sql id="selectConsumerInfoVo">
         select user_id, name, birthday, consumer_stat, coupon_type, print_code, hotel_id, issue_date, receive_date, update_time, create_time from pro_consumer_info
     </sql>
@@ -98,4 +108,31 @@
         </foreach>
     </delete>
 
+    <select id="getByUnameIdentity" resultMap="ConsumerInfoByUnameIdentity">
+        select user.user_id,user.username,user.identity,consumer.name,consumer.birthday,user.email,user.mobile
+        from pro_consumer_info consumer inner join sys_user user
+        on consumer.user_id = user.user_id
+        <where>
+            <if test="username != null  and username != ''"> and user.username = #{username}</if>
+            <if test="identity != null  and identity != ''"> and user.identity = #{identity}</if>
+        </where>
+    </select>
+
+    <select id="getByIdentity" resultMap="ConsumerInfoByUnameIdentity">
+        select user.user_id,user.username,user.identity,consumer.name,consumer.birthday,user.email,user.mobile
+        from pro_consumer_info consumer inner join sys_user user
+        on consumer.user_id = user.user_id
+        <where>
+            <if test="identity != null  and identity != ''"> and user.identity = #{identity}</if>
+        </where>
+    </select>
+
+    <select id="getByUsername" resultMap="ConsumerInfoByUnameIdentity">
+        select user.user_id,user.username,user.identity,consumer.name,consumer.birthday,user.email,user.mobile
+        from pro_consumer_info consumer inner join sys_user user
+        on consumer.user_id = user.user_id
+        <where>
+            <if test="username != null  and username != ''"> and user.username = #{username}</if>
+        </where>
+    </select>
 </mapper>
