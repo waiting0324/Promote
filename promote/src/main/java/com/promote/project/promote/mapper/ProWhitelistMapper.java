@@ -4,6 +4,7 @@ import com.promote.project.promote.domain.ProWhitelist;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 白名單 資料層
@@ -96,5 +97,5 @@ public interface ProWhitelistMapper
      * @param taxNo 統編/身分證字號
      * @return 結果
      */
-    public List<ProWhitelist> getByTypeTaxNo(@Param("type") String type,@Param("taxNo") String taxNo);
+    public List<Map<String,Object>> getByTypeTaxNo(@Param("type") String type, @Param("taxNo") String taxNo);
 }

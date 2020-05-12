@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 白名單Service業務層處理
@@ -202,23 +204,8 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
      * @return 結果
      */
     @Override
-    public ProWhitelist[] getByTypeTaxNo(String type, String taxNo) {
-        List<ProWhitelist> list = proWhitelistMapper.getByTypeTaxNo(type, taxNo);
-        if(StringUtils.isNotNull(list) && list.size() > 0){
-            for(ProWhitelist proWhitelist :list){
-                proWhitelist.setUsername(null);
-                proWhitelist.setPassword(null);
-                proWhitelist.setIsAgreeTerms(null);
-                proWhitelist.setIsRegisted(null);
-                proWhitelist.setIsNMarket(null);
-                proWhitelist.setIsTMarket(null);
-                proWhitelist.setIsFoodbeverage(null);
-                proWhitelist.setIsCulture(null);
-                proWhitelist.setIsSightseeing(null);
-            }
-            return list.toArray(new ProWhitelist[list.size()]);
-        }
-        return null;
+    public List<Map<String,Object>> getByTypeTaxNo(String type, String taxNo) {
+        return proWhitelistMapper.getByTypeTaxNo(type, taxNo);
     }
 
 

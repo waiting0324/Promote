@@ -88,9 +88,6 @@ public class ProWhitelist extends BaseEntity
     @Excel(name = "是否為觀光工廠 ( 0否 1是 )")
     private String isSightseeing;
 
-    /** 消費場所註記 */
-    private String storeNameMk;
-
     public String getId() {
         return id;
     }
@@ -256,14 +253,6 @@ public class ProWhitelist extends BaseEntity
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
-    }
-
-    public String getStoreNameMk() {
-        return storeNameMk;
-    }
-
-    public void setStoreNameMk(String storeNameMk) {
-        this.storeNameMk = storeNameMk;
     }
 
     @Override

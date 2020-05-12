@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -103,7 +104,16 @@ public class WhitelistController extends BaseController {
         if(StringUtils.isEmpty(type) || StringUtils.isEmpty(identity)){
             return AjaxResult.error("請輸入類型及統編/證號");
         }
-        ProWhitelist[] proWhitelistArr = proWhitelistService.getByTypeTaxNo(type,identity);
-        return StringUtils.isNotNull(proWhitelistArr) ? AjaxResult.success("whiteListInfo",proWhitelistArr) : AjaxResult.error("查無資料");
+        type = "S".equalsIgnoreCase(type) ? "2" : "H".equalsIgnoreCase(type) ? "1" : null;
+        if(StringUtils.isEmpty(type)){
+            return AjaxResult.error("類型錯誤");
+        }
+        List<Map<String, Object>> list = proWhitelistService.getByTypeTaxNo(type, identity);
+        if(StringUtils.isNotNull(list) && list.size() > 0){
+            AjaxResult ajax = AjaxResult.success();
+            ajax.put("whiteListInfo",list);
+            return ajax;
+        }
+        return AjaxResult.success("查無資料");
     }
 }

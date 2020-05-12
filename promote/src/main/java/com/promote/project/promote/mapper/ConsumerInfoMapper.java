@@ -77,7 +77,7 @@ public interface ConsumerInfoMapper
      * @param identity 身分證號或居留證號
      * @return 結果
      */
-    List<Map<String, Object>> getByIdentity(String identity);
+    List<Map<String, Object>> getByIdentity(@Param("identity") String identity);
 
     /**
      *消費者查自己
@@ -85,5 +85,5 @@ public interface ConsumerInfoMapper
      * @param username 帳號
      * @return 結果
      */
-    List<Map<String, Object>> getByUsername(String username);
+    List<Map<String, Object>> getByUsername(@Param("username") String username);
 }

@@ -29,8 +29,22 @@
         <result property="storeNameMk" column="store_name_mk"/>
     </resultMap>
 
+    <resultMap type="java.util.LinkedHashMap" id="ProWhitelistByTypeTaxNo">
+        <result property="id" column="id" />
+        <result property="owner" column="owner"/>
+        <result property="name" column="name"/>
+        <result property="taxNo" column="tax_no"/>
+        <result property="address" column="address"/>
+        <result property="latitude" column="latitude"/>
+        <result property="longitude" column="longitude"/>
+        <result property="phonenumber" column="phonenumber"/>
+        <result property="email" column="email"/>
+        <result property="storeNameMk" column="store_name_mk"/>
+    </resultMap>
+
+
     <sql id="selectProWhitelistVo">
-        select id, owner, name, tax_no, username, password, address, latitude, longitude, phonenumber, email, is_agree_terms, is_registed, type, is_n_market, is_t_market, is_foodbeverage, is_culture, is_sightseeing, update_time, create_time, '' as store_name_mk from pro_whitelist
+        select id, owner, name, tax_no, username, password, address, latitude, longitude, phonenumber, email, is_agree_terms, is_registed, type, is_n_market, is_t_market, is_foodbeverage, is_culture, is_sightseeing, update_time, create_time from pro_whitelist
     </sql>
 
     <select id="selectProWhitelistList" parameterType="ProWhitelist" resultMap="ProWhitelistResult">
@@ -157,8 +171,11 @@
         where tax_no = #{taxNo}
     </select>
 
-    <select id="getByTypeTaxNo" resultMap="resultMap">
-        <include refid="selectProWhitelistVo"/>
-        where type= #{type} and tax_no = #{taxNo}
+    <select id="getByTypeTaxNo" resultMap="ProWhitelistByTypeTaxNo">
+        select id, owner, name, tax_no, address, latitude, longitude, phonenumber, email, '' as store_name_mk from pro_whitelist
+        <where>
+            <if test="type != null  and type != ''">and type = #{type}</if>
+            <if test="taxNo != null  and taxNo != ''">and tax_No = #{taxNo}</if>
+        </where>
     </select>
 </mapper>

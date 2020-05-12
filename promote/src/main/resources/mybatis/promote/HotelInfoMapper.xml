@@ -17,7 +17,7 @@
         <result property="createTime"    column="create_time"    />
     </resultMap>
 
-    <resultMap type="java.util.Map" id="HotelInfoByUnameIdentity">
+    <resultMap type="java.util.LinkedHashMap" id="HotelInfoByUnameIdentity">
         <result property="userId"    column="user_id"    />
         <result property="username"    column="username"    />
         <result property="businessNo"    column="identity"    />

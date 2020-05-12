@@ -76,5 +76,5 @@ public interface StoreInfoMapper {
      * @param username 帳號
      * @return 結果
      */
-    List<Map<String, Object>> getByUsername(String username);
+    List<Map<String, Object>> getByUsername(@Param("username") String username);
 }
