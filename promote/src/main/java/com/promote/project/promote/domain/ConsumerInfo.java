@@ -30,7 +30,7 @@ public class ConsumerInfo extends BaseEntity
 
     /** 生日 */
     @Excel(name = "生日")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy/MM/dd")
     private Date birthday;
 
     /** 消費者狀態
