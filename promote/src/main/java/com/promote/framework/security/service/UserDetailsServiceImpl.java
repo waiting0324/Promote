@@ -84,15 +84,15 @@ public class UserDetailsServiceImpl implements UserDetailsService
         for (SysRole role : roles) {
             // 旅宿業者
             if (RoleConstants.HOTEL_ROLE_ID.equals(role.getRoleId())) {
-                user.setHotelInfo(hotelInfoMapper.selectHotelInfoById(user.getUserId()));
+                user.setHotel(hotelInfoMapper.selectHotelInfoById(user.getUserId()));
             }
             // 商家
             else if (RoleConstants.STORE_ROLE_ID.equals(role.getRoleId())) {
-                user.setStoreInfo(storeInfoMapper.selectStoreInfoById(user.getUserId()));
+                user.setStore(storeInfoMapper.selectStoreInfoById(user.getUserId()));
             }
             // 消費者
             else if (RoleConstants.CONSUMER_ROLE_ID.equals(role.getRoleId())) {
-                user.setConsumerInfo(consumerInfoMapper.selectConsumerInfoById(user.getUserId()));
+                user.setConsumer(consumerInfoMapper.selectConsumerInfoById(user.getUserId()));
             }
         }
     }

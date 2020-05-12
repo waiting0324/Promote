@@ -66,6 +66,29 @@ public class ConsumerInfo extends BaseEntity
     @Excel(name = "領取時間 ( 紙本才有)", width = 30, dateFormat = "yyyy-MM-dd")
     private Date receiveDate;
 
+
+    //----- 傳參用
+    private String identity;
+
+    private String mobile;
+
+
+    public String getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(String identity) {
+        this.identity = identity;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
     public void setUserId(Long userId)
     {
         this.userId = userId;

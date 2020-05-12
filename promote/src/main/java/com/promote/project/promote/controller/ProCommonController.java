@@ -14,6 +14,9 @@ import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.service.ICommonService;
+import com.promote.project.promote.service.IConsumerService;
+import com.promote.project.promote.service.IProHotelService;
+import com.promote.project.promote.service.IProStoreService;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,15 @@ public class ProCommonController extends BaseController {
 
     @Autowired
     ICommonService commonService;
+
+    @Autowired
+    private IProHotelService hostelService;
+
+    @Autowired
+    private IProStoreService storeService;
+
+    @Autowired
+    private IConsumerService consumerService;
 
     @Autowired
     private SysLoginService loginService;
@@ -65,6 +77,98 @@ public class ProCommonController extends BaseController {
         commonService.sendCaptcha(username, type);
         return AjaxResult.success();
     }
+
+    @PostMapping("/regist")
+    public AjaxResult regist(@RequestBody SysUser user, HttpServletRequest request) {
+
+        AjaxResult ajax = AjaxResult.success();
+
+        // 旅宿業者註冊
+        if ("hotel".equals(user.getRole())) {
+            //帳號
+            String username = user.getUsername();
+            //舊密碼
+            String oriPwd = user.getHotel().getOriPwd();
+            //新密碼
+            String newPwd = user.getPassword();
+            if (StringUtils.isEmpty(username) || StringUtils.isEmpty(oriPwd)
+                    || StringUtils.isEmpty(newPwd)) {
+                return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
+            }
+            hostelService.regist(username, oriPwd, newPwd);
+        }
+        // 商家
+        else if ("store".equals(user.getRole())) {
+
+            // 必填欄位檢核
+            if (StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(user.getPassword()) ||
+                    StringUtils.isEmpty(user.getStore().getName()) || StringUtils.isEmpty(user.getStore().getIdentity()) ||
+                    StringUtils.isEmpty(user.getStore().getMobile()) || StringUtils.isEmpty(user.getStore().getName()) ||
+                    StringUtils.isEmpty(user.getStore().getAddress()) || StringUtils.isEmpty(user.getStore().getBankAccount()) ||
+                    StringUtils.isEmpty(user.getStore().getBankAccountName())) {
+                return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
+            }
+
+            String userAgent = request.getHeader("User-Agent");
+            // User-Agent不以 Mozilla 開頭，則代表是從APP發來的請求
+            Boolean isFromWeb = userAgent.startsWith("Mozilla");
+
+            // 圖形驗證碼校驗
+            // 不是從APP訪問則需要圖形驗證碼
+            if (isFromWeb) {
+                String uuid = user.getUuid();
+                String verifyKey = Constants.CAPTCHA_CODE_KEY + (StringUtils.isNotEmpty(uuid) ? uuid : "");
+                String captcha = redisCache.getCacheObject(verifyKey);
+                String code = user.getCode();
+                if (StringUtils.isEmpty(code)) {
+                    throw new CustomException(MessageUtils.message("user.jcaptcha.not.exist"));
+                }
+                if (!code.equalsIgnoreCase(captcha)) {
+                    throw new CaptchaException();
+                }
+            }
+
+            // 白名單id
+            String whitelistId = user.getStore().getWhitelistId();
+
+            // 進行註冊
+            storeService.regist(user, whitelistId);
+
+            ajax.put("latitude", user.getStore().getLatitude());
+            ajax.put("longitude", user.getStore().getLongitude());
+        }
+        // 消費者
+        else if ("consumer".equals(user.getRole())) {
+
+            Boolean isProxy = user.getConsumer().getHotelId() == null;
+            // 正常註冊(非代註冊)才需檢核欄位
+            if (!isProxy) {
+
+                // 帳號、密碼、手機
+                if (StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(user.getPassword()) ||
+                        StringUtils.isEmpty(user.getMobile())) {
+                    return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
+                }
+
+                // 密碼規則檢核
+                if (!user.getPassword().matches(Constants.PASSWORD_REGEX)) {
+                    AjaxResult.error("密碼不符合8-20字元的英數字規則");
+                }
+            }
+
+            // 必填欄位檢核，姓名、身分證、生日
+            if ( StringUtils.isEmpty(user.getConsumer().getName()) || StringUtils.isEmpty(user.getIdentity()) ||
+                    StringUtils.isNull(user.getConsumer().getBirthday())) {
+                return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
+            }
+
+
+            consumerService.regist(user, isProxy);
+        }
+
+        return ajax;
+    }
+
 
     /**
      * 登入方法

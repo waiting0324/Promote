@@ -9,7 +9,6 @@ import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.security.LoginUser;
 import com.promote.project.promote.domain.ConsumerInfo;
-import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.promote.mapper.ConsumerInfoMapper;
 import com.promote.project.promote.service.IConsumerService;
 import com.promote.project.system.domain.SysUser;
@@ -75,7 +74,7 @@ public class ConsumerServiceImpl implements IConsumerService {
 
         // 檢核身分證與生日是否重複
         if (StringUtils.isNotNull(userMapper.selectUserByIdentityAndBirthday(user.getIdentity(),
-                user.getConsumerInfo().getBirthday()))) {
+                user.getConsumer().getBirthday()))) {
             throw new CustomException("該身分證已重複註冊");
         }
 
@@ -100,8 +99,8 @@ public class ConsumerServiceImpl implements IConsumerService {
         // 設定消費者基本資訊
         ConsumerInfo consumerInfo = new ConsumerInfo();
         consumerInfo.setUserId(insertUser.getUserId());
-        consumerInfo.setName(user.getConsumerInfo().getName());
-        consumerInfo.setBirthday(user.getConsumerInfo().getBirthday());
+        consumerInfo.setName(user.getConsumer().getName());
+        consumerInfo.setBirthday(user.getConsumer().getBirthday());
 
         // 非旅宿業者代註冊
         if (!isProxy) {

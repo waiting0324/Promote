@@ -118,6 +118,8 @@ public class SysUser extends BaseEntity {
      */
     private Long[] postIds;
 
+
+
     public SysUser() {
 
     }
@@ -125,40 +127,73 @@ public class SysUser extends BaseEntity {
     /**
      * 消費者資訊
      */
-    private ConsumerInfo consumerInfo;
+    private ConsumerInfo consumer;
 
     /**
      * 旅宿資訊
      */
-    private HotelInfo hotelInfo;
+    private HotelInfo hotel;
 
     /**
      * 商家資訊
      */
-    private StoreInfo storeInfo;
+    private StoreInfo store;
 
-    public ConsumerInfo getConsumerInfo() {
-        return consumerInfo;
+    //------------ 傳參用
+
+    private String role;
+
+    private String uuid;
+
+    private String code;
+
+
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setConsumerInfo(ConsumerInfo consumerInfo) {
-        this.consumerInfo = consumerInfo;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
-    public HotelInfo getHotelInfo() {
-        return hotelInfo;
+    public String getCode() {
+        return code;
     }
 
-    public void setHotelInfo(HotelInfo hotelInfo) {
-        this.hotelInfo = hotelInfo;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public StoreInfo getStoreInfo() {
-        return storeInfo;
+    public String getRole() {
+        return role;
     }
 
-    public void setStoreInfo(StoreInfo storeInfo) {
-        this.storeInfo = storeInfo;
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public ConsumerInfo getConsumer() {
+        return consumer;
+    }
+
+    public void setConsumer(ConsumerInfo consumer) {
+        this.consumer = consumer;
+    }
+
+    public HotelInfo getHotel() {
+        return hotel;
+    }
+
+    public void setHotel(HotelInfo hotel) {
+        this.hotel = hotel;
+    }
+
+    public StoreInfo getStore() {
+        return store;
+    }
+
+    public void setStore(StoreInfo store) {
+        this.store = store;
     }
 
     public SysUser(Long userId) {

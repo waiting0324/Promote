@@ -42,6 +42,18 @@ public class HotelInfo extends BaseEntity
     /** 經度 */
     private Double longitude;
 
+
+    //-------
+    String oriPwd;
+
+    public String getOriPwd() {
+        return oriPwd;
+    }
+
+    public void setOriPwd(String oriPwd) {
+        this.oriPwd = oriPwd;
+    }
+
     public Integer getUserId() {
         return userId;
     }

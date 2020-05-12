@@ -55,14 +55,12 @@ public class ProStoreServiceImpl implements IProStoreService {
 
     /**
      * 店家註冊
-     *
-     * @param user         商家基本資訊
-     * @param isAgreeTerms
+     *  @param user         商家基本資訊
      * @param whitelistId  白名單ID
      */
     @Transactional
     @Override
-    public void regist(SysUser user, String isAgreeTerms, String whitelistId) {
+    public void regist(SysUser user, String whitelistId) {
 
         if (StringUtils.isNotNull(userMapper.selectUserByUsername(user.getUsername()))) {
             throw new CustomException("該帳號已被使用");
@@ -73,7 +71,7 @@ public class ProStoreServiceImpl implements IProStoreService {
         if (StringUtils.isNull(white)) {
             throw new CustomException("白名單內並無此店家");
         }
-        if (!user.getIdentity().equals(white.getTaxNo())) {
+        if (!user.getStore().getIdentity().equals(white.getTaxNo())) {
             throw new CustomException("填寫的統編與白名單資料不一致");
         }
 
@@ -81,8 +79,8 @@ public class ProStoreServiceImpl implements IProStoreService {
         SysUser insertUser = new SysUser();
         insertUser.setUsername(user.getUsername());
         insertUser.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
-        insertUser.setIdentity(user.getIdentity());
-        insertUser.setMobile(user.getMobile().replace("-", ""));
+        insertUser.setIdentity(user.getStore().getIdentity());
+        insertUser.setMobile(user.getStore().getMobile());
         // TODO EMAIL ??
 
         // 插入User表
@@ -90,7 +88,7 @@ public class ProStoreServiceImpl implements IProStoreService {
 
 
         // 處理商家基本資訊
-        StoreInfo storeInfo = user.getStoreInfo();
+        StoreInfo storeInfo = user.getStore();
         StoreInfo insertStoreInfo = new StoreInfo();
 
         insertStoreInfo.setUserId(insertUser.getUserId());
@@ -99,7 +97,7 @@ public class ProStoreServiceImpl implements IProStoreService {
         insertStoreInfo.setBankAccountName(storeInfo.getBankAccountName());
         insertStoreInfo.setBankAccount(storeInfo.getBankAccount());
         insertStoreInfo.setAddress(storeInfo.getAddress());
-        insertStoreInfo.setIsAgreeTerms(isAgreeTerms);
+        insertStoreInfo.setIsAgreeTerms("1");
         insertStoreInfo.setAgreeTime(DateUtils.getNowDate());
         // 狀態 待驗證
         insertStoreInfo.setStatus(StoreTypeConstants.STATUS_UNVERIFIED);
@@ -165,9 +163,9 @@ public class ProStoreServiceImpl implements IProStoreService {
         //從Spring Security取得的資料
         LoginUser loginUser = SecurityUtils.getLoginUser();
         SysUser updUser = loginUser.getUser();
-        StoreInfo storeInfo = updUser.getStoreInfo();
+        StoreInfo storeInfo = updUser.getStore();
         //從Client端取得的資料
-        StoreInfo storeInfoTmp = user.getStoreInfo();
+        StoreInfo storeInfoTmp = user.getStore();
         //判斷是否要做update
         boolean needUpdate = false;
 
@@ -239,7 +237,7 @@ public class ProStoreServiceImpl implements IProStoreService {
      */
     @Override
     public Map<String, Object> getRecdMoneyRecord() {
-        StoreInfo storeInfo = SecurityUtils.getLoginUser().getUser().getStoreInfo();
+        StoreInfo storeInfo = SecurityUtils.getLoginUser().getUser().getStore();
         Map<String, Object> recdMoneyRecordMap = new HashMap<String, Object>();
         if (storeInfo != null) {
             //店家id

@@ -1,6 +1,5 @@
 package com.promote.project.promote.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.promote.common.constant.Constants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
@@ -11,7 +10,6 @@ import com.promote.framework.redis.RedisCache;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
-import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.promote.service.IConsumerService;
 import com.promote.project.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,8 +81,8 @@ public class ConsumerController extends BaseController {
         }
 
         // 必填欄位檢核，姓名、身分證、生日
-        if ( StringUtils.isEmpty(user.getConsumerInfo().getName()) || StringUtils.isEmpty(user.getIdentity()) ||
-                 StringUtils.isNull(user.getConsumerInfo().getBirthday())) {
+        if ( StringUtils.isEmpty(user.getConsumer().getName()) || StringUtils.isEmpty(user.getIdentity()) ||
+                 StringUtils.isNull(user.getConsumer().getBirthday())) {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
 

@@ -194,7 +194,7 @@ public class CouponServiceImpl implements ICouponService {
                 , new String[]{"S", "T", "B", "C"});
 
         // 消費者選擇使用電子(虛擬)方式發放抵用券
-        if (CouponConstants.TYPE_ELEC.equals(user.getConsumerInfo().getCouponType())) {
+        if (CouponConstants.TYPE_ELEC.equals(user.getConsumer().getCouponType())) {
 
             // 設定抵用券資料，發送抵用券
             List<Coupon> couponList = new ArrayList<>();
@@ -245,7 +245,7 @@ public class CouponServiceImpl implements ICouponService {
 
         }
         // 消費者選擇使用紙本方式發放抵用券
-        else if (CouponConstants.TYPE_PAPAER.equals(user.getConsumerInfo().getCouponType())) {
+        else if (CouponConstants.TYPE_PAPAER.equals(user.getConsumer().getCouponType())) {
             // KIOSK兌換碼
             consumerInfo.setPrintCode(RandomUtil.randomNumbers(10));
         } else {
@@ -255,7 +255,7 @@ public class CouponServiceImpl implements ICouponService {
         // 處理要更新的消費者資料
         consumerInfo.setUserId(userId);
         consumerInfo.setConsumerStat(ConsumerConstants.STAT_SEND);
-        consumerInfo.setCouponPrintType(user.getConsumerInfo().getCouponType());
+        consumerInfo.setCouponPrintType(user.getConsumer().getCouponType());
         consumerInfo.setHotelId(SecurityUtils.getLoginUser().getUser().getUserId());
         consumerInfo.setIssueDate(nowDate);
 
@@ -464,7 +464,7 @@ public class CouponServiceImpl implements ICouponService {
         if ("1".equals(coupon.getIsUsed())) {
             throw new CustomException(MessageUtils.message("pro.err.coupon.used"));
         }
-        StoreInfo storeInfo = sysUser.getStoreInfo();
+        StoreInfo storeInfo = sysUser.getStore();
         if (StringUtils.isNull(storeInfo)) {
             throw new CustomException(MessageUtils.message("pro.err.store.not.find"));
         }
@@ -503,6 +503,9 @@ public class CouponServiceImpl implements ICouponService {
         // 構建查詢條件
         CouponConsume couponConsume = new CouponConsume();
         couponConsume.setConsumerId(SecurityUtils.getLoginUser().getUser().getUserId());
+
+        ConsumerInfo consumerInfo = SecurityUtils.getLoginUser().getUser().getConsumer();
+
 
         List<CouponConsume> list = couponConsumeMapper.selectConsumptionList(SecurityUtils.getLoginUser().getUser().getUserId());
 
