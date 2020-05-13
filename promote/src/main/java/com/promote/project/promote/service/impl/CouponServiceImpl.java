@@ -626,4 +626,14 @@ public class CouponServiceImpl implements ICouponService {
 
         return result;
     }
+
+    /**
+     * 重置列印狀態
+     */
+    public int updateConsumerStart(ConsumerInfo consumerInfo) {
+
+        int sum = consumerInfoMapper.updateConsumerInfo(consumerInfo);
+
+        return sum;
+    }
 }

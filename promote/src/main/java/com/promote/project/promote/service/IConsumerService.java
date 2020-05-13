@@ -4,6 +4,7 @@ import com.promote.framework.security.LoginUser;
 import com.promote.project.system.domain.SysUser;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 6550 劉威廷
@@ -31,4 +32,29 @@ public interface IConsumerService {
      */
     LoginUser updateConsumerInfo(SysUser user);
 
+    /**
+     *客服查詢消費者
+     *
+     * @param username 帳號
+     * @param identity 身分證號或居留證號
+     * @return 結果
+     */
+    List<Map<String, Object>> getByUnameIdentity(String username, String identity);
+
+
+    /**
+     *旅宿業者查消費者
+     *
+     * @param identity 身分證號或居留證號
+     * @return 結果
+     */
+    List<Map<String, Object>> getByIdentity(String identity);
+
+    /**
+     *消費者查自己
+     *
+     * @param username 帳號
+     * @return 結果
+     */
+    Map<String, Object> getByUsername(String username);
 }

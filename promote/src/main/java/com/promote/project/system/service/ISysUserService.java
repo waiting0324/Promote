@@ -166,4 +166,11 @@ public interface ISysUserService
      */
     public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
 
+    /**
+     * 根據身分證查詢 消費者
+     * @param identity 身分證
+     * @return 使用者Bean
+     */
+    public List<SysUser> selectConsumerByIdentity(String identity);
+
 }

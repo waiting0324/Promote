@@ -282,6 +282,30 @@ public class ProStoreServiceImpl implements IProStoreService {
         return recdMoneyRecordMap;
     }
 
+
+    /**
+     *客服查詢店家
+     *
+     * @param username 帳號
+     * @param identity 身分證號或居留證號
+     * @return 結果
+     */
+    @Override
+    public List<Map<String, Object>> getByUnameIdentity(String username, String identity) {
+        return storeInfoMapper.getByUnameIdentity(username, identity);
+    }
+
+    /**
+     *店家查詢自己
+     *
+     * @param username 帳號
+     * @return 結果
+     */
+    @Override
+    public Map<String, Object> getByUsername(String username) {
+        return storeInfoMapper.getByUsername(username).get(0);
+    }
+
     /**
      * 取得星期幾
      *

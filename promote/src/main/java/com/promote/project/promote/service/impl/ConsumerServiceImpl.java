@@ -22,6 +22,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 6550 劉威廷
@@ -176,5 +177,40 @@ public class ConsumerServiceImpl implements IConsumerService {
             }
         }
         return loginUser;
+    }
+
+
+    /**
+     *客服查詢消費者
+     *
+     * @param username 帳號
+     * @param identity 身分證號或居留證號
+     * @return 結果
+     */
+    @Override
+    public List<Map<String, Object>> getByUnameIdentity(String username, String identity) {
+        return consumerInfoMapper.getByUnameIdentity(username,identity);
+    }
+
+    /**
+     *旅宿業者查消費者
+     *
+     * @param identity 身分證號或居留證號
+     * @return 結果
+     */
+    @Override
+    public List<Map<String, Object>> getByIdentity(String identity) {
+        return consumerInfoMapper.getByIdentity(identity);
+    }
+
+    /**
+     *消費者查自己
+     *
+     * @param username 帳號
+     * @return 結果
+     */
+    @Override
+    public Map<String, Object> getByUsername(String username) {
+        return consumerInfoMapper.getByUsername(username).get(0);
     }
 }

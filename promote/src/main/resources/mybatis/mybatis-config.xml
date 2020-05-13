@@ -10,6 +10,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<setting name="defaultExecutorType"      value="REUSE" /> <!-- 配置預設的執行器 -->
 		<setting name="logImpl"                  value="SLF4J" /> <!-- 指定 MyBatis 所用日誌的具體實現 -->
 		<!-- <setting name="mapUnderscoreToCamelCase" value="true"/>  駝峰式命名 -->
+		<setting name="callSettersOnNulls"       value="true" /> <!-- 返回結果為Null時,顯示Map類型的字段 -->
 	</settings>
 	
 </configuration>

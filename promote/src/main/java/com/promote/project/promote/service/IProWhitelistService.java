@@ -3,6 +3,7 @@ package com.promote.project.promote.service;
 import com.promote.project.promote.domain.ProWhitelist;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 白名單Service介面
@@ -94,4 +95,13 @@ public interface IProWhitelistService
      * @return 白名單
      */
     public ProWhitelist selectProWhitelistByTaxNo(String taxNo);
+
+    /**
+     *根據資料類型及統編/身分證字號查找白名單資料
+     *
+     * @param type 資料類型 (1旅宿業者 2商家)
+     * @param taxNo 統編/身分證字號
+     * @return 結果
+     */
+    public List<Map<String,Object>> getByTypeTaxNo(String type, String taxNo);
 }
