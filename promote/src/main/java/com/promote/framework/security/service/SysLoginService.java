@@ -2,7 +2,6 @@ package com.promote.framework.security.service;
 
 import com.promote.common.constant.Constants;
 import com.promote.common.exception.CustomException;
-import com.promote.common.exception.user.UserPasswordNotMatchException;
 import com.promote.common.utils.MessageUtils;
 import com.promote.framework.manager.AsyncManager;
 import com.promote.framework.manager.factory.AsyncFactory;
@@ -57,7 +56,8 @@ public class SysLoginService
             if (e instanceof BadCredentialsException)
             {
                 AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.password.not.match")));
-                throw new UserPasswordNotMatchException();
+                //throw new UserPasswordNotMatchException();
+                throw new CustomException("使用者不存在/密碼錯誤", 0003);
             }
             else
             {

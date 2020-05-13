@@ -166,7 +166,10 @@ public class CommonServiceImpl implements ICommonService {
 
     @Override
     @Transactional
-    public void sendCaptcha(String username, String type) {
+    public String sendCaptcha(String username, String type, String method, String mobile) {
+
+        // 返回給前端的資訊
+        String result = "";
 
         // 驗證碼
         String verifyCode = String.format("%04d", new Random().nextInt(9999));
@@ -186,10 +189,10 @@ public class CommonServiceImpl implements ICommonService {
             throw new CustomException("該帳號找不到對應的使用者");
         }
 
-        // 使用Email方式驗證
-        if (Constants.VERI_CODE_TYPE_EMAIL.equals(type)) {
+        // 忘記密碼，使用Email方式驗證
+        if (Constants.VERI_TYPE_FORGET_PWD.equals(type) && Constants.VERI_METHOD_EMAIL.equals(method)) {
             if (StringUtils.isEmpty(user.getEmail())) {
-                throw new CustomException("您尚未設定Email，故不能使用Email進行重設密碼操作");
+                throw new CustomException("您的帳號未留存email,請使用其他驗證方式", 200);
             }
             AsyncManager.me().execute(AsyncFactory.sendEmail(user.getEmail(), "振興券 - 重設密碼", msg));
 
@@ -197,12 +200,13 @@ public class CommonServiceImpl implements ICommonService {
             String verifyKey = Constants.VERI_CODE_KEY + username;
             redisCache.setCacheObject(verifyKey, verifyCode, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
         }
-        // 使用OTP方式驗證
-        else if (Constants.VERI_CODE_TYPE_OTP.equals(type)) {
+        // 忘記密碼，使用OTP方式驗證
+        else if (Constants.VERI_TYPE_FORGET_PWD.equals(type) && Constants.VERI_METHOD_SMS.equals(method)) {
             // TODO 處理OTP
+            AsyncManager.me().execute(AsyncFactory.sendSms(mobile, msg));
         }
         // 旅宿業者發送抵用券 OTP 方式驗證
-        else if (Constants.VERI_CODE_SEND_COUPON.equals(type)) {
+        else if (Constants.VERI_TYPE_SEND_COUPON.equals(type) && Constants.VERI_METHOD_SMS.equals(method)) {
 
             // 校驗消費者狀態
             ConsumerInfo consumerInfo = consumerInfoMapper.selectConsumerInfoById(user.getUserId());
@@ -211,8 +215,8 @@ public class CommonServiceImpl implements ICommonService {
                 throw new CustomException("此消費者已領過抵用券");
             }
 
-            // TODO 改為使用OTP
-            System.out.println(msg);
+            // TODO 處理OTP
+            AsyncManager.me().execute(AsyncFactory.sendSms(mobile, msg));
 
             // 驗證碼存入Redis
             String verifyKey = Constants.VERI_COUPON_SEND_CODE_KEY + username;
@@ -225,5 +229,15 @@ public class CommonServiceImpl implements ICommonService {
             throw new CustomException("驗證方式選擇錯誤");
         }
 
+        if (Constants.VERI_METHOD_EMAIL.equals(method)) {
+            hidePersonalInfo(user);
+            result = "驗證碼已發送到" + user.getEmail();
+        } else if (Constants.VERI_METHOD_SMS.equals(method)) {
+            user.setMobile(mobile);
+            hidePersonalInfo(user);
+            result = "驗證碼已發送到" + user.getMobile() + "，驗證碼:" + verifyCode + "(在簡訊API能使用後需移除此資訊)";
+        }
+
+        return result;
     }
 }

@@ -19,7 +19,7 @@ public class HotelInfo extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** 旅宿業者的user_id */
-    private Integer userId;
+    private Long userId;
 
     /** 旅宿業者名稱 */
     private String name;
@@ -54,11 +54,11 @@ public class HotelInfo extends BaseEntity
         this.oriPwd = oriPwd;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

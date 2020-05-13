@@ -20,6 +20,8 @@ import com.promote.project.promote.service.ICommonService;
 import com.promote.project.promote.service.IConsumerService;
 import com.promote.project.promote.service.IProHotelService;
 import com.promote.project.promote.service.IProStoreService;
+import com.promote.project.promote.domain.ProWhitelist;
+import com.promote.project.promote.service.*;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,23 +65,31 @@ public class ProCommonController extends BaseController {
     @Autowired
     private RedisCache redisCache;
 
+    @Autowired
+    private IProWhitelistService whitelistService;
+
     /**
      * 發送驗證碼
-     *
-     * @param sysUser 使用者資料
      */
-    @PostMapping("/captcha")
-    public AjaxResult captcha(@RequestBody SysUser sysUser) throws MessagingException {
-        //帳號
-        String username = sysUser.getUsername();
-        Map<String, Object> params = sysUser.getParams();
-        //驗證類型(1:Email,2:手機)
-        String type = (String) params.get("type");
-        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(type)) {
+    @PostMapping("/common/sendOtp")
+    public AjaxResult captcha(@RequestBody Map<String, String> request) throws MessagingException {
+
+        // 帳號
+        String username = request.get("username");
+        // 驗證類型 (1:忘記密碼，2:旅宿業者發抵用券驗證)
+        String type = request.get("type");
+        // 發送方式 (1:Email,2:手機)
+        String method = request.get("method");
+        // 手機號碼
+        String mobile = request.get("mobile");
+
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(type) || StringUtils.isEmpty(method)) {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
-        commonService.sendCaptcha(username, type);
-        return AjaxResult.success();
+        String msg = commonService.sendCaptcha(username, type, method, mobile);
+
+
+        return AjaxResult.success(msg);
     }
 
     @PostMapping("/regist")
@@ -161,7 +171,7 @@ public class ProCommonController extends BaseController {
             }
 
             // 必填欄位檢核，姓名、身分證、生日
-            if ( StringUtils.isEmpty(user.getConsumer().getName()) || StringUtils.isEmpty(user.getConsumer().getIdentity()) ||
+            if (StringUtils.isEmpty(user.getConsumer().getName()) || StringUtils.isEmpty(user.getConsumer().getIdentity()) ||
                     StringUtils.isNull(user.getConsumer().getBirthday())) {
                 return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
             }
@@ -177,8 +187,7 @@ public class ProCommonController extends BaseController {
      * 登入方法
      */
     @PostMapping("/common/login")
-    public AjaxResult login(@RequestBody SysUser user, HttpServletRequest request)
-    {
+    public AjaxResult login(@RequestBody SysUser user, HttpServletRequest request) {
 
         String userAgent = request.getHeader("User-Agent");
         // User-Agent不以 Mozilla 開頭，則代表是從APP發來的請求
@@ -202,11 +211,26 @@ public class ProCommonController extends BaseController {
 
         AjaxResult ajax = AjaxResult.success();
 
+
+        String username = user.getUsername();
+        String password = user.getPassword();
+
+        // 旅宿業者第一次登入
+        ProWhitelist whitelist = whitelistService.selectProWhitelistByUsernameAndPwd(username, password);
+        if (StringUtils.isNotNull(whitelist)) {
+            ajax.put("whitelistId", whitelist.getId());
+            if (!"1".equals(whitelist.getIsRegisted())) {
+                hostelService.regist(username, password, password);
+            }
+        }
+
+
         // 生成令牌
-        LoginUser loginUser = loginService.login(user.getUsername(), user.getPassword());
+        LoginUser loginUser = loginService.login(username, password);
         String token = tokenService.createToken(loginUser);
         ajax.put(Constants.TOKEN, token);
 
+        // 角色
         Long roleId = loginUser.getUser().getRoles().get(0).getRoleId();
         if (RoleConstants.HOTEL_ROLE_ID.equals(roleId)) {
             ajax.put("role", "H");
@@ -216,9 +240,15 @@ public class ProCommonController extends BaseController {
             ajax.put("role", "C");
         }
 
+        // 是否強制更改密碼
+        if ("0".equals(loginUser.getUser().getPwNeedReset())) {
+            ajax.put("forceChgPwd", "N");
+        } else {
+            ajax.put("forceChgPwd", "Y");
+        }
+
         return ajax;
     }
-
 
 
     /**
@@ -255,11 +285,11 @@ public class ProCommonController extends BaseController {
 
     /**
      * 變更密碼
+     *
      * @return 結果
      */
     @PostMapping("/common/resetPwd")
-    public AjaxResult resetPwd(@RequestBody Map<String, String> request)
-    {
+    public AjaxResult resetPwd(@RequestBody Map<String, String> request) {
 
         // String oldPassword = request.get("oldPwd");
         String newPwd = request.get("newPwd");
@@ -280,8 +310,7 @@ public class ProCommonController extends BaseController {
         {
             return AjaxResult.error("新密碼不能與舊密碼相同");
         }*/
-        if (userService.resetUserPwd(username, SecurityUtils.encryptPassword(newPwd)) > 0)
-        {
+        if (userService.resetUserPwd(username, SecurityUtils.encryptPassword(newPwd)) > 0) {
             // 更新快取使用者密碼
             loginUser.getUser().setPassword(SecurityUtils.encryptPassword(newPwd));
             tokenService.setLoginUser(loginUser);

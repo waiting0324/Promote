@@ -1,7 +1,6 @@
 package com.promote.project.promote.service.impl;
 
 import com.promote.common.utils.DateUtils;
-import com.promote.common.utils.StringUtils;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
 import com.promote.project.promote.service.IProWhitelistService;
@@ -9,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -206,6 +203,11 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
     @Override
     public List<Map<String,Object>> getByTypeTaxNo(String type, String taxNo) {
         return proWhitelistMapper.getByTypeTaxNo(type, taxNo);
+    }
+
+    @Override
+    public ProWhitelist selectProWhitelistByUsernameAndPwd(String username, String password) {
+        return proWhitelistMapper.selectProWhitelistByUsernameAndPwd(username, password);
     }
 
 

@@ -120,17 +120,22 @@ public class Constants
     public static final String PASSWORD_REGEX = "[0-9A-Za-z]{8,20}";
 
     /**
-     * 驗證碼使用EMAIL方式驗證
+     * 驗證類型 忘記密碼
      */
-    public static final String VERI_CODE_TYPE_EMAIL = "1";
+    public static final String VERI_TYPE_FORGET_PWD = "1";
 
     /**
-     * 驗證碼使用OTP方式驗證
+     * 驗證類型 旅宿業者發抵用券
      */
-    public static final String VERI_CODE_TYPE_OTP = "2";
+    public static final String VERI_TYPE_SEND_COUPON = "2";
 
     /**
-     * 旅宿業者發送抵用券，使用OTP方式驗證
+     * 驗證方式 Email
      */
-    public static final String VERI_CODE_SEND_COUPON = "3";
+    public static final String VERI_METHOD_EMAIL = "email";
+
+    /**
+     * 驗證方式 sms
+     */
+    public static final String VERI_METHOD_SMS = "sms";
 }
