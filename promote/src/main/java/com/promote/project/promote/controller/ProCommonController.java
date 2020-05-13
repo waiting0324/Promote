@@ -14,6 +14,8 @@ import com.promote.framework.security.service.SysLoginService;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
+import com.promote.project.promote.domain.ConsumerInfo;
+import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.promote.service.ICommonService;
 import com.promote.project.promote.service.IConsumerService;
 import com.promote.project.promote.service.IProHotelService;
@@ -382,15 +384,61 @@ public class ProCommonController extends BaseController {
         return AjaxResult.error("目前登入者無權進行基本資料查詢");
     }
 
+    /**
+     *基本資料修改
+     *
+     * @param sysUser 請求
+     * @return
+     */
     @PostMapping("/updateProfile")
-    public AjaxResult updateProfile(Map<String, Object> request) {
+    public AjaxResult updateProfile(@RequestBody SysUser sysUser) {
         SysUser user = SecurityUtils.getLoginUser().getUser();
         //判斷角色
         String role = user.getRoles().get(0).getRoleKey();
-        if("hostel".equals(role)){
-
-        }else if("store".equals(role)){
-
+        //登入者id
+        Long userId = user.getUserId();
+        //登入者帳號
+        String username = user.getUsername();
+        //資料類型
+        String userType = null;
+        if("customerService".equals(role)){
+            //客服
+            userType = sysUser.getUserType();
+            if(StringUtils.isEmpty(userType)){
+                return AjaxResult.error("需輸入資料類型");
+            }
         }
+        if("hostel".equals(role)){
+            //SA奕凱:目前不處理旅宿
+        }else if("store".equals(role) || ("customerService".equals(role) && "S".equals(userType))){
+            //店家
+            StoreInfo storeInfo = sysUser.getStore();
+            if("customerService".equals(role)){
+                if(StringUtils.isNull(storeInfo.getUserId()) || StringUtils.isEmpty(storeInfo.getUsername())){
+                    return AjaxResult.error("需輸入userId及帳號");
+                }
+                userId = storeInfo.getUserId();
+                username = storeInfo.getUsername();
+            }
+            storeInfo.setUserId(userId);
+            storeInfo.setUsername(username);
+            storeService.updateStoreInfo(storeInfo);
+            return AjaxResult.success("更新成功");
+        }else if("consumer".equals(role) || ("customerService".equals(role) && "C".equals(userType))){
+            //消費者
+            ConsumerInfo consumer = sysUser.getConsumer();
+            if("customerService".equals(role)){
+                if(StringUtils.isNull(consumer.getUserId()) || StringUtils.isEmpty(consumer.getUsername())){
+                    return AjaxResult.error("需輸入userId及帳號");
+                }
+                userId = consumer.getUserId();
+                username = consumer.getUsername();
+            }
+            consumer.setUserId(userId);
+            consumer.setUsername(username);
+            consumerService.updateConsumerInfo(consumer);
+            return AjaxResult.success("更新成功");
+        }
+        return AjaxResult.error("目前登入者無權進行基本資料修改");
     }
 }

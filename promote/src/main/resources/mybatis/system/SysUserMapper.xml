@@ -251,5 +251,12 @@
             u.identity = #{identity} and c.birthday = #{birthday}
     </select>
 
+    <select id="getByUnameIndentity" resultMap="SysUserResult">
+        <include refid="selectUserVo"/>
+        <where>
+            <if test="username != null  and username != ''">and username = #{username}</if>
+            <if test="identity != null  and identity != ''">and identity = #{identity}</if>
+        </where>
+    </select>
 
 </mapper>

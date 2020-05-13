@@ -173,4 +173,13 @@ public interface ISysUserService
      */
     public List<SysUser> selectConsumerByIdentity(String identity);
 
+    /**
+     * 根據帳號及身分證查使用者
+     *
+     * @param username
+     * @param identity
+     * @return
+     */
+    public SysUser getByUnameIndentity(String username,String identity);
+
 }

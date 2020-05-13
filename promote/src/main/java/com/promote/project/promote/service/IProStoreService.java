@@ -66,4 +66,11 @@ public interface IProStoreService {
      */
     Map<String, Object> getByUsername(String username);
 
+    /**
+     * 修改店家基本資料
+     *
+     * @param storeInfo 店家基本資料物件
+     * @return 結果
+     */
+    void updateStoreInfo(StoreInfo storeInfo);
 }

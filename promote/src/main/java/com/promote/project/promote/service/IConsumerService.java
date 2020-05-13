@@ -1,6 +1,7 @@
 package com.promote.project.promote.service;
 
 import com.promote.framework.security.LoginUser;
+import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.system.domain.SysUser;
 
 import java.util.List;
@@ -57,4 +58,11 @@ public interface IConsumerService {
      * @return 結果
      */
     Map<String, Object> getByUsername(String username);
+
+    /**
+     * 修改消費者基本資料
+     *
+     * @param consumer 消費者基本資料
+     */
+    void updateConsumerInfo(ConsumerInfo consumer);
 }

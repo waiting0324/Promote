@@ -16,7 +16,7 @@ import java.util.Date;
  * @date 2020-04-27
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ConsumerInfo extends BaseEntity
+public class    ConsumerInfo extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
@@ -72,6 +72,25 @@ public class ConsumerInfo extends BaseEntity
 
     private String mobile;
 
+    private String username;
+
+    private String email;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getIdentity() {
         return identity;

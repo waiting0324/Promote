@@ -403,4 +403,35 @@ public class SysUserServiceImpl implements ISysUserService {
     public List<SysUser> selectConsumerByIdentity(String identity){
         return userMapper.selectConsumerByIdentity(identity);
     }
+
+    /**
+     * 根據帳號及身分證查使用者
+     *
+     * @param username
+     * @param identity
+     * @return
+     */
+    @Override
+    public SysUser getByUnameIndentity(String username, String identity) {
+        List<SysUser> list = userMapper.getByUnameIndentity(username, identity);
+        //是否找到不一樣的userId
+        boolean findDiff = false;
+        for(int i = 0 ; i < list.size(); i++){
+            Long userId = list.get(i).getUserId();
+            for(int j = i + 1; j < list.size(); j++){
+                Long targetUserId = list.get(j).getUserId();
+                if(userId != targetUserId){
+                    findDiff = true;
+                    break;
+                }
+            }
+            if(findDiff){
+                break;
+            }
+        }
+        if(findDiff){
+            throw new CustomException("查詢到多個使用者,請再輸入帳號查詢");
+        }
+        return list.get(0);
+    }
 }
