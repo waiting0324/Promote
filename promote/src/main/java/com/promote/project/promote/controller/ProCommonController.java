@@ -18,7 +18,6 @@ import com.promote.project.promote.service.ICommonService;
 import com.promote.project.promote.service.IConsumerService;
 import com.promote.project.promote.service.IProHotelService;
 import com.promote.project.promote.service.IProStoreService;
-import com.promote.project.system.domain.SysRole;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -228,6 +227,7 @@ public class ProCommonController extends BaseController {
      */
     @PostMapping("/forgetPwd")
     public AjaxResult forgetPwd(@RequestBody SysUser sysUser) {
+
         String username = (String) sysUser.getUsername();
         Map<String, Object> params = sysUser.getParams();
         //新密碼
@@ -255,16 +255,21 @@ public class ProCommonController extends BaseController {
      * 變更密碼
      * @return 結果
      */
-    @PutMapping("/resetPwd")
+    @PostMapping("/common/resetPwd")
     public AjaxResult resetPwd(@RequestBody Map<String, String> request)
     {
 
-        String oldPassword = request.get("oldPwd");
-        String newPassword = request.get("newPwd");
+        // String oldPassword = request.get("oldPwd");
+        String newPwd = request.get("newPwd");
+        String checkNewPwd = request.get("checkNewPwd");
+
+        if (!newPwd.equals(checkNewPwd)) {
+            return AjaxResult.error("兩次輸入的密碼不一致");
+        }
 
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        String userName = loginUser.getUsername();
-        String password = loginUser.getPassword();
+        String username = loginUser.getUsername();
+        /* String password = loginUser.getPassword();
         if (!SecurityUtils.matchesPassword(oldPassword, password))
         {
             return AjaxResult.error("修改密碼失敗，舊密碼錯誤");
@@ -272,11 +277,11 @@ public class ProCommonController extends BaseController {
         if (SecurityUtils.matchesPassword(newPassword, password))
         {
             return AjaxResult.error("新密碼不能與舊密碼相同");
-        }
-        if (userService.resetUserPwd(userName, SecurityUtils.encryptPassword(newPassword)) > 0)
+        }*/
+        if (userService.resetUserPwd(username, SecurityUtils.encryptPassword(newPwd)) > 0)
         {
             // 更新快取使用者密碼
-            loginUser.getUser().setPassword(SecurityUtils.encryptPassword(newPassword));
+            loginUser.getUser().setPassword(SecurityUtils.encryptPassword(newPwd));
             tokenService.setLoginUser(loginUser);
             return AjaxResult.success();
         }
@@ -315,7 +320,7 @@ public class ProCommonController extends BaseController {
         SysUser user = SecurityUtils.getLoginUser().getUser();
         //判斷角色
         String role = user.getRoles().get(0).getRoleKey();
-        role = "customerService";
+//        role = "customerService";
         if("customerService".equals(role)){
             //客服
             if(StringUtils.isEmpty(userType)){
@@ -374,5 +379,17 @@ public class ProCommonController extends BaseController {
             return ajax;
         }
         return AjaxResult.error("目前登入者無權進行基本資料查詢");
+    }
+
+    @PostMapping("/updateProfile")
+    public AjaxResult updateProfile(Map<String, Object> request) {
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        //判斷角色
+        String role = user.getRoles().get(0).getRoleKey();
+        if("hostel".equals(role)){
+
+        }else if("store".equals(role)){
+
+        }
     }
 }
