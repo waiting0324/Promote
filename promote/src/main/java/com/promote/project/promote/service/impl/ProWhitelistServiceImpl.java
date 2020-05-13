@@ -165,13 +165,13 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
     /**
      * 根據代號及資料類型查找白名單資料
      *
-     * @param id 代號
+     * @param id   代號
      * @param type 資料類型
      * @return 白名單
      */
     @Override
     public ProWhitelist selectProWhitelistByIdType(String id, String type) {
-        return proWhitelistMapper.selectProWhitelistByIdType(id,type);
+        return proWhitelistMapper.selectProWhitelistByIdType(id, type);
     }
 
     /**
@@ -194,20 +194,41 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
     }
 
     /**
-     *根據資料類型及統編/身分證字號查找白名單資料
+     * 根據資料類型及統編/身分證字號查找白名單資料
      *
-     * @param type 資料類型 (1旅宿業者 2商家)
+     * @param type  資料類型 (1旅宿業者 2商家)
      * @param taxNo 統編/身分證字號
      * @return 結果
      */
     @Override
-    public List<Map<String,Object>> getByTypeTaxNo(String type, String taxNo) {
+    public List<Map<String, Object>> getByTypeTaxNo(String type, String taxNo) {
         return proWhitelistMapper.getByTypeTaxNo(type, taxNo);
     }
 
     @Override
     public ProWhitelist selectProWhitelistByUsernameAndPwd(String username, String password) {
         return proWhitelistMapper.selectProWhitelistByUsernameAndPwd(username, password);
+    }
+
+
+    /**
+     * 從旅宿白名單檔新增白名單
+     *
+     * @return
+     */
+    @Override
+    public int insertFromHotelWhitelist() {
+        return proWhitelistMapper.insertFromHotelWhitelist();
+    }
+
+    /**
+     * 從店家白名單檔新增白名單
+     *
+     * @return
+     */
+    @Override
+    public int insertFromStoreWhitelist() {
+        return proWhitelistMapper.insertFromStoreWhitelist();
     }
 
 

@@ -178,4 +178,14 @@
             <if test="taxNo != null  and taxNo != ''">and tax_No = #{taxNo}</if>
         </where>
     </select>
+
+    <insert id="insertFromHotelWhitelist">
+        insert into pro_whitelist (id,name,tax_no,username,password,address,phonenumber,email,type,latitude,longitude)
+        select data_id,name,unifiedbusinessno,firstusername,firstpassword,address,tel,industryemail,1,py,px from hotel_whitelist
+    </insert>
+
+    <insert id="insertFromStoreWhitelist">
+        insert into pro_whitelist (id,owner,name,tax_no,address,phonenumber,type,is_n_market,is_t_market,is_foodbeverage,is_culture,is_sightseeing)
+        select store_uid,owner,store_name,tax_no,address,phone_number,2,n_market,t_market,foodbeverage,cultural,sightseeing from store_whitelist
+    </insert>
 </mapper>

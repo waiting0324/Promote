@@ -73,4 +73,12 @@ public interface ISysConfigService
      * @return 結果
      */
     public String checkConfigKeyUnique(SysConfig config);
+
+    /**
+     * 根據key查找引數配置資訊
+     *
+     * @param configKey key
+     * @return 結果
+     */
+    public SysConfig getConfigBykey(String configKey);
 }

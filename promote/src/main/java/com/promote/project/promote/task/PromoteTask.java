@@ -13,6 +13,8 @@ import com.promote.project.promote.domain.HotelWhitelist;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.domain.StoreWhitelist;
 import com.promote.project.promote.service.*;
+import com.promote.project.system.domain.SysConfig;
+import com.promote.project.system.service.ISysConfigService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
@@ -54,6 +56,9 @@ public class PromoteTask {
 
     @Autowired
     StoreWhitelistService storeWhitelistService;
+
+    @Autowired
+    private ISysConfigService configService;
 
     // 與FTP相關配置 開始
     private String host;
@@ -167,6 +172,35 @@ public class PromoteTask {
         if (StringUtils.isNotEmpty(path)) {
 //            BufferedInputStream inputStream = null;
 //            BufferedReader reader = null;
+            //是否為第一份白名單(旅宿or店家)
+            boolean isFirstWhitelist = false;
+            String isFirstHotelWhitelist = configService.selectConfigByKey("is.first.hotelWhitelist");
+            Date now = DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime());
+            if (StringUtils.isEmpty(isFirstHotelWhitelist)) {
+                SysConfig config = new SysConfig();
+                config.setConfigName("是否為第一份旅宿白名單");
+                config.setConfigKey("is.first.hotelWhitelist");
+                config.setConfigValue("true");
+                config.setConfigType("N");
+                config.setCreateTime(now);
+                config.setUpdateTime(now);
+                configService.insertConfig(config);
+                isFirstHotelWhitelist = "true";
+                isFirstWhitelist = true;
+            }
+            String isFirstStoreWhitelist = configService.selectConfigByKey("is.first.storeWhitelist");
+            if (StringUtils.isEmpty(isFirstStoreWhitelist)) {
+                SysConfig config = new SysConfig();
+                config.setConfigName("是否為第一份店家白名單");
+                config.setConfigKey("is.first.storeWhitelist");
+                config.setConfigValue("true");
+                config.setConfigType("N");
+                config.setCreateTime(now);
+                config.setUpdateTime(now);
+                configService.insertConfig(config);
+                isFirstStoreWhitelist = "true";
+                isFirstWhitelist = true;
+            }
             CSVParser csvParser = null;
             Map<String, Integer> pair = new HashMap<String, Integer>();
             //白名單Field與白名單Excel映射關係
@@ -183,6 +217,9 @@ public class PromoteTask {
                 pair.put("type", 1);
                 pair.put("latitude", 11);
                 pair.put("longitude", 10);
+                if (StringUtils.isNotEmpty(isFirstHotelWhitelist)) {
+                    isFirstWhitelist = Boolean.parseBoolean(isFirstHotelWhitelist);
+                }
             } else {
                 //店家
                 pair.put("id", 0);
@@ -197,13 +234,19 @@ public class PromoteTask {
                 pair.put("isFoodbeverage", 12);
                 pair.put("isCulture", 13);
                 pair.put("isSightseeing", 14);
+                if (StringUtils.isNotEmpty(isFirstStoreWhitelist)) {
+                    isFirstWhitelist = Boolean.parseBoolean(isFirstStoreWhitelist);
+                }
             }
             try {
-                //parse csv
+                //開始解析csv
                 csvParser = new CSVParser(new FileReader(path), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
+                //是否為第一列
                 boolean isFirstLine = true;
+                //第一列(Title)的值
                 List<String> titlelist = new ArrayList<String>();
                 for (CSVRecord record : csvParser) {
+                    //每一列的值
                     List<String> rowlist = new ArrayList<String>();
                     for (Iterator<String> iterator = record.iterator(); iterator.hasNext(); ) {
                         rowlist.add(iterator.next());
@@ -213,7 +256,24 @@ public class PromoteTask {
                         titlelist = rowlist;
                         continue;
                     }
-                    handlerRow(pair, rowlist, titlelist);
+                    handlerRow(pair, rowlist, titlelist, isFirstWhitelist);
+                }
+                //更新參數檔及寫入白名單ProWhitelist(第一次)
+                if (isFirstWhitelist) {
+                    SysConfig sysConfig = null;
+                    if (isHostel) {
+                        sysConfig = configService.getConfigBykey("is.first.hotelWhitelist");
+                        //從旅宿白名單檔整批寫入
+                        proWhitelistService.insertFromHotelWhitelist();
+                    } else {
+                        sysConfig = configService.getConfigBykey("is.first.storeWhitelist");
+                        //從店家白名單檔整批寫入
+                        proWhitelistService.insertFromStoreWhitelist();
+                    }
+                    if (StringUtils.isNotNull(sysConfig)) {
+                        sysConfig.setConfigValue("false");
+                        configService.updateConfig(sysConfig);
+                    }
                 }
 //                inputStream = new BufferedInputStream(new FileInputStream(path));
 //                reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 5 * 1024 * 1024); //5MB緩存
@@ -246,9 +306,8 @@ public class PromoteTask {
 //                    items[lastIndex] = lastItem.substring(0, lastItem.lastIndexOf(";"));
 //                    handlerRow(pair, Arrays.asList(items));
 //                }
-
+                //處理完畢,開始寫Log
                 String mathodName = PromoteTask.class.getName() + ".dealDiffData(String path)";
-                Date now = DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime());
                 if (proWhitelistSuccessCnt > 0) {
                     //白名單成功筆數寫log
                     SysOperLog successLog = new SysOperLog();
@@ -332,11 +391,220 @@ public class PromoteTask {
     /**
      * 處理每一行數據
      *
+     * @param pair 白名單Field與白名單Excel映射關係
+     * @param rowlist 每一行數據
+     * @param titlelist 第一行(標題)數據
+     * @param isFirstWhitelist 是否為第一份白名單(旅宿or店家)
+     */
+    private void handlerRow(Map<String, Integer> pair, List<String> rowlist, List<String> titlelist, boolean isFirstWhitelist) {
+        try {
+            //1-旅宿,2-店家
+            Integer type = pair.get("type");
+            String id = rowlist.get(pair.get("id")).toString();
+            if (StringUtils.isEmpty(id)) {
+                throw new Exception("ID不得為空");
+            }
+            Class proWhitelistCls = null;
+            Field[] proWhitelistFields = null;
+            Class whitelistCls = type == 1 ? HotelWhitelist.class : StoreWhitelist.class;
+            Field[] whitelistFields = whitelistCls.getDeclaredFields();
+            //白名單Model的屬性名
+            List<String> proWhitelistFieldName = null;
+            List<String> whitelistFieldName = new ArrayList<String>();
+            //白名單Model的屬性類型
+            List<Class> proWhitelistFieldType = null;
+            List<Class> whitelistFieldType = new ArrayList<Class>();
+
+            //取得旅宿or店家白名單屬姓名及屬性類型
+            for (Field field : whitelistFields) {
+                String fieldName = field.getName();
+                if ("serialVersionUID".equals(fieldName)) {
+                    continue;
+                }
+                whitelistFieldName.add(fieldName);
+                whitelistFieldType.add(field.getType());
+            }
+
+            ProWhitelist proWhitelist = null;
+            HotelWhitelist hotelWhitelist = new HotelWhitelist();
+            StoreWhitelist storeWhitelist = new StoreWhitelist();
+            boolean needInsertProWhitelist = false;
+            boolean needInsertWhitelist = false;
+
+            if (!isFirstWhitelist) {
+                //處理差異檔
+                proWhitelistCls = ProWhitelist.class;
+                proWhitelistFields = proWhitelistCls.getDeclaredFields();
+                proWhitelistFieldName = new ArrayList<String>();
+                proWhitelistFieldType = new ArrayList<Class>();
+                //取得白名單屬姓名及屬性類型
+                for (Field field : proWhitelistFields) {
+                    String fieldName = field.getName();
+                    if ("serialVersionUID".equals(fieldName) || "type".equals(fieldName)) {
+                        continue;
+                    }
+                    proWhitelistFieldName.add(fieldName);
+                    proWhitelistFieldType.add(field.getType());
+                }
+                //根據id及類型去查白名單table,有查到做update,沒查到做insert
+                proWhitelist = proWhitelistService.selectProWhitelistByIdType(id, type.toString());
+                if (type == 1) {
+                    hotelWhitelist = hotelWhitelistService.getHotelWhitelistById(id);
+                } else if (type == 2) {
+                    storeWhitelist = storeWhitelistService.getStoreWhitelistById(id);
+                }
+                if (proWhitelist == null) {
+                    needInsertProWhitelist = true;
+                    proWhitelist = new ProWhitelist();
+                }
+                if (type == 1 && StringUtils.isNull(hotelWhitelist)) {
+                    needInsertWhitelist = true;
+                    hotelWhitelist = new HotelWhitelist();
+                }
+                if (type == 2 && StringUtils.isNull(storeWhitelist)) {
+                    needInsertWhitelist = true;
+                    storeWhitelist = new StoreWhitelist();
+                }
+                //處理白名單
+                for (int i = 0; i < proWhitelistFieldName.size(); i++) {
+                    try {
+                        String columnName = proWhitelistFieldName.get(i);
+                        String methodName = new StringBuilder("set").append(columnName.substring(0, 1).toUpperCase()).append(columnName.substring(1)).toString();
+                        //取得白名單Model的setter方法
+                        Class typeClass = proWhitelistFieldType.get(i);
+                        Method method = proWhitelistCls.getMethod(methodName, typeClass);
+                        if (method != null) {
+                            Integer index = pair.get(columnName);
+                            if (index == null) {
+                                continue;
+                            }
+                            String tempValue = rowlist.get(index);
+                            //設定Excel的值到白名單Model
+                            String value = StringUtils.isNotNull(tempValue) ? tempValue.trim().replaceAll("\\u00A0+", "") : null;
+                            switch (typeClass.getName()) {
+                                case "java.lang.Double":
+                                    method.invoke(proWhitelist, StringUtils.isNotNull(value) ? Double.parseDouble(value) : null);
+                                    break;
+                                case "java.lang.String":
+                                    method.invoke(proWhitelist, value);
+                                    break;
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                proWhitelist.setType(type != null ? type.toString() : null);
+                try {
+                    if (needInsertProWhitelist) {
+                        //新增
+                        proWhitelistService.insertProWhitelist(proWhitelist);
+                    } else {
+                        //更新
+                        proWhitelistService.updateProWhitelist(proWhitelist);
+                    }
+                    proWhitelistSuccessCnt++;
+                } catch (Exception e) {
+                    //新增或更新失敗時寫log
+                    proWhitelistFailCnt++;
+                    SysOperLog failLog = new SysOperLog();
+                    failLog.setTitle("定時任務");
+                    failLog.setMethod(PromoteTask.class.getName() + ".dealDiffData(String path)");
+                    failLog.setOperatorType(1);
+                    failLog.setOperName("SYSTEM");
+                    failLog.setErrorMsg("執行白名單" + (needInsertProWhitelist ? "新增" : "更新") + "失敗: " + (type == 1 ? "旅宿業者代號= " : "店家代碼= ") + id);
+                    failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
+                    operLogServic.insertOperlog(failLog);
+                }
+            }
+            //處理旅宿or店家白名單
+            for (int i = 0; i < whitelistFieldName.size(); i++) {
+                try {
+                    String columnName = whitelistFieldName.get(i);
+                    String methodName = new StringBuilder("set").append(columnName.substring(0, 1).toUpperCase()).append(columnName.substring(1)).toString();
+                    //取得旅宿or店家白名單Model的setter方法
+                    Class typeClass = whitelistFieldType.get(i);
+                    Method method = whitelistCls.getMethod(methodName, typeClass);
+                    if (method != null) {
+                        String tempValue = rowlist.get(i);
+                        //設定Excel的值到白名單Model
+                        String value = StringUtils.isNotNull(tempValue) ? tempValue.trim().replaceAll("\\u00A0+", "") : null;
+                        switch (typeClass.getName()) {
+                            case "java.lang.Double":
+                                method.invoke(type == 1 ? hotelWhitelist : storeWhitelist, StringUtils.isNotNull(value) ? Double.parseDouble(value) : null);
+                                break;
+                            case "java.lang.String":
+                                method.invoke(type == 1 ? hotelWhitelist : storeWhitelist, value);
+                                break;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                if (isFirstWhitelist || needInsertWhitelist) {
+                    //新增
+                    int result = type == 1 ? hotelWhitelistService.insertHotelWhitelist(hotelWhitelist) : storeWhitelistService.insertStoreWhitelist(storeWhitelist);
+                } else {
+                    //更新
+                    int result = type == 1 ? hotelWhitelistService.updateHotelWhitelist(hotelWhitelist) : storeWhitelistService.updateStoreWhitelist(storeWhitelist);
+                }
+                whitelistSuccessCnt++;
+            } catch (Exception e) {
+                //新增或更新失敗時寫log
+                whitelistFailCnt++;
+                SysOperLog failLog = new SysOperLog();
+                failLog.setTitle("定時任務");
+                failLog.setMethod(PromoteTask.class.getName() + ".dealDiffData(String path)");
+                failLog.setOperatorType(1);
+                failLog.setOperName("SYSTEM");
+                String errMsg = "";
+                if (type == 1) {
+                    errMsg = "執行旅宿白名單(hotel_whitelist)" + (needInsertWhitelist ? "新增" : "更新") + "失敗: 旅宿業者代號 = " + id;
+                } else if (type == 2) {
+                    errMsg = "執行店家白名單(store_whitelist)" + (needInsertWhitelist ? "新增" : "更新") + "失敗: 店家代碼 = " + id;
+                }
+                failLog.setErrorMsg(errMsg);
+                failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
+                operLogServic.insertOperlog(failLog);
+                File file = new File(type == 1 ? "d:\\hotel_whitelistErr.csv" : "d:\\store_whitelistErr.csv");
+                CSVPrinter csvPrinter = null;
+                if (!file.exists()) {
+                    file.createNewFile();
+                    csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
+                    //打印標題
+                    for (String title : titlelist) {
+                        csvPrinter.print(title);
+                    }
+                    csvPrinter.println();
+                }
+                if (csvPrinter == null) {
+                    csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
+                }
+                for (String item : rowlist) {
+                    csvPrinter.print(item);
+                }
+                csvPrinter.println();
+                csvPrinter.flush();
+                csvPrinter.close();
+            }
+        } catch (Exception e) {
+            //Do Nothing
+        }
+
+    }
+
+
+    /**
+     * 處理每一行數據
+     *
      * @param pair    白名單Field與白名單檔映射關係
      * @param rowlist 每一行數據
      */
     private void handlerRow(Map<String, Integer> pair, List<String> rowlist, List<String> titlelist) {
         try {
+            //1-旅宿,2-店家
             Integer type = pair.get("type");
             String id = rowlist.get(pair.get("id")).toString();
             if (StringUtils.isEmpty(id)) {
@@ -426,24 +694,13 @@ public class PromoteTask {
             try {
                 if (needInsertProWhitelist) {
                     //新增
-//                                if(count == 3){
-//                                    //測試用
-//                                    count++;
-//                                    throw new Exception();
-//                                }
                     proWhitelistService.insertProWhitelist(proWhitelist);
 
                 } else {
                     //更新
-//                                if(count == 3){
-//                                    //測試用
-//                                    count++;
-//                                    throw new Exception();
-//                                }
                     proWhitelistService.updateProWhitelist(proWhitelist);
                 }
                 proWhitelistSuccessCnt++;
-//                            count++; //測試用
             } catch (Exception e) {
                 //新增或更新失敗時寫log
                 proWhitelistFailCnt++;
@@ -484,23 +741,12 @@ public class PromoteTask {
             try {
                 if (needInsertWhitelist) {
                     //新增
-//                                if(count == 3){
-//                                    //測試用
-//                                    count++;
-//                                    throw new Exception();
-//                                }
                     int result = type == 1 ? hotelWhitelistService.insertHotelWhitelist(hotelWhitelist) : storeWhitelistService.insertStoreWhitelist(storeWhitelist);
                 } else {
                     //更新
-//                                if(count == 4){
-//                                    //測試用
-//                                    count++;
-//                                    throw new Exception();
-//                                }
                     int result = type == 1 ? hotelWhitelistService.updateHotelWhitelist(hotelWhitelist) : storeWhitelistService.updateStoreWhitelist(storeWhitelist);
                 }
                 whitelistSuccessCnt++;
-//                            count++; //測試用
             } catch (Exception e) {
                 //新增或更新失敗時寫log
                 whitelistFailCnt++;
@@ -532,7 +778,7 @@ public class PromoteTask {
                 if (csvPrinter == null) {
                     csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
                 }
-                for(String item :rowlist){
+                for (String item : rowlist) {
                     csvPrinter.print(item);
                 }
                 csvPrinter.println();

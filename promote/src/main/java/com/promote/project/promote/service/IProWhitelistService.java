@@ -112,4 +112,18 @@ public interface IProWhitelistService
      * @return
      */
     public ProWhitelist selectProWhitelistByUsernameAndPwd(String username, String password);
+
+    /**
+     * 從旅宿白名單檔新增白名單
+     *
+     * @return
+     */
+    public int insertFromHotelWhitelist();
+
+    /**
+     * 從店家白名單檔新增白名單
+     *
+     * @return
+     */
+    public int insertFromStoreWhitelist();
 }

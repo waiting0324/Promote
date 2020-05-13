@@ -108,5 +108,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         	#{configId}
         </foreach>
     </delete>
-    
+
+    <select id="getConfigBykey" parameterType="String" resultMap="SysConfigResult">
+        <include refid="selectConfigVo"/>
+        where config_key = #{configKey}
+    </select>
 </mapper>
