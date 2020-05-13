@@ -1,8 +1,9 @@
 package com.promote.framework.web.domain;
 
-import java.util.HashMap;
 import com.promote.common.constant.HttpStatus;
 import com.promote.common.utils.StringUtils;
+
+import java.util.HashMap;
 
 /**
  * 操作訊息提醒
@@ -50,7 +51,7 @@ public class AjaxResult extends HashMap<String, Object>
      */
     public AjaxResult(int code, String msg, Object data)
     {
-        super.put(CODE_TAG, code);
+        super.put(CODE_TAG, String.format("%04d", code));
         super.put(MSG_TAG, msg);
         if (StringUtils.isNotNull(data))
         {

@@ -1,5 +1,8 @@
 package com.promote.project.promote.service;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * 旅宿業者 服務層
  *
@@ -28,5 +31,13 @@ public interface IProHotelService {
      */
     String login(String username, String password, String code, String uuid);
 
+    /**
+     *客服查詢旅宿
+     *
+     * @param username 帳號
+     * @param identity 身分證號或居留證號
+     * @return 結果
+     */
+    Map<String, Object> getByUnameIdentity(String username, String identity);
 
 }

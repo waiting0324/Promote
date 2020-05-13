@@ -1,6 +1,7 @@
 package com.promote.project.promote.service.impl;
 
 import com.promote.common.utils.DateUtils;
+import com.promote.common.utils.StringUtils;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
 import com.promote.project.promote.service.IProWhitelistService;
@@ -8,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 白名單Service業務層處理
@@ -191,6 +195,19 @@ public class ProWhitelistServiceImpl implements IProWhitelistService {
 
         return white;
     }
+
+    /**
+     *根據資料類型及統編/身分證字號查找白名單資料
+     *
+     * @param type 資料類型 (1旅宿業者 2商家)
+     * @param taxNo 統編/身分證字號
+     * @return 結果
+     */
+    @Override
+    public List<Map<String,Object>> getByTypeTaxNo(String type, String taxNo) {
+        return proWhitelistMapper.getByTypeTaxNo(type, taxNo);
+    }
+
 
 //    private RowHandler createRowHandler(Map<String,Integer> dataMap) {
 //        return new RowHandler() {

@@ -52,7 +52,7 @@ public class SysLoginController
     {
         AjaxResult ajax = AjaxResult.success();
         // 生成令牌
-        LoginUser loginUser = loginService.login(username, password, "", "");
+        LoginUser loginUser = loginService.login(username, password);
         String token = tokenService.createToken(loginUser);
         ajax.put(Constants.TOKEN, token);
         return ajax;

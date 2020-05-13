@@ -94,6 +94,38 @@ public class StoreInfo extends BaseEntity {
     @Excel(name = "是否強制變更密碼( 0否 1是 )")
     private String pwNeedReset;
 
+
+    //------ 傳參用
+    private String whitelistId;
+
+    private String identity;
+
+    private String mobile;
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(String identity) {
+        this.identity = identity;
+    }
+
+    public String getWhitelistId() {
+        return whitelistId;
+    }
+
+    public void setWhitelistId(String whitelistId) {
+        this.whitelistId = whitelistId;
+    }
+
     public void setUserId(Long userId) {
         this.userId = userId;
     }

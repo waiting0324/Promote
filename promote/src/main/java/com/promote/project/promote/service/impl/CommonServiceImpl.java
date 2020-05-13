@@ -77,7 +77,7 @@ public class CommonServiceImpl implements ICommonService {
     public SysUser hidePersonalInfo(SysUser sysUser) {
         if (sysUser != null) {
             //消費者基本資料
-            ConsumerInfo consumerInfo = sysUser.getConsumerInfo();
+            ConsumerInfo consumerInfo = sysUser.getConsumer();
             if (consumerInfo != null) {
                 //姓名
                 String nameTmp = consumerInfo.getName();
@@ -131,7 +131,7 @@ public class CommonServiceImpl implements ICommonService {
                 sysUser.setMobile(mobile.toString());
             }
             //店家基本資料
-            StoreInfo storeInfo = sysUser.getStoreInfo();
+            StoreInfo storeInfo = sysUser.getStore();
             if (storeInfo != null) {
                 //銀行帳號
                 String bankAccountTmp = storeInfo.getBankAccount();

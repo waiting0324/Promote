@@ -1,8 +1,10 @@
 package com.promote.project.promote.mapper;
 
 import com.promote.project.promote.domain.StoreInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 店家基本資料Mapper介面
@@ -10,8 +12,7 @@ import java.util.List;
  * @author 6550 劉威廷
  * @date 2020-04-27
  */
-public interface StoreInfoMapper
-{
+public interface StoreInfoMapper {
     /**
      * 查詢店家基本資料
      *
@@ -59,4 +60,21 @@ public interface StoreInfoMapper
      * @return 結果
      */
     public int deleteStoreInfoByIds(Long[] userIds);
+
+    /**
+     * 客服查詢店家
+     *
+     * @param username 帳號
+     * @param identity 身分證號或居留證號
+     * @return 結果
+     */
+    List<Map<String, Object>> getByUnameIdentity(@Param("username") String username, @Param("identity") String identity);
+
+    /**
+     *店家查詢自己
+     *
+     * @param username 帳號
+     * @return 結果
+     */
+    List<Map<String, Object>> getByUsername(@Param("username") String username);
 }

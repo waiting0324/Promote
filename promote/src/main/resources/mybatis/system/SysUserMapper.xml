@@ -23,7 +23,7 @@
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
         <association property="dept" column="dept_id" javaType="SysDept" resultMap="deptResult"/>
-        <association property="consumerInfo" column="user_id"
+        <association property="consumer" column="user_id"
                      javaType="com.promote.project.promote.domain.ConsumerInfo" resultMap="ConsumerInfoResult"/>
         <collection property="roles" javaType="java.util.List" resultMap="RoleResult"/>
     </resultMap>

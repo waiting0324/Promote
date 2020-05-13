@@ -114,10 +114,10 @@ public class StoreController extends BaseController {
 
         // 必填欄位檢核
         if (StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(user.getPassword()) ||
-                StringUtils.isEmpty(user.getStoreInfo().getName()) || StringUtils.isEmpty(user.getIdentity()) ||
-                StringUtils.isEmpty(user.getMobile()) || StringUtils.isEmpty(user.getStoreInfo().getName()) ||
-                StringUtils.isEmpty(user.getStoreInfo().getAddress()) || StringUtils.isEmpty(user.getStoreInfo().getBankAccount()) ||
-                StringUtils.isEmpty(user.getStoreInfo().getBankAccountName())) {
+                StringUtils.isEmpty(user.getStore().getName()) || StringUtils.isEmpty(user.getIdentity()) ||
+                StringUtils.isEmpty(user.getMobile()) || StringUtils.isEmpty(user.getStore().getName()) ||
+                StringUtils.isEmpty(user.getStore().getAddress()) || StringUtils.isEmpty(user.getStore().getBankAccount()) ||
+                StringUtils.isEmpty(user.getStore().getBankAccountName())) {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
 
@@ -144,7 +144,7 @@ public class StoreController extends BaseController {
         String whitelistId = (String) params.get("whitelistId");
 
         // 進行註冊
-        storeService.regist(user, isAgreeTerms, whitelistId);
+        storeService.regist(user, whitelistId);
 
 
         return AjaxResult.success();
@@ -167,8 +167,8 @@ public class StoreController extends BaseController {
      */
     @PutMapping("/info")
     public AjaxResult updateStoreInfo(@RequestBody SysUser user) {
-        if (StringUtils.isEmpty(user.getStoreInfo().getName()) &&
-                StringUtils.isEmpty(user.getStoreInfo().getAddress()) &&
+        if (StringUtils.isEmpty(user.getStore().getName()) &&
+                StringUtils.isEmpty(user.getStore().getAddress()) &&
                 StringUtils.isEmpty(user.getMobile())) {
             return AjaxResult.success();
         }
