@@ -88,9 +88,9 @@ public class ProHotelServiceImpl implements IProHotelService {
             throw new CustomException("該帳號在使用者表中已經存在");
         }
 
-        if (newPwd.equals(oldPwd)) {
+       /* if (newPwd.equals(oldPwd)) {
             throw new CustomException("新密碼不可使用預設密碼");
-        }
+        }*/
 
         // 將白名單資料轉為使用者資料
         SysUser user = new SysUser();
@@ -99,6 +99,10 @@ public class ProHotelServiceImpl implements IProHotelService {
         user.setPassword(SecurityUtils.encryptPassword(newPwd));
         user.setEmail(white.getEmail());
         user.setMobile(white.getPhonenumber().replace("-", ""));
+        if (oldPwd.equals(newPwd)) {
+            user.setPwNeedReset("1");
+        }
+
 
         // 插入User表
         userMapper.insertUser(user);

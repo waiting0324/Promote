@@ -104,4 +104,12 @@ public interface IProWhitelistService
      * @return 結果
      */
     public List<Map<String,Object>> getByTypeTaxNo(String type, String taxNo);
+
+    /**
+     * 根據帳號密碼查詢白名單
+     * @param username
+     * @param password
+     * @return
+     */
+    public ProWhitelist selectProWhitelistByUsernameAndPwd(String username, String password);
 }

@@ -14,10 +14,8 @@ import com.promote.framework.security.service.SysLoginService;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
-import com.promote.project.promote.service.ICommonService;
-import com.promote.project.promote.service.IConsumerService;
-import com.promote.project.promote.service.IProHotelService;
-import com.promote.project.promote.service.IProStoreService;
+import com.promote.project.promote.domain.ProWhitelist;
+import com.promote.project.promote.service.*;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +58,9 @@ public class ProCommonController extends BaseController {
 
     @Autowired
     private RedisCache redisCache;
+
+    @Autowired
+    private IProWhitelistService whitelistService;
 
     /**
      * 發送驗證碼
@@ -200,11 +201,23 @@ public class ProCommonController extends BaseController {
 
         AjaxResult ajax = AjaxResult.success();
 
+
+        String username = user.getUsername();
+        String password = user.getPassword();
+
+        ProWhitelist whitelist = whitelistService.selectProWhitelistByUsernameAndPwd(username, password);
+        if (StringUtils.isNotNull(whitelist) && !"1".equals(whitelist.getIsRegisted())) {
+            hostelService.regist(username, password, password);
+            ajax.put("whitelistId", whitelist.getId());
+        }
+
+
         // 生成令牌
-        LoginUser loginUser = loginService.login(user.getUsername(), user.getPassword());
+        LoginUser loginUser = loginService.login(username, password);
         String token = tokenService.createToken(loginUser);
         ajax.put(Constants.TOKEN, token);
 
+        // 角色
         Long roleId = loginUser.getUser().getRoles().get(0).getRoleId();
         if (RoleConstants.HOTEL_ROLE_ID.equals(roleId)) {
             ajax.put("role", "H");
@@ -212,6 +225,13 @@ public class ProCommonController extends BaseController {
             ajax.put("role", "S");
         } else if (RoleConstants.CONSUMER_ROLE_ID.equals(roleId)) {
             ajax.put("role", "C");
+        }
+
+        // 是否強制更改密碼
+        if ("0".equals(loginUser.getUser().getPwNeedReset())) {
+            ajax.put("forceChgPwd", "N");
+        } else {
+            ajax.put("forceChgPwd", "Y");
         }
 
         return ajax;
@@ -380,7 +400,7 @@ public class ProCommonController extends BaseController {
         }
         return AjaxResult.error("目前登入者無權進行基本資料查詢");
     }
-
+/*
     @PostMapping("/updateProfile")
     public AjaxResult updateProfile(Map<String, Object> request) {
         SysUser user = SecurityUtils.getLoginUser().getUser();
@@ -391,5 +411,5 @@ public class ProCommonController extends BaseController {
         }else if("store".equals(role)){
 
         }
-    }
+    }*/
 }
