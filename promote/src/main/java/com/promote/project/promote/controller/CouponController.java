@@ -243,6 +243,7 @@ public class CouponController extends BaseController {
         //判斷角色
         String role = user.getRoles().get(0).getRoleKey();
         Map<String, Object> map = null;
+//        role = "customerService"; //測試用
         if("store".equals(role)){
             map = couponService.transactionHistory(userId, "S", storeType, startDate, endDate, rows, page);
         }else if("consumer".equals(role)){

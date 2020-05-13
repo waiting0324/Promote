@@ -650,6 +650,10 @@ public class CouponServiceImpl implements ICouponService {
     public Map<String, Object> transactionHistory(Long id, String role, String storeType, String startDate, String endDate, String rows, String page) {
         List<Map<String, Object>> historyList = null;
         Map<String, Object> map = null;
+        startDate = startDate.replaceAll("/", "-");
+        startDate += " 00:00:00";
+        endDate = endDate.replaceAll("/","-");
+        endDate += " 23:59:59";
         if ("S".equals(role)) {
             //查店家
             historyList = couponConsumeMapper.transactionHistory(startDate, endDate, "-1".equals(storeType) ? null : storeType, null, id);
@@ -671,6 +675,9 @@ public class CouponServiceImpl implements ICouponService {
             int startCount = (targetPage - 1) * rowsPerPage;
             int endCount = (targetPage * rowsPerPage) > totalCount ? totalCount : targetPage * rowsPerPage;
             for (int i = startCount; i < endCount; i++){
+                Map<String, Object> dataMap = historyList.get(i);
+                Date date = (Date) dataMap.get("consumeTime");
+                dataMap.put("consumeTime",DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss",date));
                 couponInfoList.add(historyList.get(i));
             }
             map.put("couponInfo",couponInfoList);
