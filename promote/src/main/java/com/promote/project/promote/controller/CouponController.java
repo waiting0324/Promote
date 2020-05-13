@@ -219,4 +219,58 @@ public class CouponController extends BaseController {
         return AjaxResult.success();
     }
 
+    /**
+     * 抵用券消費記錄查詢(WEB介面用)
+     *
+     * @return 結果
+     */
+    @PostMapping("/transactionHistory")
+    public AjaxResult transactionHistory(@RequestBody Map<String, Object> request) {
+        //抵用券類型
+        String storeType = (String) request.get("storeType");
+        String startDate = (String) request.get("startDate");
+        String endDate = (String) request.get("endDate");
+        if(StringUtils.isEmpty(storeType) || StringUtils.isEmpty(startDate) || StringUtils.isEmpty(endDate)){
+            return AjaxResult.error("需輸入抵用券類型,查詢起日,查詢迄日");
+        }
+        String rows = (String) request.get("rows");
+        rows = StringUtils.isEmpty(rows) ? "10" : rows;
+        String page = (String) request.get("page");
+        page = StringUtils.isEmpty(page) ? "1" : page;
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        Long userId = user.getUserId();
+        AjaxResult ajax = AjaxResult.success();
+        //判斷角色
+        String role = user.getRoles().get(0).getRoleKey();
+        Map<String, Object> map = null;
+        if("store".equals(role)){
+            map = couponService.transactionHistory(userId, "S", storeType, startDate, endDate, rows, page);
+        }else if("consumer".equals(role)){
+            map = couponService.transactionHistory(userId,"C",storeType,startDate,endDate,rows,page);
+        }else if("customerService".equals(role)){
+            //客服
+            String username = (String) request.get("username");
+            String indentity = (String) request.get("indentity");
+            //查店家或查消費者
+            String target = (String) request.get("role");
+            if(StringUtils.isEmpty(target)){
+                return AjaxResult.error("需輸入要查詢店家或消費者");
+            }
+            if(StringUtils.isEmpty(username) && StringUtils.isEmpty(indentity)){
+                return AjaxResult.error("需輸入身分證號/居留證號或帳號");
+            }
+            SysUser sysUser = sysUserService.getByUnameIndentity(username,indentity);
+            role = sysUser.getRoles().get(0).getRoleKey();
+            if("store".equals(role)){
+                map = couponService.transactionHistory(sysUser.getUserId(),"S",storeType,startDate,endDate,rows,page);
+            }else if("consumer".equals(role)){
+                map = couponService.transactionHistory(sysUser.getUserId(),"C",storeType,startDate,endDate,rows,page);
+            }
+        }
+        if(StringUtils.isNotEmpty(map)){
+            ajax.putAll(map);
+            return ajax;
+        }
+        return AjaxResult.error("目前登入者無權進行抵用券消費記錄查詢");
+    }
 }

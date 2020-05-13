@@ -4,6 +4,7 @@ import com.promote.common.utils.SecurityUtils;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
+import com.promote.project.promote.service.IWeeklySettlementService;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.promote.domain.WeeklySettlement;
 import com.promote.project.system.service.ISysUserService;
@@ -29,6 +30,9 @@ public class paymentController extends BaseController {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private IWeeklySettlementService weeklySettlementService;
+
     /**
      * 重置列印狀態
      *
@@ -46,6 +50,7 @@ public class paymentController extends BaseController {
             weeklySettlement.setStoreId(userId);
             weeklySettlement.setId(Long.valueOf(weeklyTxId.get(i).toString()));
             weeklySettlementList.add(weeklySettlement);
+            weeklySettlementService.updateWeeklySettlement(weeklySettlementList);
         }
 
         return AjaxResult.success();

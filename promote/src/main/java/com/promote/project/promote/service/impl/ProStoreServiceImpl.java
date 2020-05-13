@@ -307,6 +307,39 @@ public class ProStoreServiceImpl implements IProStoreService {
     }
 
     /**
+     * 店家基本資料修改
+     *
+     * @param storeInfo 店家基本資料
+     * @return 結果
+     */
+    @Transactional
+    @Override
+    public void updateStoreInfo(StoreInfo storeInfo) {
+        //更新StoreInfo
+        StoreInfo storeInfoTmp =  new StoreInfo();
+        storeInfoTmp.setUserId(storeInfo.getUserId());
+        storeInfoTmp.setName(storeInfo.getName());
+        storeInfoTmp.setOwner(storeInfo.getOwner());
+        storeInfoTmp.setBankAccountName(storeInfo.getBankAccountName());
+        storeInfoTmp.setBankAccount(storeInfo.getBankAccount());
+        storeInfoTmp.setBankAchCode(storeInfo.getBankAchCode());
+        storeInfoTmp.setAddress(storeInfo.getAddress());
+        int result = storeInfoMapper.updateStoreInfo(storeInfoTmp);
+        if(result < 0){
+            throw new CustomException("更新失敗");
+        }
+        //更新SysUser
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(storeInfo.getUserId());
+        sysUser.setUsername(storeInfo.getUsername());
+        sysUser.setMobile(storeInfo.getMobile());
+        result = userMapper.updateUser(sysUser);
+        if(result < 0){
+            throw new CustomException("更新失敗");
+        }
+    }
+
+    /**
      * 取得星期幾
      *
      * @param date 日期

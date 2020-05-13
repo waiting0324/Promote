@@ -91,12 +91,12 @@ public class JmsConfig {
      * @param cachingConnectionFactory
      * @return
      */
-    @Bean
-    public PlatformTransactionManager jmsTransactionManager(CachingConnectionFactory cachingConnectionFactory) {
-        JmsTransactionManager jmsTransactionManager = new JmsTransactionManager();
-        jmsTransactionManager.setConnectionFactory(cachingConnectionFactory);
-        return jmsTransactionManager;
-    }
+//    @Bean
+//    public PlatformTransactionManager jmsTransactionManager(CachingConnectionFactory cachingConnectionFactory) {
+//        JmsTransactionManager jmsTransactionManager = new JmsTransactionManager();
+//        jmsTransactionManager.setConnectionFactory(cachingConnectionFactory);
+//        return jmsTransactionManager;
+//    }
 
     /**
      * 配置JMS模板

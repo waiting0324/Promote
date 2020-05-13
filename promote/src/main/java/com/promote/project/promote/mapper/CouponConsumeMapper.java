@@ -72,4 +72,13 @@ public interface CouponConsumeMapper {
      */
     List<Map<String,Object>> getTotalAmtByStoreId(@Param("beginDate") String beginDate, @Param("endDate") String endDate);
 
+    /**
+     * 抵用券消費記錄查詢(WEB介面用)
+     *
+     * @param storeType 抵用券類型
+     * @param startDate 查詢起日
+     * @param endDate 查詢迄日
+     * @return 結果
+     */
+    List<Map<String,Object>> transactionHistory(@Param("startDate") String startDate,@Param("endDate") String endDate,@Param("storeType") String storeType,@Param("consumerId") Long consumerId,@Param("storeId") Long storeId);
 }

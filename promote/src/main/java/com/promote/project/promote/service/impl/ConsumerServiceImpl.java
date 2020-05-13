@@ -213,4 +213,23 @@ public class ConsumerServiceImpl implements IConsumerService {
     public Map<String, Object> getByUsername(String username) {
         return consumerInfoMapper.getByUsername(username).get(0);
     }
+
+    /**
+     * 修改消費者基本資料
+     *
+     * @param consumer 消費者基本資料
+     */
+    @Transactional
+    @Override
+    public void updateConsumerInfo(ConsumerInfo consumer) {
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(consumer.getUserId());
+        sysUser.setUsername(consumer.getUsername());
+        sysUser.setEmail(consumer.getEmail());
+        sysUser.setMobile(consumer.getMobile());
+        int result = userMapper.updateUser(sysUser);
+        if(result < 0){
+            throw new CustomException("更新失敗");
+        }
+    }
 }

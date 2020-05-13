@@ -102,6 +102,7 @@
         update pro_store_info
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="owner != null  and owner != ''">owner = #{owner},</if>
             <if test="type != null  and type != ''">type = #{type},</if>
             <if test="bankAccountName != null  and bankAccountName != ''">bank_account_name = #{bankAccountName},</if>
             <if test="bankAccount != null  and bankAccount != ''">bank_account = #{bankAccount},</if>

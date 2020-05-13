@@ -14,6 +14,12 @@ import com.promote.framework.security.service.SysLoginService;
 import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
+import com.promote.project.promote.domain.ConsumerInfo;
+import com.promote.project.promote.domain.StoreInfo;
+import com.promote.project.promote.service.ICommonService;
+import com.promote.project.promote.service.IConsumerService;
+import com.promote.project.promote.service.IProHotelService;
+import com.promote.project.promote.service.IProStoreService;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.service.*;
 import com.promote.project.system.domain.SysUser;
@@ -337,84 +343,130 @@ public class ProCommonController extends BaseController {
         String userType = null;
         String username = null;
         String identity = null;
-        if (request != null) {
-            userType = (String) request.get("userType");
-            username = (String) request.get("username");
-            identity = (String) request.get("identity");
+        if(request != null){
+            userType = (String)request.get("userType");
+            username = (String)request.get("username");
+            identity = (String)request.get("identity");
         }
         SysUser user = SecurityUtils.getLoginUser().getUser();
         //判斷角色
         String role = user.getRoles().get(0).getRoleKey();
 //        role = "customerService";
-        if ("customerService".equals(role)) {
+        if("customerService".equals(role)){
             //客服
-            if (StringUtils.isEmpty(userType)) {
+            if(StringUtils.isEmpty(userType)){
                 return AjaxResult.error("資料類型需輸入");
             }
-            if (StringUtils.isEmpty(username) && StringUtils.isEmpty(identity)) {
+            if(StringUtils.isEmpty(username) && StringUtils.isEmpty(identity)){
                 return AjaxResult.error("帳號,統編/身分證號/居留證號至少需輸入一項");
             }
-            if ("S".equalsIgnoreCase(userType)) {
+            if("S".equalsIgnoreCase(userType)){
                 //查店家
-                List<Map<String, Object>> list = storeService.getByUnameIdentity(username, identity);
-                if (StringUtils.isNull(list) || list.size() == 0) {
+                List<Map<String, Object>> list = storeService.getByUnameIdentity(username,identity);
+                if(StringUtils.isNull(list) || list.size() == 0){
                     return AjaxResult.success("查無資料");
                 }
-                ajax.put("store", list);
+                ajax.put("store",list);
                 return ajax;
-            } else if ("C".equalsIgnoreCase(userType)) {
+            }else if("C".equalsIgnoreCase(userType)){
                 //查消費者
-                List<Map<String, Object>> list = consumerService.getByUnameIdentity(username, identity);
-                if (StringUtils.isNull(list) || list.size() == 0) {
+                List<Map<String, Object>> list = consumerService.getByUnameIdentity(username,identity);
+                if(StringUtils.isNull(list) || list.size() == 0){
                     return AjaxResult.success("查無資料");
                 }
-                ajax.put("consumer", list);
+                ajax.put("consumer",list);
                 return ajax;
-            } else if ("H".equalsIgnoreCase(userType)) {
+            }else if("H".equalsIgnoreCase(userType)){
                 //查旅宿業者
-                Map<String, Object> map = hostelService.getByUnameIdentity(username, identity);
-                if (StringUtils.isNull(map)) {
+                Map<String, Object> map = hostelService.getByUnameIdentity(username,identity);
+                if(StringUtils.isNull(map)){
                     return AjaxResult.success("查無資料");
                 }
-                ajax.put("hotel", map);
+                ajax.put("hotel",map);
                 return ajax;
             }
         }
-        if ("hostel".equals(role)) {
+        if("hostel".equals(role)){
             //旅宿業者查消費者
-            if (StringUtils.isEmpty(identity)) {
+            if(StringUtils.isEmpty(identity)){
                 return AjaxResult.error("身分證號/居留證號需輸入");
             }
             //查消費者
             List<Map<String, Object>> list = consumerService.getByIdentity(identity);
-            if (StringUtils.isNull(list) || list.size() == 0) {
+            if(StringUtils.isNull(list) || list.size() == 0){
                 return AjaxResult.success("查無資料");
             }
-            ajax.put("consumer", list);
+            ajax.put("consumer",list);
             return ajax;
         }
-        if ("store".equals(role)) {
+        if("store".equals(role)){
             //店家
-            ajax.put("store", storeService.getByUsername(user.getUsername()));
+            ajax.put("store",storeService.getByUsername(user.getUsername()));
             return ajax;
         }
-        if ("consumer".equals(role)) {
+        if("consumer".equals(role)){
             //消費者
-            ajax.put("consumer", consumerService.getByUsername(user.getUsername()));
+            ajax.put("consumer",consumerService.getByUsername(user.getUsername()));
             return ajax;
         }
         return AjaxResult.error("目前登入者無權進行基本資料查詢");
     }
-/*
+
+    /**
+     *基本資料修改
+     *
+     * @param sysUser 請求
+     * @return
+     */
     @PostMapping("/updateProfile")
-    public AjaxResult updateProfile(Map<String, Object> request) {
+    public AjaxResult updateProfile(@RequestBody SysUser sysUser) {
         SysUser user = SecurityUtils.getLoginUser().getUser();
         //判斷角色
         String role = user.getRoles().get(0).getRoleKey();
-        if("hostel".equals(role)){
-
-        }else if("store".equals(role)){
-
+        //登入者id
+        Long userId = user.getUserId();
+        //登入者帳號
+        String username = user.getUsername();
+        //資料類型
+        String userType = null;
+        if("customerService".equals(role)){
+            //客服
+            userType = sysUser.getUserType();
+            if(StringUtils.isEmpty(userType)){
+                return AjaxResult.error("需輸入資料類型");
+            }
         }
-    }*/
+        if("hostel".equals(role)){
+            //SA奕凱:目前不處理旅宿
+        }else if("store".equals(role) || ("customerService".equals(role) && "S".equals(userType))){
+            //店家
+            StoreInfo storeInfo = sysUser.getStore();
+            if("customerService".equals(role)){
+                if(StringUtils.isNull(storeInfo.getUserId()) || StringUtils.isEmpty(storeInfo.getUsername())){
+                    return AjaxResult.error("需輸入userId及帳號");
+                }
+                userId = storeInfo.getUserId();
+                username = storeInfo.getUsername();
+            }
+            storeInfo.setUserId(userId);
+            storeInfo.setUsername(username);
+            storeService.updateStoreInfo(storeInfo);
+            return AjaxResult.success("更新成功");
+        }else if("consumer".equals(role) || ("customerService".equals(role) && "C".equals(userType))){
+            //消費者
+            ConsumerInfo consumer = sysUser.getConsumer();
+            if("customerService".equals(role)){
+                if(StringUtils.isNull(consumer.getUserId()) || StringUtils.isEmpty(consumer.getUsername())){
+                    return AjaxResult.error("需輸入userId及帳號");
+                }
+                userId = consumer.getUserId();
+                username = consumer.getUsername();
+            }
+            consumer.setUserId(userId);
+            consumer.setUsername(username);
+            consumerService.updateConsumerInfo(consumer);
+            return AjaxResult.success("更新成功");
+        }
+        return AjaxResult.error("目前登入者無權進行基本資料修改");
+    }
 }
