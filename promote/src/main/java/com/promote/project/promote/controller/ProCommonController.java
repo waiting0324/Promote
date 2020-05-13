@@ -18,7 +18,6 @@ import com.promote.project.promote.service.ICommonService;
 import com.promote.project.promote.service.IConsumerService;
 import com.promote.project.promote.service.IProHotelService;
 import com.promote.project.promote.service.IProStoreService;
-import com.promote.project.system.domain.SysRole;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -256,7 +255,7 @@ public class ProCommonController extends BaseController {
      * 變更密碼
      * @return 結果
      */
-    @PostMapping("/resetPwd")
+    @PostMapping("/common/resetPwd")
     public AjaxResult resetPwd(@RequestBody Map<String, String> request)
     {
 
