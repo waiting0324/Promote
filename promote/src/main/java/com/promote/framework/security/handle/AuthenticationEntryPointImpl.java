@@ -3,7 +3,6 @@ package com.promote.framework.security.handle;
 import com.alibaba.fastjson.JSON;
 import com.promote.common.constant.HttpStatus;
 import com.promote.common.utils.ServletUtils;
-import com.promote.common.utils.StringUtils;
 import com.promote.framework.web.domain.AjaxResult;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -29,7 +28,8 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint, S
             throws IOException
     {
         int code = HttpStatus.UNAUTHORIZED;
-        String msg = StringUtils.format("請求訪問：{}，認證失敗，無法訪問系統資源", request.getRequestURI());
-        ServletUtils.renderString(response, JSON.toJSONString(AjaxResult.error(code + "", msg)));
+        //String msg = StringUtils.format("請求訪問：{}，認證失敗，無法訪問系統資源", request.getRequestURI());
+        String msg = "使用者未登入";
+        ServletUtils.renderString(response, JSON.toJSONString(AjaxResult.error(code, msg)));
     }
 }

@@ -9,13 +9,16 @@ import com.promote.framework.security.service.TokenService;
 import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.framework.web.page.TableDataInfo;
+import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.promote.domain.Coupon;
 import com.promote.project.promote.domain.CouponConsume;
 import com.promote.project.promote.service.ICouponService;
 import com.promote.project.system.domain.SysUser;
+import com.promote.project.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import com.promote.project.promote.service.IConsumerService;
 
 import java.util.List;
 import java.util.Map;
@@ -35,6 +38,12 @@ public class CouponController extends BaseController {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private IConsumerService consumerService;
+
+    @Autowired
+    private ISysUserService sysUserService;
 
     /**
      * 查詢抵用券列表
@@ -183,4 +192,31 @@ public class CouponController extends BaseController {
         AjaxResult ajax = couponService.overviewCoupons();
         return ajax;
     }
+
+    /**
+     * 重置列印狀態
+     *
+     * @return 結果
+     */
+    @PostMapping("/resetPrint")
+    public AjaxResult resetPrint(@RequestBody Map<String, Object> request) {
+        List<SysUser> sysYserList = sysUserService.selectConsumerByIdentity(request.get("indentity").toString());
+
+        if(sysYserList.size() > 0) {
+            String userId = sysYserList.get(0).getUserId().toString();
+            ConsumerInfo consumerInfo = new ConsumerInfo();
+            consumerInfo.setUserId(Long.parseLong(userId));
+            consumerInfo.setConsumerStat("3");
+            int sum = couponService.updateConsumerStart(consumerInfo);
+
+            if(sum < 0){
+                return AjaxResult.error("修改失敗");
+            }
+        }else{
+            return AjaxResult.error("無此消費者");
+        }
+
+        return AjaxResult.success();
+    }
+
 }
