@@ -64,21 +64,26 @@ public class ProCommonController extends BaseController {
 
     /**
      * 發送驗證碼
-     *
-     * @param sysUser 使用者資料
      */
-    @PostMapping("/captcha")
-    public AjaxResult captcha(@RequestBody SysUser sysUser) throws MessagingException {
-        //帳號
-        String username = sysUser.getUsername();
-        Map<String, Object> params = sysUser.getParams();
-        //驗證類型(1:Email,2:手機)
-        String type = (String) params.get("type");
-        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(type)) {
+    @PostMapping("/common/sendOtp")
+    public AjaxResult captcha(@RequestBody Map<String, String> request) throws MessagingException {
+
+        // 帳號
+        String username = request.get("username");
+        // 驗證類型 (1:忘記密碼，2:旅宿業者發抵用券驗證)
+        String type = request.get("type");
+        // 發送方式 (1:Email,2:手機)
+        String method = request.get("method");
+        // 手機號碼
+        String mobile = request.get("mobile");
+
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(type) || StringUtils.isEmpty(method)) {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
-        commonService.sendCaptcha(username, type);
-        return AjaxResult.success();
+        String msg = commonService.sendCaptcha(username, type, method, mobile);
+
+
+        return AjaxResult.success(msg);
     }
 
     @PostMapping("/regist")
@@ -160,7 +165,7 @@ public class ProCommonController extends BaseController {
             }
 
             // 必填欄位檢核，姓名、身分證、生日
-            if ( StringUtils.isEmpty(user.getConsumer().getName()) || StringUtils.isEmpty(user.getConsumer().getIdentity()) ||
+            if (StringUtils.isEmpty(user.getConsumer().getName()) || StringUtils.isEmpty(user.getConsumer().getIdentity()) ||
                     StringUtils.isNull(user.getConsumer().getBirthday())) {
                 return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
             }
@@ -176,8 +181,7 @@ public class ProCommonController extends BaseController {
      * 登入方法
      */
     @PostMapping("/common/login")
-    public AjaxResult login(@RequestBody SysUser user, HttpServletRequest request)
-    {
+    public AjaxResult login(@RequestBody SysUser user, HttpServletRequest request) {
 
         String userAgent = request.getHeader("User-Agent");
         // User-Agent不以 Mozilla 開頭，則代表是從APP發來的請求
@@ -205,10 +209,13 @@ public class ProCommonController extends BaseController {
         String username = user.getUsername();
         String password = user.getPassword();
 
+        // 旅宿業者第一次登入
         ProWhitelist whitelist = whitelistService.selectProWhitelistByUsernameAndPwd(username, password);
-        if (StringUtils.isNotNull(whitelist) && !"1".equals(whitelist.getIsRegisted())) {
-            hostelService.regist(username, password, password);
+        if (StringUtils.isNotNull(whitelist)) {
             ajax.put("whitelistId", whitelist.getId());
+            if (!"1".equals(whitelist.getIsRegisted())) {
+                hostelService.regist(username, password, password);
+            }
         }
 
 
@@ -236,7 +243,6 @@ public class ProCommonController extends BaseController {
 
         return ajax;
     }
-
 
 
     /**
@@ -273,11 +279,11 @@ public class ProCommonController extends BaseController {
 
     /**
      * 變更密碼
+     *
      * @return 結果
      */
     @PostMapping("/common/resetPwd")
-    public AjaxResult resetPwd(@RequestBody Map<String, String> request)
-    {
+    public AjaxResult resetPwd(@RequestBody Map<String, String> request) {
 
         // String oldPassword = request.get("oldPwd");
         String newPwd = request.get("newPwd");
@@ -298,8 +304,7 @@ public class ProCommonController extends BaseController {
         {
             return AjaxResult.error("新密碼不能與舊密碼相同");
         }*/
-        if (userService.resetUserPwd(username, SecurityUtils.encryptPassword(newPwd)) > 0)
-        {
+        if (userService.resetUserPwd(username, SecurityUtils.encryptPassword(newPwd)) > 0) {
             // 更新快取使用者密碼
             loginUser.getUser().setPassword(SecurityUtils.encryptPassword(newPwd));
             tokenService.setLoginUser(loginUser);
@@ -332,70 +337,70 @@ public class ProCommonController extends BaseController {
         String userType = null;
         String username = null;
         String identity = null;
-        if(request != null){
-            userType = (String)request.get("userType");
-            username = (String)request.get("username");
-            identity = (String)request.get("identity");
+        if (request != null) {
+            userType = (String) request.get("userType");
+            username = (String) request.get("username");
+            identity = (String) request.get("identity");
         }
         SysUser user = SecurityUtils.getLoginUser().getUser();
         //判斷角色
         String role = user.getRoles().get(0).getRoleKey();
 //        role = "customerService";
-        if("customerService".equals(role)){
+        if ("customerService".equals(role)) {
             //客服
-            if(StringUtils.isEmpty(userType)){
+            if (StringUtils.isEmpty(userType)) {
                 return AjaxResult.error("資料類型需輸入");
             }
-            if(StringUtils.isEmpty(username) && StringUtils.isEmpty(identity)){
+            if (StringUtils.isEmpty(username) && StringUtils.isEmpty(identity)) {
                 return AjaxResult.error("帳號,統編/身分證號/居留證號至少需輸入一項");
             }
-            if("S".equalsIgnoreCase(userType)){
+            if ("S".equalsIgnoreCase(userType)) {
                 //查店家
-                List<Map<String, Object>> list = storeService.getByUnameIdentity(username,identity);
-                if(StringUtils.isNull(list) || list.size() == 0){
+                List<Map<String, Object>> list = storeService.getByUnameIdentity(username, identity);
+                if (StringUtils.isNull(list) || list.size() == 0) {
                     return AjaxResult.success("查無資料");
                 }
-                ajax.put("store",list);
+                ajax.put("store", list);
                 return ajax;
-            }else if("C".equalsIgnoreCase(userType)){
+            } else if ("C".equalsIgnoreCase(userType)) {
                 //查消費者
-                List<Map<String, Object>> list = consumerService.getByUnameIdentity(username,identity);
-                if(StringUtils.isNull(list) || list.size() == 0){
+                List<Map<String, Object>> list = consumerService.getByUnameIdentity(username, identity);
+                if (StringUtils.isNull(list) || list.size() == 0) {
                     return AjaxResult.success("查無資料");
                 }
-                ajax.put("consumer",list);
+                ajax.put("consumer", list);
                 return ajax;
-            }else if("H".equalsIgnoreCase(userType)){
+            } else if ("H".equalsIgnoreCase(userType)) {
                 //查旅宿業者
-                Map<String, Object> map = hostelService.getByUnameIdentity(username,identity);
-                if(StringUtils.isNull(map)){
+                Map<String, Object> map = hostelService.getByUnameIdentity(username, identity);
+                if (StringUtils.isNull(map)) {
                     return AjaxResult.success("查無資料");
                 }
-                ajax.put("hotel",map);
+                ajax.put("hotel", map);
                 return ajax;
             }
         }
-        if("hostel".equals(role)){
+        if ("hostel".equals(role)) {
             //旅宿業者查消費者
-            if(StringUtils.isEmpty(identity)){
+            if (StringUtils.isEmpty(identity)) {
                 return AjaxResult.error("身分證號/居留證號需輸入");
             }
             //查消費者
             List<Map<String, Object>> list = consumerService.getByIdentity(identity);
-            if(StringUtils.isNull(list) || list.size() == 0){
+            if (StringUtils.isNull(list) || list.size() == 0) {
                 return AjaxResult.success("查無資料");
             }
-            ajax.put("consumer",list);
+            ajax.put("consumer", list);
             return ajax;
         }
-        if("store".equals(role)){
+        if ("store".equals(role)) {
             //店家
-            ajax.put("store",storeService.getByUsername(user.getUsername()));
+            ajax.put("store", storeService.getByUsername(user.getUsername()));
             return ajax;
         }
-        if("consumer".equals(role)){
+        if ("consumer".equals(role)) {
             //消費者
-            ajax.put("consumer",consumerService.getByUsername(user.getUsername()));
+            ajax.put("consumer", consumerService.getByUsername(user.getUsername()));
             return ajax;
         }
         return AjaxResult.error("目前登入者無權進行基本資料查詢");

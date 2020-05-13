@@ -33,10 +33,11 @@ public interface ICommonService {
 
     /**
      * 發送驗證碼
-     *
-     * @param username 帳號
-     * @param type     驗證類型 ( 1:Email 2:簡訊OTP )
+     *  @param username 帳號
+     * @param type      驗證類型 (1:忘記密碼，2:旅宿業者發抵用券驗證)
+     * @param method    發送方式 (1:Email,2:手機)
+     * @param mobile    手機號碼
      */
-    void sendCaptcha(String username, String type) throws MessagingException;
+    String sendCaptcha(String username, String type, String method, String mobile) throws MessagingException;
 
 }

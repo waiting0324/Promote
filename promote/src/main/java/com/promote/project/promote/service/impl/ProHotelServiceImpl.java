@@ -108,7 +108,7 @@ public class ProHotelServiceImpl implements IProHotelService {
         userMapper.insertUser(user);
 
         HotelInfo hotelInfo = new HotelInfo();
-        hotelInfo.setUserId(user.getUserId().intValue());
+        hotelInfo.setUserId(user.getUserId());
         hotelInfo.setName(white.getName());
         hotelInfo.setAddress(white.getAddress());
         hotelInfo.setLatitude(white.getLatitude());
