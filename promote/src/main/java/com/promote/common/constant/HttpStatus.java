@@ -50,7 +50,7 @@ public interface HttpStatus
     /**
      * 未授權
      */
-    public static final int UNAUTHORIZED = 401;
+    public static final int UNAUTHORIZED = 0004;
 
     /**
      * 訪問受限，授權過期

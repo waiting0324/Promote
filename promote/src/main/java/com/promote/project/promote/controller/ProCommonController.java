@@ -226,6 +226,7 @@ public class ProCommonController extends BaseController {
      */
     @PostMapping("/forgetPwd")
     public AjaxResult forgetPwd(@RequestBody SysUser sysUser) {
+
         String username = (String) sysUser.getUsername();
         Map<String, Object> params = sysUser.getParams();
         //新密碼
@@ -253,16 +254,21 @@ public class ProCommonController extends BaseController {
      * 變更密碼
      * @return 結果
      */
-    @PutMapping("/resetPwd")
+    @PostMapping("/resetPwd")
     public AjaxResult resetPwd(@RequestBody Map<String, String> request)
     {
 
-        String oldPassword = request.get("oldPwd");
-        String newPassword = request.get("newPwd");
+        // String oldPassword = request.get("oldPwd");
+        String newPwd = request.get("newPwd");
+        String checkNewPwd = request.get("checkNewPwd");
+
+        if (!newPwd.equals(checkNewPwd)) {
+            return AjaxResult.error("兩次輸入的密碼不一致");
+        }
 
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        String userName = loginUser.getUsername();
-        String password = loginUser.getPassword();
+        String username = loginUser.getUsername();
+        /* String password = loginUser.getPassword();
         if (!SecurityUtils.matchesPassword(oldPassword, password))
         {
             return AjaxResult.error("修改密碼失敗，舊密碼錯誤");
@@ -270,11 +276,11 @@ public class ProCommonController extends BaseController {
         if (SecurityUtils.matchesPassword(newPassword, password))
         {
             return AjaxResult.error("新密碼不能與舊密碼相同");
-        }
-        if (userService.resetUserPwd(userName, SecurityUtils.encryptPassword(newPassword)) > 0)
+        }*/
+        if (userService.resetUserPwd(username, SecurityUtils.encryptPassword(newPwd)) > 0)
         {
             // 更新快取使用者密碼
-            loginUser.getUser().setPassword(SecurityUtils.encryptPassword(newPassword));
+            loginUser.getUser().setPassword(SecurityUtils.encryptPassword(newPwd));
             tokenService.setLoginUser(loginUser);
             return AjaxResult.success();
         }
