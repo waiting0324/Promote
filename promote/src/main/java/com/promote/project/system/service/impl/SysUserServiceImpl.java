@@ -394,4 +394,13 @@ public class SysUserServiceImpl implements ISysUserService {
         }
         return successMsg.toString();
     }
+
+    /**
+     * 根據身分證查詢 消費者
+     * @param identity 身分證
+     * @return 使用者Bean
+     */
+    public List<SysUser> selectConsumerByIdentity(String identity){
+        return userMapper.selectConsumerByIdentity(identity);
+    }
 }

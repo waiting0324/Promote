@@ -1,6 +1,7 @@
 package com.promote.project.promote.service;
 
 import com.promote.framework.web.domain.AjaxResult;
+import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.promote.domain.Coupon;
 import com.promote.project.promote.domain.CouponConsume;
 import com.promote.project.system.domain.SysUser;
@@ -119,4 +120,11 @@ public interface ICouponService {
      * @return 結果
      */
     List<Map<String,Object>> getTotalAmtByStoreId(String beginDate, String endDate);
+
+    /**
+     * 重置列印狀態
+     *
+     * @return 結果
+     */
+    int updateConsumerStart(ConsumerInfo consumerInfo);
 }
