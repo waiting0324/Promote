@@ -106,11 +106,11 @@ public interface ICouponService {
     List<CouponConsume> consumption();
 
     /**
-     * 抵用券總攬
+     * 抵用券發放紀錄查詢
      *
-     * @return
+     * @return 結果
      */
-    AjaxResult overviewCoupons();
+    Map<String, Object> overviewCoupons(Long consumerId);
 
     /**
      * 取得時間範圍內的消費記錄檔
@@ -140,4 +140,5 @@ public interface ICouponService {
      * @return 結果
      */
     Map<String,Object> transactionHistory(Long id,String role,String storeType,String startDate,String endDate,String rows,String page);
+
 }

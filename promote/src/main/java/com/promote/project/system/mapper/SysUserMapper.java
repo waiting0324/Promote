@@ -153,4 +153,5 @@ public interface SysUserMapper {
      * @return 結果
      */
     public List<SysUser> getByUnameIndentity(@Param("username") String username,@Param("identity") String identity);
+
 }

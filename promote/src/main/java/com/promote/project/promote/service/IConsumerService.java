@@ -65,4 +65,12 @@ public interface IConsumerService {
      * @param consumer 消費者基本資料
      */
     void updateConsumerInfo(ConsumerInfo consumer);
+
+    /**
+     *
+     *
+     * @param userId
+     * @return
+     */
+//    Map<String,Object> getCouponOverview(Long userId);
 }

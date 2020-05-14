@@ -20,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.promote.project.promote.service.IConsumerService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -145,7 +146,7 @@ public class CouponController extends BaseController {
         List<String> couponIds = (List<String>) request.get("couponIds");
 
         //商家的user_id
-        Long storeId = Long.parseLong((String)request.get("storeId"));
+        Long storeId = Long.parseLong((String) request.get("storeId"));
         if (StringUtils.isNull(couponIds) || couponIds.size() == 0) {
             return AjaxResult.error("未輸入抵用券");
         }
@@ -183,13 +184,31 @@ public class CouponController extends BaseController {
     }
 
     /**
-     * 抵用券總覽
+     * 抵用券發放紀錄查詢
      *
      * @return 結果
      */
-    @GetMapping("/overview")
-    public AjaxResult overview() {
-        AjaxResult ajax = couponService.overviewCoupons();
+    @PostMapping("/getCouponOverview")
+    public AjaxResult getCouponOverview(@RequestBody(required = false) Map<String, Object> request) {
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        String role = user.getRoles().get(0).getRoleKey();
+        Long consumerId = null;
+        if ("consumer".equals(role)) {
+            consumerId = user.getUserId();
+        } else if ("customerService".equals(role)) {
+            String indentity = (String) request.get("indentity");
+            String username = (String) request.get("username");
+            if (StringUtils.isEmpty(indentity) && StringUtils.isEmpty(username)) {
+                AjaxResult.error("請輸入身分證號/居留證號或消費者帳號");
+            }
+            SysUser sysUser = sysUserService.getByUnameIndentity(username, indentity);
+            consumerId = sysUser.getUserId();
+        }
+        AjaxResult ajax = AjaxResult.success();
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        Map<String, Object> couponOverview = couponService.overviewCoupons(consumerId);
+        resultMap.put("couponOverview", couponOverview);
+        ajax.put("result", resultMap);
         return ajax;
     }
 
@@ -202,17 +221,17 @@ public class CouponController extends BaseController {
     public AjaxResult resetPrint(@RequestBody Map<String, Object> request) {
         List<SysUser> sysYserList = sysUserService.selectConsumerByIdentity(request.get("indentity").toString());
 
-        if(sysYserList.size() > 0) {
+        if (sysYserList.size() > 0) {
             String userId = sysYserList.get(0).getUserId().toString();
             ConsumerInfo consumerInfo = new ConsumerInfo();
             consumerInfo.setUserId(Long.parseLong(userId));
             consumerInfo.setConsumerStat("3");
             int sum = couponService.updateConsumerStart(consumerInfo);
 
-            if(sum < 0){
+            if (sum < 0) {
                 return AjaxResult.error("修改失敗");
             }
-        }else{
+        } else {
             return AjaxResult.error("無此消費者");
         }
 
@@ -230,7 +249,7 @@ public class CouponController extends BaseController {
         String storeType = (String) request.get("storeType");
         String startDate = (String) request.get("startDate");
         String endDate = (String) request.get("endDate");
-        if(StringUtils.isEmpty(storeType) || StringUtils.isEmpty(startDate) || StringUtils.isEmpty(endDate)){
+        if (StringUtils.isEmpty(storeType) || StringUtils.isEmpty(startDate) || StringUtils.isEmpty(endDate)) {
             return AjaxResult.error("需輸入抵用券類型,查詢起日,查詢迄日");
         }
         String rows = (String) request.get("rows");
@@ -244,34 +263,35 @@ public class CouponController extends BaseController {
         String role = user.getRoles().get(0).getRoleKey();
         Map<String, Object> map = null;
 //        role = "customerService"; //測試用
-        if("store".equals(role)){
+        if ("store".equals(role)) {
             map = couponService.transactionHistory(userId, "S", storeType, startDate, endDate, rows, page);
-        }else if("consumer".equals(role)){
-            map = couponService.transactionHistory(userId,"C",storeType,startDate,endDate,rows,page);
-        }else if("customerService".equals(role)){
+        } else if ("consumer".equals(role)) {
+            map = couponService.transactionHistory(userId, "C", storeType, startDate, endDate, rows, page);
+        } else if ("customerService".equals(role)) {
             //客服
             String username = (String) request.get("username");
             String indentity = (String) request.get("indentity");
             //查店家或查消費者
             String target = (String) request.get("role");
-            if(StringUtils.isEmpty(target)){
+            if (StringUtils.isEmpty(target)) {
                 return AjaxResult.error("需輸入要查詢店家或消費者");
             }
-            if(StringUtils.isEmpty(username) && StringUtils.isEmpty(indentity)){
+            if (StringUtils.isEmpty(username) && StringUtils.isEmpty(indentity)) {
                 return AjaxResult.error("需輸入身分證號/居留證號或帳號");
             }
-            SysUser sysUser = sysUserService.getByUnameIndentity(username,indentity);
+            SysUser sysUser = sysUserService.getByUnameIndentity(username, indentity);
             role = sysUser.getRoles().get(0).getRoleKey();
-            if("store".equals(role)){
-                map = couponService.transactionHistory(sysUser.getUserId(),"S",storeType,startDate,endDate,rows,page);
-            }else if("consumer".equals(role)){
-                map = couponService.transactionHistory(sysUser.getUserId(),"C",storeType,startDate,endDate,rows,page);
+            if ("store".equals(role)) {
+                map = couponService.transactionHistory(sysUser.getUserId(), "S", storeType, startDate, endDate, rows, page);
+            } else if ("consumer".equals(role)) {
+                map = couponService.transactionHistory(sysUser.getUserId(), "C", storeType, startDate, endDate, rows, page);
             }
         }
-        if(StringUtils.isNotEmpty(map)){
+        if (StringUtils.isNotEmpty(map)) {
             ajax.putAll(map);
             return ajax;
         }
         return AjaxResult.error("目前登入者無權進行抵用券消費記錄查詢");
     }
+
 }

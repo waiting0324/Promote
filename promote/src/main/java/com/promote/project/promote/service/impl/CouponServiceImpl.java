@@ -510,33 +510,54 @@ public class CouponServiceImpl implements ICouponService {
         return list;
     }
 
+    /**
+     * 抵用券發放紀錄查詢
+     *
+     * @return 結果
+     */
     @Override
-    public AjaxResult overviewCoupons() {
-
+    public Map<String, Object> overviewCoupons(Long consumerId) {
         AjaxResult ajax = AjaxResult.success();
-
         // 可用總餘額
         int balance = 0;
         // 已消費總金額
         int consumed = 0;
-
-        Long consumerId = SecurityUtils.getLoginUser().getUser().getUserId();
-        List<Coupon> couponList = couponMapper.overviewCoupons(consumerId);
-        List<CouponConsume> couponConsumeList = couponConsumeMapper.selectConsumptionList(consumerId);
-
-        if (couponList.isEmpty()) {
-            throw new CustomException("您尚未擁有振興券");
+        Map<String, Object> couponOverview = consumerInfoMapper.getConsumerInfoById(consumerId);
+        if(StringUtils.isNotNull(couponOverview)){
+            throw new CustomException("尚未申請抵用券");
+        }
+        Date applyTime = (Date)couponOverview.get("applyTime");
+        if(StringUtils.isNotNull(applyTime)){
+            couponOverview.put("applyTime",DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss",applyTime));
+        }
+        Date printTime = (Date)couponOverview.get("printTime");
+        if(StringUtils.isNotNull(printTime)){
+            couponOverview.put("printTime",DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss",printTime));
         }
 
+        //取得該使用者的coupon(pro_coupon)
+        List<Coupon> couponList = couponMapper.overviewCoupons(consumerId);
+//        if (couponList.isEmpty()) {
+//            throw new CustomException("您尚未擁有振興券");
+//        }
         // 初始化返回結果
-        List<Map<String, Object>> result = new ArrayList<>();
+        List<Map<String, Object>> couponTypeInfo = new ArrayList<>(); //couponTypeInfo
+        String[] typeName = {"夜市類", "餐廳類", "商圈類", "藝文類"};
         for (int i = 0; i < 4; i++) {
-            Map<String, Object> map = new HashMap<>();
+            Map<String, Object> map = new LinkedHashMap<String, Object>();
+            map.put("fundType", i + ""); //0夜市 1餐廳 2商圈 3藝文
+            map.put("typeName", typeName[i]);
             map.put("consumed", 0);
             map.put("balance", 0);
-            map.put("type", i + "");
-            map.put("consumedCoupons", new ArrayList<>());
-            result.add(map);
+            List<Map<String, Object>> couponInfo = couponMapper.getCouponInfo(consumerId,i + "");
+            for(Map<String, Object> detail :couponInfo){
+                Date consumeTime = (Date)detail.get("consumeTime");
+                if(StringUtils.isNotNull(consumeTime)){
+                    detail.put("consumeTime",DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss",consumeTime));
+                }
+            }
+            map.put("couponInfo",couponInfo);
+            couponTypeInfo.add(map);
         }
 
 
@@ -545,38 +566,25 @@ public class CouponServiceImpl implements ICouponService {
             // 抵用券類型
             Integer storeType = Integer.parseInt(coupon.getStoreType());
             // storeType 類型的抵用券紀錄
-            Map<String, Object> map = result.get(storeType);
+            Map<String, Object> map = couponTypeInfo.get(storeType);
             // 抵用券已使用
             if (CouponConstants.USED.equals(coupon.getIsUsed())) {
                 // 已消費總金額
                 consumed += coupon.getAmount();
                 // storeType 類型的抵用券已消費金額
                 map.put("consumed", (int) (Integer.parseInt(map.get("consumed").toString()) + coupon.getAmount()));
-                /*List<Coupon> consumedCoupons = (List<Coupon>) map.get("consumedCoupons");
-                consumedCoupons.add(coupon);*/
-            }
-            // 抵用券未使用
-            else {
+            } else {
+                // 抵用券未使用
                 // 可用總餘額
                 balance += coupon.getAmount();
                 // storeType 類型的抵用券總餘額
                 map.put("balance", (int) (Integer.parseInt(map.get("balance").toString()) + coupon.getAmount()));
             }
         }
-
-        // 處理消費紀錄
-        for (CouponConsume couponConsume : couponConsumeList) {
-            int i = Integer.parseInt(couponConsume.getStoreType());
-            List<CouponConsume> consumedCoupons = (List<CouponConsume>) result.get(i).get("consumedCoupons");
-            consumedCoupons.add(couponConsume);
-        }
-
-        // 處理返回結果
-        ajax.put("balance", balance);
-        ajax.put("consumed", consumed);
-        ajax.put("couponTypes", result);
-
-        return ajax;
+        couponOverview.put("consumed",consumed);
+        couponOverview.put("balance",balance);
+        couponOverview.put("couponTypeInfo",couponTypeInfo);
+        return couponOverview;
     }
 
     /**
@@ -652,7 +660,7 @@ public class CouponServiceImpl implements ICouponService {
         Map<String, Object> map = null;
         startDate = startDate.replaceAll("/", "-");
         startDate += " 00:00:00";
-        endDate = endDate.replaceAll("/","-");
+        endDate = endDate.replaceAll("/", "-");
         endDate += " 23:59:59";
         if ("S".equals(role)) {
             //查店家
@@ -674,17 +682,18 @@ public class CouponServiceImpl implements ICouponService {
             int targetPage = Integer.parseInt(page);
             int startCount = (targetPage - 1) * rowsPerPage;
             int endCount = (targetPage * rowsPerPage) > totalCount ? totalCount : targetPage * rowsPerPage;
-            for (int i = startCount; i < endCount; i++){
+            for (int i = startCount; i < endCount; i++) {
                 Map<String, Object> dataMap = historyList.get(i);
                 Date date = (Date) dataMap.get("consumeTime");
-                dataMap.put("consumeTime",DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss",date));
+                dataMap.put("consumeTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", date));
                 couponInfoList.add(historyList.get(i));
             }
-            map.put("couponInfo",couponInfoList);
-            map.put("totalPage",pageSize);
-            map.put("page",targetPage);
-            map.put("totalRecords",totalCount);
+            map.put("couponInfo", couponInfoList);
+            map.put("totalPage", pageSize);
+            map.put("page", targetPage);
+            map.put("totalRecords", totalCount);
         }
         return map;
     }
+
 }
