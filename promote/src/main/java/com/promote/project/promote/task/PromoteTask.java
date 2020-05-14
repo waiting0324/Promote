@@ -166,9 +166,9 @@ public class PromoteTask {
      * 處理白名單匯入及差異檔(csv版)
      *
      * @param path     白名單路徑
-     * @param isHostel 是否為旅宿業者
+     * @param isHotel 是否為旅宿業者
      */
-    public void dealWhitelistFile(String path, Boolean isHostel) {
+    public void dealWhitelistFile(String path, Boolean isHotel) {
         if (StringUtils.isNotEmpty(path)) {
 //            BufferedInputStream inputStream = null;
 //            BufferedReader reader = null;
@@ -204,7 +204,7 @@ public class PromoteTask {
             CSVParser csvParser = null;
             Map<String, Integer> pair = new HashMap<String, Integer>();
             //白名單Field與白名單Excel映射關係
-            if (isHostel) {
+            if (isHotel) {
                 //旅宿
                 pair.put("id", 0);
                 pair.put("name", 2);
@@ -261,7 +261,7 @@ public class PromoteTask {
                 //更新參數檔及寫入白名單ProWhitelist(第一次)
                 if (isFirstWhitelist) {
                     SysConfig sysConfig = null;
-                    if (isHostel) {
+                    if (isHotel) {
                         sysConfig = configService.getConfigBykey("is.first.hotelWhitelist");
                         //從旅宿白名單檔整批寫入
                         proWhitelistService.insertFromHotelWhitelist();
@@ -338,7 +338,7 @@ public class PromoteTask {
                     successLog.setMethod(mathodName);
                     successLog.setOperatorType(1);
                     successLog.setOperName("SYSTEM");
-                    successLog.setJsonResult("執行" + (isHostel ? "旅宿白名單(hotel_whitelist)匯入- 共成功: " : "店家白名單(store_whitelist)匯入- 共成功: ") + whitelistSuccessCnt + "筆");
+                    successLog.setJsonResult("執行" + (isHotel ? "旅宿白名單(hotel_whitelist)匯入- 共成功: " : "店家白名單(store_whitelist)匯入- 共成功: ") + whitelistSuccessCnt + "筆");
                     successLog.setOperTime(now);
                     operLogServic.insertOperlog(successLog);
                 }
@@ -349,7 +349,7 @@ public class PromoteTask {
                     failLog.setMethod(mathodName);
                     failLog.setOperatorType(1);
                     failLog.setOperName("SYSTEM");
-                    failLog.setErrorMsg("執行" + (isHostel ? "旅宿白名單(hotel_whitelist)匯入- 共失敗: " : "店家白名單(store_whitelist)匯入- 共失敗: ") + whitelistFailCnt + "筆");
+                    failLog.setErrorMsg("執行" + (isHotel ? "旅宿白名單(hotel_whitelist)匯入- 共失敗: " : "店家白名單(store_whitelist)匯入- 共失敗: ") + whitelistFailCnt + "筆");
                     failLog.setOperTime(now);
                     operLogServic.insertOperlog(failLog);
                 }

@@ -9,13 +9,12 @@
         <result property="fundType"    column="fund_type"    />
         <result property="userId"    column="user_id"    />
         <result property="isUsed"    column="is_used"    />
-        <result property="issueDate"    column="issue_date"    />
-        <result property="status"    column="status"    />
         <result property="storeType"    column="store_type"    />
         <result property="amount"    column="amount"    />
         <result property="noticeTime"    column="notice_time"    />
         <result property="createTime"    column="create_time"    />
     </resultMap>
+
 
     <resultMap type="java.util.LinkedHashMap" id="CouponInfoResult">
         <result property="couponId"    column="id"    />
@@ -26,8 +25,14 @@
         <result property="storeType"    column="store_type"    />
     </resultMap>
 
+    <resultMap type="java.util.Map" id="getPrintCouponResult">
+        <result property="couponId"    column="couponId"  />
+        <result property="amount"    column="amount"  />
+        <result property="storeType"    column="storeType"  />
+    </resultMap>
+
     <sql id="selectCouponVo">
-        select id, fund_type, user_id, is_used, issue_date, status, store_type, amount, notice_time, create_time from pro_coupon
+        select id, fund_type, user_id, is_used, store_type, amount, notice_time, create_time from pro_coupon
     </sql>
 
     <select id="selectCouponList" parameterType="Coupon" resultMap="CouponResult">
@@ -36,8 +41,6 @@
             <if test="fundType != null  and fundType != ''"> and fund_type = #{fundType}</if>
             <if test="userId != null "> and user_id = #{userId}</if>
             <if test="isUsed != null  and isUsed != ''"> and is_used = #{isUsed}</if>
-            <if test="issueDate != null "> and issue_date = #{issueDate}</if>
-            <if test="status != null  and status != ''"> and status = #{status}</if>
             <if test="storeType != null  and storeType != ''"> and store_type = #{storeType}</if>
             <if test="amount != null "> and amount = #{amount}</if>
             <if test="noticeTime != null "> and notice_time = #{noticeTime}</if>
@@ -56,8 +59,6 @@
             <if test="fundType != null  and fundType != ''">fund_type,</if>
             <if test="userId != null ">user_id,</if>
             <if test="isUsed != null  and isUsed != ''">is_used,</if>
-            <if test="issueDate != null ">issue_date,</if>
-            <if test="status != null  and status != ''">status,</if>
             <if test="storeType != null  and storeType != ''">store_type,</if>
             <if test="amount != null ">amount,</if>
             <if test="noticeTime != null ">notice_time,</if>
@@ -68,8 +69,6 @@
             <if test="fundType != null  and fundType != ''">#{fundType},</if>
             <if test="userId != null ">#{userId},</if>
             <if test="isUsed != null  and isUsed != ''">#{isUsed},</if>
-            <if test="issueDate != null ">#{issueDate},</if>
-            <if test="status != null  and status != ''">#{status},</if>
             <if test="storeType != null  and storeType != ''">#{storeType},</if>
             <if test="amount != null ">#{amount},</if>
             <if test="noticeTime != null ">#{noticeTime},</if>
@@ -92,8 +91,6 @@
             <if test="fundType != null  and fundType != ''">fund_type = #{fundType},</if>
             <if test="userId != null ">user_id = #{userId},</if>
             <if test="isUsed != null  and isUsed != ''">is_used = #{isUsed},</if>
-            <if test="issueDate != null ">issue_date = #{issueDate},</if>
-            <if test="status != null  and status != ''">status = #{status},</if>
             <if test="storeType != null  and storeType != ''">store_type = #{storeType},</if>
             <if test="amount != null ">amount = #{amount},</if>
             <if test="noticeTime != null ">notice_time = #{noticeTime},</if>
@@ -127,6 +124,7 @@
         where user_id = #{userId}
     </select>
 
+
     <select id="getCouponInfo" resultMap="CouponInfoResult">
         select coupon.id,coupon.is_used,consume.consume_time,coupon.amount,store.name,coupon.store_type
         from pro_coupon coupon left join pro_coupon_consume consume
@@ -134,6 +132,15 @@
         left join pro_store_info store on consume.store_id=store.user_id
         where coupon.user_id = #{userId} and coupon.store_type=#{storeType}
         order by id
+    </select>
+    <select id="getPrintCoupon"  resultMap="getPrintCouponResult">
+        SELECT A.amount, A.store_Type, D.coupon_id
+        FROM PRO_COUPON A
+        INNER JOIN pro_consumer_info B ON A.USER_ID = B.USER_ID
+        INNER JOIN SYS_USER C ON A.USER_ID = C.USER_ID
+        INNER JOIN pro_coupon_consume D ON B.user_id = D.consumer_id
+        WHERE C.IDENTITY like #{indentity}
+            AND B.print_code = #{printCode}
     </select>
 
 </mapper>

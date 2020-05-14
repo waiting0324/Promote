@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.promote.project.promote.mapper.ProStoreHisMailMapper">
+
+    <resultMap type="java.util.Map" id="ProStoreHisMailResult">
+        <result property="id"    column="id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="startDate"    column="start_date"    />
+        <result property="endDate"    column="end_date"    />
+        <result property="status"    column="status"    />
+        <result property="storeType"    column="store_type"    />
+        <result property="mail"    column="mail"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectProStoreHisMailVo">
+        select id, store_id, start_date, end_date, status, store_type, mail, create_time, update_time
+        from pro_store_his_mail
+    </sql>
+
+    <select id="selectProStoreHisMailList" resultMap="ProStoreHisMailResult">
+        <include refid="selectProStoreHisMailVo"/>
+    </select>
+
+    <insert id="insertProStoreHisMail" parameterType="StoreHisMail">
+        insert into pro_store_his_mail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="storeId != null and storeId != ''">store_id,</if>
+            <if test="startDate != null and startDate != ''">start_date,</if>
+            <if test="endDate != null and endDate != ''">end_date,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="storeType != null and storeType != ''">store_type,</if>
+            <if test="mail != null and mail != ''">mail,</if>
+            create_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="storeId != null and storeId != ''">#{storeId},</if>
+            <if test="startDate != null and startDate != ''">#{startDate},</if>
+            <if test="endDate != null and endDate != ''">#{endDate},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="storeType != null and storeType != ''">#{storeType},</if>
+            <if test="mail != null and mail != ''">#{mail},</if>
+            sysdate
+        </trim>
+    </insert>
+
+</mapper>

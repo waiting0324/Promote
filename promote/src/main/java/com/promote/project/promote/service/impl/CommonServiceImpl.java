@@ -231,7 +231,7 @@ public class CommonServiceImpl implements ICommonService {
 
         if (Constants.VERI_METHOD_EMAIL.equals(method)) {
             hidePersonalInfo(user);
-            result = "驗證碼已發送到" + user.getEmail();
+            result = "驗證碼已發送到" + user.getEmail() + "，驗證碼:" + verifyCode + "(在SMTP能使用後需移除此資訊)";
         } else if (Constants.VERI_METHOD_SMS.equals(method)) {
             user.setMobile(mobile);
             hidePersonalInfo(user);

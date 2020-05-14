@@ -5,6 +5,7 @@ import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.promote.domain.Coupon;
 import com.promote.project.promote.domain.CouponConsume;
 import com.promote.project.system.domain.SysUser;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -71,7 +72,7 @@ public interface ICouponService {
      * @param code 簡訊驗證碼
      * @return
      */
-    void sendCoupon(SysUser user, String code);
+    Map<String, Object> applyCoupon(SysUser user, String code);
 
     /**
      * 消費者取得可使用的抵用券
@@ -94,9 +95,8 @@ public interface ICouponService {
      * 反掃(商家掃消費者)
      *
      * @param id      組抵用券序號
-     * @param sysUser 使用者資料(店家)
      */
-    void reverseScan(String id, SysUser sysUser);
+    Long reverseScan(String id);
 
     /**
      * 查詢當前消費者的消費紀錄
@@ -140,5 +140,15 @@ public interface ICouponService {
      * @return 結果
      */
     Map<String,Object> transactionHistory(Long id,String role,String storeType,String startDate,String endDate,String rows,String page);
+
+    /**
+     * 以證號末四碼及兌換碼查詢抵用券
+     *
+     * @param indentity 身分證號或居留證號末四碼
+     * @param printCode 紙本兌換碼
+     * @return 結果
+     */
+    public List<Map<String, Object>> getPrintCoupon(@Param("indentity") String indentity, @Param("printCode") String printCode);
+
 
 }

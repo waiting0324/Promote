@@ -19,6 +19,11 @@
         <result property="storeId" column="store_id" javaType="java.lang.Long"/>
     </resultMap>
 
+    <resultMap type="java.util.Map" id="queryDailyConsumeForDayCondition">
+        <result property="showDate" column="consume_time" />
+        <result property="showAmount" column="coupon_amount" />
+    </resultMap>
+
     <sql id="selectDailyConsumeVo">
         select id, consume_time, fund_type, store_id, consume_amount, store_type, coupon_amount from pro_daily_consume
     </sql>
@@ -98,5 +103,15 @@
         from pro_daily_consume
         where store_id=#{storeId}
         group by store_id;
+    </select>
+
+    <select id="queryDailyConsumeForDay" resultMap="queryDailyConsumeForDayCondition">
+
+            SELECT consume_time, coupon_amount
+            FROM pro_daily_consume
+            where store_id = #{storeId}
+                AND consume_time &gt;= #{beginDay}
+                AND #{endDay} &gt;= consume_time
+
     </select>
 </mapper>

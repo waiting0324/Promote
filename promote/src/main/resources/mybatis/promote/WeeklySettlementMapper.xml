@@ -17,6 +17,15 @@
         <result property="paymentStatus"    column="payment_status"    />
     </resultMap>
 
+    <resultMap type="java.util.Map" id="weeklyTxResults">
+        <result property="weeklyTxId"    column="store_id"    />
+        <result property="weekStart"    column="week_start"    />
+        <result property="weekEnd"    column="week_end"    />
+        <result property="totalAmount"    column="amount"    />
+        <result property="isConfirm"    column="is_confirm"    />
+        <result property="paymentStatus"    column="payment_status"    />
+    </resultMap>
+
     <sql id="selectWeeklySettlementVo">
         select id, store_id, week_start, week_end, amount, is_confirm, is_batch, batch_status, batch_time, payment_status from pro_weekly_settlement
     </sql>
@@ -95,5 +104,12 @@
             #{id}
         </foreach>
     </delete>
+
+    <select id="queryWeeklySettlementList" resultMap="weeklyTxResults">
+        SELECT store_id, week_start, week_end,
+            amount, is_confirm, payment_status
+        FROM PRO_WEEKLY_SETTLEMENT
+        where store_id = #{storeId}
+    </select>
 
 </mapper>

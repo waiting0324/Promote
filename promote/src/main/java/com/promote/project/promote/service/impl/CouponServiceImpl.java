@@ -14,14 +14,17 @@ import com.promote.framework.redis.RedisCache;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.domain.*;
 import com.promote.project.promote.mapper.*;
+import com.promote.project.promote.service.ICommonService;
 import com.promote.project.promote.service.ICouponService;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.mapper.SysUserMapper;
 import com.promote.project.system.service.ISysConfigService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -56,6 +59,9 @@ public class CouponServiceImpl implements ICouponService {
 
     @Autowired
     private ISysConfigService configService;
+
+    @Autowired
+    private ICommonService commonService;
 
     /**
      * 查詢抵用券
@@ -127,22 +133,30 @@ public class CouponServiceImpl implements ICouponService {
 
     @Override
     @Transactional
-    public void sendCoupon(SysUser user, String code) {
+    public Map<String, Object> applyCoupon(SysUser requestConsumer, String code) {
+
+        // 返回給前端的結果封裝
+        Map<String, Object> result = new HashMap<>();
+        List<String> msg = new ArrayList<>();
+        msg.add("✱提醒您，夜市、餐廳、商圈類抵用券使用有效期限為發放後一個月內！藝文類為二個月內！");
+        result.put("msg", msg);
 
 
         // 檢驗是否有消費者帳號
-        if (StringUtils.isNull(user.getUsername())) {
+        if (StringUtils.isNull(requestConsumer.getUsername())) {
             throw new CustomException("未指定消費者帳號");
         }
-        if (StringUtils.isNull(userMapper.selectUserByUsername(user.getUsername()))) {
+        // 從DB中獲取的消費者資料
+        SysUser dbConsumer = userMapper.selectUserByUsername(requestConsumer.getUsername());
+        if (StringUtils.isNull(dbConsumer)) {
             throw new CustomException("找不到此消費者");
         }
-        Long userId = userMapper.selectUserByUsername(user.getUsername()).getUserId();
-        String consumerStat = consumerInfoMapper.selectConsumerInfoById(userId).getConsumerStat();
-        ConsumerInfo consumerInfo = new ConsumerInfo();
+        Long consumerId = dbConsumer.getUserId();
+        String consumerStat = consumerInfoMapper.selectConsumerInfoById(consumerId).getConsumerStat();
+        ConsumerInfo insertConsumerInfo = new ConsumerInfo();
 
         // 除了代註冊沒手機的之外，都要校驗是否有輸入手機號碼
-        if (StringUtils.isEmpty(user.getMobile())
+        if (StringUtils.isEmpty(requestConsumer.getMobile())
                 && !consumerStat.equals(ConsumerConstants.STAT_REGISTED_PROXY_NO_MOBILE)) {
             throw new CustomException("未輸入手機號碼");
         }
@@ -153,7 +167,7 @@ public class CouponServiceImpl implements ICouponService {
 
         // 驗證OTP驗證碼
         // 從Redis中取出驗證碼
-        String verifyKey = Constants.VERI_COUPON_SEND_CODE_KEY + user.getUsername();
+        String verifyKey = Constants.VERI_COUPON_SEND_CODE_KEY + requestConsumer.getUsername();
         String captcha = redisCache.getCacheObject(verifyKey);
         redisCache.deleteObject(verifyKey);
 
@@ -192,7 +206,7 @@ public class CouponServiceImpl implements ICouponService {
                 , new String[]{"S", "T", "B", "C"});
 
         // 消費者選擇使用電子(虛擬)方式發放抵用券
-        if (CouponConstants.TYPE_ELEC.equals(user.getConsumer().getCouponType())) {
+        if (CouponConstants.TYPE_ELEC.equals(requestConsumer.getConsumer().getCouponType())) {
 
             // 設定抵用券資料，發送抵用券
             List<Coupon> couponList = new ArrayList<>();
@@ -201,7 +215,7 @@ public class CouponServiceImpl implements ICouponService {
                 // 設定抵用券的基本資料
                 Coupon coupon = new Coupon();
 
-                coupon.setUserId(userId);
+                coupon.setUserId(consumerId);
                 coupon.setIsUsed(CouponConstants.UN_USED);
                 coupon.setIssueDate(nowDate);
                 coupon.setAmount(CouponConstants.COUPON_AMOUNT);
@@ -243,44 +257,50 @@ public class CouponServiceImpl implements ICouponService {
 
         }
         // 消費者選擇使用紙本方式發放抵用券
-        else if (CouponConstants.TYPE_PAPAER.equals(user.getConsumer().getCouponType())) {
+        else if (CouponConstants.TYPE_PAPAER.equals(requestConsumer.getConsumer().getCouponType())) {
             // KIOSK兌換碼
-            consumerInfo.setPrintCode(RandomUtil.randomNumbers(10));
+            insertConsumerInfo.setPrintCode(RandomUtil.randomNumbers(10));
         } else {
             throw new CustomException("消費者選擇發放抵用券的方式不正確");
         }
 
         // 處理要更新的消費者資料
-        consumerInfo.setUserId(userId);
-        consumerInfo.setConsumerStat(ConsumerConstants.STAT_SEND);
-        consumerInfo.setCouponPrintType(user.getConsumer().getCouponType());
-        consumerInfo.setHotelId(SecurityUtils.getLoginUser().getUser().getUserId());
-        consumerInfo.setIssueDate(nowDate);
+        insertConsumerInfo.setUserId(consumerId);
+        insertConsumerInfo.setConsumerStat(ConsumerConstants.STAT_SEND);
+        insertConsumerInfo.setCouponPrintType(requestConsumer.getConsumer().getCouponType());
+        insertConsumerInfo.setHotelId(SecurityUtils.getLoginUser().getUser().getUserId());
+        insertConsumerInfo.setIssueDate(nowDate);
 
         // 更新消費者資料
-        int result = consumerInfoMapper.updateConsumerInfo(consumerInfo);
-        if (result < 0) {
+        if (consumerInfoMapper.updateConsumerInfo(insertConsumerInfo) < 0) {
             throw new CustomException(MessageUtils.message("pro.err.update.consumer.fail"));
         }
 
         // 更新使用者資料
         SysUser updUser = new SysUser();
-        updUser.setUserId(userId);
-        updUser.setMobile(user.getMobile());
-
-        // 隨機密碼
-        String down = String.valueOf(((char) (new Random().nextInt(26) + 97)));  // 得到a-z
-        String genPwd = down + RandomUtil.randomNumbers(7);
+        updUser.setUserId(consumerId);
+        updUser.setMobile(requestConsumer.getMobile());
 
         // 旅宿業者代註冊消費者，需要產生隨機密碼
         if (consumerStat.equals(ConsumerConstants.STAT_REGISTED_PROXY_MOBILE)
                 || consumerStat.equals(ConsumerConstants.STAT_REGISTED_PROXY_NO_MOBILE)) {
-            user.setPassword(SecurityUtils.encryptPassword(genPwd));
+
+            // 密碼 : 證件號碼末四碼+生日月日共八碼
+            String genPwd = StrUtil.sub(dbConsumer.getIdentity(), -1, -5)
+                    + new SimpleDateFormat("yyyyMMdd").format(consumerInfoMapper.selectConsumerInfoById(consumerId).getBirthday());
+
+            updUser.setPassword(SecurityUtils.encryptPassword(genPwd));
+            System.out.println("PASSWORD: " + genPwd);
+            result.put("note", "您的代註冊預設帳號為" + dbConsumer.getUsername() + "，密碼為證件號碼末四碼+生日月日共八碼，首次登入請立即變更密碼");
         }
 
-        // 插入使用者表
-        result = userMapper.updateUser(updUser);
-        if (result < 0) {
+        // 手機號碼與註冊時不同，需加入訊息
+        if (!requestConsumer.getMobile().equals(dbConsumer.getMobile())) {
+            msg.add("系統已將您的手機號碼更新為" + commonService.hidePersonalInfo(requestConsumer).getMobile());
+        }
+
+        // 更新使用者表
+        if (userMapper.updateUser(updUser) < 0) {
             throw new CustomException(MessageUtils.message("pro.err.update.user.fail"));
         }
 
@@ -323,7 +343,7 @@ public class CouponServiceImpl implements ICouponService {
 
         // TODO 抵用券發送成功簡訊
         // 自行註冊的消費者
-        if (consumerStat.equals(ConsumerConstants.STAT_REGISTED)) {
+        /*if (consumerStat.equals(ConsumerConstants.STAT_REGISTED)) {
             // 簡訊模板
             String template = configService.selectConfigByKey("hostel.sendCoupon.template");
             if (StringUtils.isEmpty(template)) {
@@ -345,10 +365,11 @@ public class CouponServiceImpl implements ICouponService {
             }
 
             // 要發送的訊息
-            String msg = StrUtil.format(template, user.getUsername(), genPwd);
+            String msg = StrUtil.format(template, requestConsumer.getUsername(), genPwd);
             System.out.println("代註冊的消費者簡訊: " + msg);
-        }
+        }*/
 
+        return result;
     }
 
     /**
@@ -450,19 +471,20 @@ public class CouponServiceImpl implements ICouponService {
      * 反掃(商家掃消費者)
      *
      * @param id      組抵用券序號
-     * @param sysUser 使用者資料(店家)
      */
     @Override
     @Transactional
-    public void reverseScan(String id, SysUser sysUser) {
+    public Long reverseScan(String id) {
+
         Coupon coupon = couponMapper.selectCouponById(id);
+
         if (StringUtils.isNull(coupon)) {
             throw new CustomException(MessageUtils.message("pro.err.coupon.not.exist"));
         }
         if ("1".equals(coupon.getIsUsed())) {
-            throw new CustomException(MessageUtils.message("pro.err.coupon.used"));
+            throw new CustomException(MessageUtils.message("pro.err.coupon.used"), 1001);
         }
-        StoreInfo storeInfo = sysUser.getStore();
+        StoreInfo storeInfo =  SecurityUtils.getLoginUser().getUser().getStore();
         if (StringUtils.isNull(storeInfo)) {
             throw new CustomException(MessageUtils.message("pro.err.store.not.find"));
         }
@@ -470,7 +492,7 @@ public class CouponServiceImpl implements ICouponService {
         String storeTypes = storeInfo.getType();
         //抵用券發放記錄檔-類別
         String storeType = coupon.getStoreType();
-        if (storeTypes.indexOf(storeType) == -1) {
+        if (!storeTypes.contains(storeType)) {
             throw new CustomException(MessageUtils.message("pro.err.coupon.not.match"));
         }
         //抵用券發放記錄檔設為已使用
@@ -488,11 +510,13 @@ public class CouponServiceImpl implements ICouponService {
         couponConsume.setStoreId(storeInfo.getUserId());
         couponConsume.setConsumeTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
         couponConsume.setStoreType(storeType);
-        couponConsume.setAmount(CouponConstants.COUPON_AMOUNT);
+        couponConsume.setAmount(coupon.getAmount());
         result = couponConsumeMapper.insertCouponConsume(couponConsume);
         if (result < 0) {
             throw new CustomException("新增消費記錄檔失敗，請聯絡管理員");
         }
+
+        return coupon.getAmount();
     }
 
     @Override
@@ -694,6 +718,19 @@ public class CouponServiceImpl implements ICouponService {
             map.put("totalRecords", totalCount);
         }
         return map;
+    }
+
+    /**
+     * 以證號末四碼及兌換碼查詢抵用券
+     *
+     * @param indentity 身分證號或居留證號末四碼
+     * @param printCode 紙本兌換碼
+     * @return 結果
+     */
+    @Override
+    public List<Map<String, Object>> getPrintCoupon(@Param("indentity") String indentity, @Param("printCode") String printCode) {
+        List<Map<String, Object>> resultList = couponMapper.getPrintCoupon(indentity, printCode);
+        return resultList;
     }
 
 }

@@ -112,13 +112,31 @@ public class CouponController extends BaseController {
      * 旅宿業者發送抵用券給消費者
      */
     @PreAuthorize("@ss.hasRole('hostel')")
-    @PostMapping("/send")
-    public AjaxResult sendCoupon(@RequestBody SysUser user) {
-        Map<String, Object> params = user.getParams();
-        String code = (String) params.get("code");
+    @PostMapping("/apply")
+    public AjaxResult applyCoupon(@RequestBody Map<String, String> request) {
 
-        couponService.sendCoupon(user, code);
-        return AjaxResult.success();
+        // 參數取得
+        String username = request.get("username");
+        String mobile = request.get("mobile");
+        String couponType = request.get("couponType");
+        String code = request.get("code");
+
+        // 參數封裝
+        SysUser user = new SysUser();
+        user.setUsername(username);
+        user.setMobile(mobile);
+        ConsumerInfo consumerInfo = new ConsumerInfo();
+        consumerInfo.setCouponType(couponType);
+        user.setConsumer(consumerInfo);
+
+
+        AjaxResult ajax = AjaxResult.success("恭喜你，已完成抵用券申請，通知簡訊已由系統傳送簡訊到您的手機。");
+
+        // 發放抵用券
+        Map<String, Object> result = couponService.applyCoupon(user, code);
+        ajax.put("result", result);
+
+        return ajax;
     }
 
 
@@ -158,18 +176,6 @@ public class CouponController extends BaseController {
     }
 
 
-    /**
-     * 反掃(商家掃消費者)
-     *
-     * @param coupon 抵用券發放記錄檔物件
-     * @return 結果
-     */
-    @PostMapping("/reverseScan")
-    public AjaxResult reverseScan(@RequestBody Coupon coupon) {
-        String id = coupon.getId();
-        couponService.reverseScan(id, SecurityUtils.getLoginUser().getUser());
-        return AjaxResult.success();
-    }
 
 
     /**
@@ -294,4 +300,22 @@ public class CouponController extends BaseController {
         return AjaxResult.error("目前登入者無權進行抵用券消費記錄查詢");
     }
 
+    /**
+     * 以證號末四碼及兌換碼查詢抵用券
+     *
+     * @return 結果
+     */
+    @PostMapping("/getPrintCoupon")
+    public AjaxResult getPrintCoupon(@RequestBody Map<String, Object> request) {
+        String indentity = "%"+request.get("indentity").toString();
+        String printCode = request.get("printCode").toString();
+
+        List<Map<String, Object>> getPrintCouponList =  couponService.getPrintCoupon(indentity, printCode);
+        System.out.println(getPrintCouponList);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("couponInfo", getPrintCouponList);
+        AjaxResult ajax = AjaxResult.success();
+        ajax.put("result", resultMap);
+        return ajax;
+    }
 }

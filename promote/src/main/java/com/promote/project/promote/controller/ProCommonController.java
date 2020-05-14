@@ -45,7 +45,7 @@ public class ProCommonController extends BaseController {
     ICommonService commonService;
 
     @Autowired
-    private IProHotelService hostelService;
+    private IProHotelService hotelService;
 
     @Autowired
     private IProStoreService storeService;
@@ -109,7 +109,7 @@ public class ProCommonController extends BaseController {
                     || StringUtils.isEmpty(newPwd)) {
                 return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
             }
-            hostelService.regist(username, oriPwd, newPwd);
+            hotelService.regist(username, oriPwd, newPwd);
         }
         // 商家
         else if ("store".equals(user.getRole())) {
@@ -154,7 +154,7 @@ public class ProCommonController extends BaseController {
         // 消費者
         else if ("consumer".equals(user.getRole())) {
 
-            Boolean isProxy = user.getConsumer().getHotelId() == null;
+            Boolean isProxy = user.getConsumer().getHotelId() != null;
             // 正常註冊(非代註冊)才需檢核欄位
             if (!isProxy) {
 
@@ -177,6 +177,8 @@ public class ProCommonController extends BaseController {
             }
 
             consumerService.regist(user, isProxy);
+        } else {
+            return AjaxResult.error("角色指定不正確");
         }
 
         return ajax;
@@ -220,7 +222,7 @@ public class ProCommonController extends BaseController {
         if (StringUtils.isNotNull(whitelist)) {
             ajax.put("whitelistId", whitelist.getId());
             if (!"1".equals(whitelist.getIsRegisted())) {
-                hostelService.regist(username, password, password);
+                hotelService.regist(username, password, password);
             }
         }
 
@@ -257,17 +259,17 @@ public class ProCommonController extends BaseController {
      * @param sysUser 使用者資料
      * @return 結果
      */
-    @PostMapping("/forgetPwd")
-    public AjaxResult forgetPwd(@RequestBody SysUser sysUser) {
+    @PostMapping("/common/forgetPwd")
+    public AjaxResult forgetPwd(@RequestBody Map<String, String> request) {
 
-        String username = (String) sysUser.getUsername();
-        Map<String, Object> params = sysUser.getParams();
+        String username = request.get("username");
         //新密碼
-        String newPwd = (String) params.get("newPwd");
+        String newPwd = request.get("newPwd");
         //確認新密碼
-        String checkNewPwd = (String) params.get("checkNewPwd");
+        String checkNewPwd = request.get("checkNewPwd");
         //驗證碼
-        String code = (String) params.get("code");
+        String code = request.get("code");
+
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(newPwd) || StringUtils.isEmpty(checkNewPwd) || StringUtils.isEmpty(code)) {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
@@ -378,7 +380,7 @@ public class ProCommonController extends BaseController {
                 return ajax;
             }else if("H".equalsIgnoreCase(userType)){
                 //查旅宿業者
-                Map<String, Object> map = hostelService.getByUnameIdentity(username,identity);
+                Map<String, Object> map = hotelService.getByUnameIdentity(username,identity);
                 if(StringUtils.isNull(map)){
                     return AjaxResult.success("查無資料");
                 }

@@ -59,7 +59,7 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: 10.89.16.82
+    host: 10.89.63.22
     # 埠，預設為6379
     port: 30001
     # 密碼
@@ -125,14 +125,14 @@ gen:
 # Email工具類
 email:
   # 服物器的SMTP地址
-  host: smtp.gmail.com
+  host: 10.88.17.158
   # 服物器的SMTP端口
-  port: 587
+  port: 25
   smtp: smtp
   # 發信人Email
-  from: weicardstw@gmail.com
+  from: tradvan@mail.com
   # 發信人Email密碼
-  pwd: s89236001
+  pwd:
 
 ftp:
   # FTP 遠端地址

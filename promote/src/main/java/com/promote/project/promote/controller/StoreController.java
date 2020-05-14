@@ -33,6 +33,9 @@ public class StoreController extends BaseController {
     private IProWhitelistService whitelistService;
 
     @Autowired
+    private ICouponService couponService;
+
+    @Autowired
     private ISysOperLogService operLogService;
 
     @Autowired
@@ -43,6 +46,9 @@ public class StoreController extends BaseController {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private IProStoreService proStoreService;
 
     /**
      * 店家白名單檢核
@@ -177,6 +183,19 @@ public class StoreController extends BaseController {
     }
 
     /**
+     * 反掃(商家掃消費者)
+     *
+     * @return 結果
+     */
+    @PostMapping("/barcodeScan")
+    public AjaxResult reverseScan(@RequestBody Map<String, String> request) {
+        String couponId = request.get("barcode");
+        Long amount = couponService.reverseScan(couponId);
+        return new AjaxResult(1000, StrUtil.format("{} {}元 抵用成功", LocalDateTime.now(), amount));
+    }
+
+
+    /**
      * 當前商家收款紀錄總覽
      */
     @GetMapping("/getRecdMoneyRecord")
@@ -184,5 +203,34 @@ public class StoreController extends BaseController {
         AjaxResult ajax = new AjaxResult();
         ajax.putAll(storeService.getRecdMoneyRecord());
         return ajax;
+    }
+
+    /**
+     * 申請歷史明細(APP專用)
+     */
+    @PostMapping("/mailTxHistory")
+    public AjaxResult mailTxHistory(@RequestBody Map<String, Object> request) throws Exception {
+
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        Long userId = user.getUserId();
+        String userEmail = user.getEmail();
+        String storeType = request.get("storeType").toString();
+        String startDate = request.get("startDate").toString();
+        String endDate = request.get("endDate").toString();
+        StoreHisMail storeHisMail = new StoreHisMail();
+        storeHisMail.setStoreId(userId);
+        startDate = startDate.replace("/","-");
+        storeHisMail.setStartDate(startDate);
+        startDate = startDate.replace("/","-");
+        storeHisMail.setEndDate(startDate);
+        storeHisMail.setStatus("0");
+        storeHisMail.setStoreType(storeType);
+        storeHisMail.setMail(userEmail);
+
+        int sum = proStoreService.mailTxHistory(storeHisMail);
+        if(sum<0){
+            return AjaxResult.error();
+        }
+        return AjaxResult.success();
     }
 }

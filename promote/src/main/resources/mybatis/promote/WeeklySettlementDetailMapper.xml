@@ -14,6 +14,13 @@
         <result property="mainId"    column="main_id"    />
     </resultMap>
 
+    <resultMap type="java.util.Map" id="queryWeeklySettlementDetail">
+        <result property="consumeTime"    column="CONSUME_TIME"    />
+        <result property="amount"    column="amount"    />
+        <result property="storeType"    column="store_type"    />
+        <result property="couponType"    column="coupon_type"    />
+    </resultMap>
+
     <sql id="selectWeeklySettlementDetailVo">
         select coupon_id, user_id, store_id, consume_time, store_type, create_time, main_id from pro_weekly_settlement_detail
     </sql>
@@ -80,4 +87,16 @@
         </foreach>
     </delete>
 
+    <select id="queryWeeklySettlementDetailList" parameterType="WeeklySettlementDetail" resultMap="queryWeeklySettlementDetail">
+        SELECT VARCHAR_FORMAT(A.CONSUME_TIME, 'YYYY/MM/DD HH:MM:SS') as CONSUME_TIME, B.amount,
+            A.STORE_TYPE, D.coupon_type
+        FROM PRO_WEEKLY_SETTLEMENT_DETAIL A
+        INNER JOIN PRO_WEEKLY_SETTLEMENT B ON A.main_id = B.id
+        INNER JOIN pro_coupon_consume C on A.coupon_id = C.coupon_id
+        INNER JOIN pro_consumer_info D ON D.user_id = C.consumer_id
+        <where>
+            <if test="storeId != null "> and A.store_id = #{storeId}</if>
+            <if test="mainId != null "> and A.main_id = #{mainId}</if>
+        </where>
+    </select>
 </mapper>

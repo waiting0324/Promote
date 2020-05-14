@@ -78,4 +78,12 @@ public interface DailyConsumeMapper {
      * @return 結果
      */
     public Map<String,Object> getTotalAmtByStoreId(Long storeId);
+
+    /**
+     * 週結交易查詢
+     *
+     * @param
+     * @return 結果
+     */
+    public List<Map<String, Object>> queryDailyConsumeForDay(@Param("storeId") Long storeId, @Param("beginDay") String beginDay, @Param("endDay") String endDay);
 }
