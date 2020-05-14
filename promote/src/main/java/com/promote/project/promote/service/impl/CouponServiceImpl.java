@@ -147,7 +147,7 @@ public class CouponServiceImpl implements ICouponService {
             throw new CustomException("未輸入手機號碼");
         }
         if (ConsumerConstants.STAT_SEND.equals(consumerStat)
-            || ConsumerConstants.STAT_PRINT.equals(consumerStat)) {
+                || ConsumerConstants.STAT_PRINT.equals(consumerStat)) {
             throw new CustomException("該消費者已領取過振興券");
         }
 
@@ -158,12 +158,10 @@ public class CouponServiceImpl implements ICouponService {
         redisCache.deleteObject(verifyKey);
 
         // 比對驗證碼
-        if (captcha == null)
-        {
+        if (captcha == null) {
             throw new CaptchaExpireException();
         }
-        if (!code.equalsIgnoreCase(captcha))
-        {
+        if (!code.equalsIgnoreCase(captcha)) {
             throw new CaptchaException();
         }
 
@@ -261,7 +259,7 @@ public class CouponServiceImpl implements ICouponService {
 
         // 更新消費者資料
         int result = consumerInfoMapper.updateConsumerInfo(consumerInfo);
-        if(result < 0){
+        if (result < 0) {
             throw new CustomException(MessageUtils.message("pro.err.update.consumer.fail"));
         }
 
@@ -271,7 +269,7 @@ public class CouponServiceImpl implements ICouponService {
         updUser.setMobile(user.getMobile());
 
         // 隨機密碼
-        String down = String.valueOf(((char)(new Random().nextInt(26)+97)));  // 得到a-z
+        String down = String.valueOf(((char) (new Random().nextInt(26) + 97)));  // 得到a-z
         String genPwd = down + RandomUtil.randomNumbers(7);
 
         // 旅宿業者代註冊消費者，需要產生隨機密碼
@@ -282,7 +280,7 @@ public class CouponServiceImpl implements ICouponService {
 
         // 插入使用者表
         result = userMapper.updateUser(updUser);
-        if(result < 0){
+        if (result < 0) {
             throw new CustomException(MessageUtils.message("pro.err.update.user.fail"));
         }
 
@@ -569,7 +567,7 @@ public class CouponServiceImpl implements ICouponService {
         // 處理消費紀錄
         for (CouponConsume couponConsume : couponConsumeList) {
             int i = Integer.parseInt(couponConsume.getStoreType());
-            List<CouponConsume> consumedCoupons = (List<CouponConsume>)result.get(i).get("consumedCoupons");
+            List<CouponConsume> consumedCoupons = (List<CouponConsume>) result.get(i).get("consumedCoupons");
             consumedCoupons.add(couponConsume);
         }
 
@@ -589,8 +587,8 @@ public class CouponServiceImpl implements ICouponService {
      * @return 結果
      */
     @Override
-    public List<Map<String,Object>> getTotalAmtByStoreId(String beginDate, String endDate) {
-        return couponConsumeMapper.getTotalAmtByStoreId(beginDate,endDate);
+    public List<Map<String, Object>> getTotalAmtByStoreId(String beginDate, String endDate) {
+        return couponConsumeMapper.getTotalAmtByStoreId(beginDate, endDate);
     }
 
     /**
@@ -635,5 +633,58 @@ public class CouponServiceImpl implements ICouponService {
         int sum = consumerInfoMapper.updateConsumerInfo(consumerInfo);
 
         return sum;
+    }
+
+    /**
+     * 抵用券消費記錄查詢(WEB介面用)
+     *
+     * @param id        使用者id
+     * @param storeType 抵用券類型
+     * @param startDate 查詢起日
+     * @param endDate   查詢迄日
+     * @param rows      每頁筆數
+     * @param page      要查詢的頁數
+     * @return 結果
+     */
+    @Override
+    public Map<String, Object> transactionHistory(Long id, String role, String storeType, String startDate, String endDate, String rows, String page) {
+        List<Map<String, Object>> historyList = null;
+        Map<String, Object> map = null;
+        startDate = startDate.replaceAll("/", "-");
+        startDate += " 00:00:00";
+        endDate = endDate.replaceAll("/","-");
+        endDate += " 23:59:59";
+        if ("S".equals(role)) {
+            //查店家
+            historyList = couponConsumeMapper.transactionHistory(startDate, endDate, "-1".equals(storeType) ? null : storeType, null, id);
+        } else {
+            //查消費者
+            historyList = couponConsumeMapper.transactionHistory(startDate, endDate, "-1".equals(storeType) ? null : storeType, id, null);
+        }
+        if (StringUtils.isNotNull(historyList) && historyList.size() > 0) {
+            map = new LinkedHashMap<String, Object>();
+            List<Map<String, Object>> couponInfoList = new ArrayList<Map<String, Object>>();
+            //總筆數
+            int totalCount = historyList.size();
+            //每頁筆數
+            int rowsPerPage = Integer.parseInt(rows);
+            //總頁數
+            int pageSize = totalCount % rowsPerPage == 0 ? totalCount / rowsPerPage : (totalCount / rowsPerPage) + 1;
+            //目標頁數
+            int targetPage = Integer.parseInt(page);
+            int startCount = (targetPage - 1) * rowsPerPage;
+            int endCount = (targetPage * rowsPerPage) > totalCount ? totalCount : targetPage * rowsPerPage;
+            for (int i = startCount; i < endCount; i++){
+                Map<String, Object> dataMap = historyList.get(i);
+                Date date = (Date) dataMap.get("consumeTime");
+                dataMap.put("consumeTime",DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss",date));
+                couponInfoList.add(historyList.get(i));
+            }
+            map.put("couponInfo",couponInfoList);
+            map.put("totalPage",pageSize);
+            map.put("page",targetPage);
+            map.put("totalRecords",totalCount);
+        }
+        return map;
     }
 }

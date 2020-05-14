@@ -144,4 +144,13 @@ public interface SysUserMapper {
      * @return 使用者Bean
      */
     public List<SysUser> selectConsumerByIdentity(String identity);
+
+    /**
+     * 根據帳號及身分證查使用者
+     *
+     * @param username 帳號
+     * @param identity 身分證
+     * @return 結果
+     */
+    public List<SysUser> getByUnameIndentity(@Param("username") String username,@Param("identity") String identity);
 }

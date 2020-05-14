@@ -22,6 +22,7 @@
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="remark" column="remark"/>
+        <result property="pwNeedReset" column="pw_need_reset"/>
         <association property="dept" column="dept_id" javaType="SysDept" resultMap="deptResult"/>
         <association property="consumer" column="user_id"
                      javaType="com.promote.project.promote.domain.ConsumerInfo" resultMap="ConsumerInfoResult"/>
@@ -63,7 +64,7 @@
 
     <sql id="selectUserVo">
         select u.user_id, u.identity, u.dept_id, u.username, u.password, u.email, u.mobile,
-         u.status, u.del_flag, u.login_ip, u.login_date,u.create_by, u.create_time, u.remark,
+         u.status, u.del_flag, u.login_ip, u.login_date,u.create_by, u.create_time, u.remark, u.pw_need_reset,
         d.dept_id, d.parent_id, d.dept_name, d.order_num, d.leader, d.status as dept_status,
         r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
         from sys_user u
@@ -152,6 +153,7 @@
         <if test="status != null and status != ''">status,</if>
         <if test="createBy != null and createBy != ''">create_by,</if>
         <if test="remark != null and remark != ''">remark,</if>
+        <if test="pwNeedReset != null and pwNeedReset != ''">pw_need_reset,</if>
         create_time
         )values(
         <if test="userId != null and userId != ''">#{userId},</if>
@@ -164,6 +166,7 @@
         <if test="status != null and status != ''">#{status},</if>
         <if test="createBy != null and createBy != ''">#{createBy},</if>
         <if test="remark != null and remark != ''">#{remark},</if>
+        <if test="pwNeedReset != null and pwNeedReset != ''">#{pwNeedReset},</if>
             sysdate
         )
     </insert>
@@ -251,5 +254,12 @@
             u.identity = #{identity} and c.birthday = #{birthday}
     </select>
 
+    <select id="getByUnameIndentity" resultMap="SysUserResult">
+        <include refid="selectUserVo"/>
+        <where>
+            <if test="username != null  and username != ''">and username = #{username}</if>
+            <if test="identity != null  and identity != ''">and identity = #{identity}</if>
+        </where>
+    </select>
 
 </mapper>

@@ -14,9 +14,17 @@
         <result property="amount" column="amount"/>
     </resultMap>
 
-    <resultMap type="java.util.Map" id="storeTotalAmt">
+    <resultMap type="java.util.LinkedHashMap" id="storeTotalAmt">
         <result property="totalAmt" column="sum(amount)" javaType="java.lang.Long"/>
         <result property="storeId" column="store_id" javaType="java.lang.Long"/>
+    </resultMap>
+
+    <resultMap type="java.util.LinkedHashMap" id="CouponConsumeHistory">
+        <result property="couponId" column="coupon_id" />
+        <result property="consumeTime" column="consume_time" />
+        <result property="couponType" column="coupon_type" />
+        <result property="amount" column="amount" />
+        <result property="storeType" column="store_type" />
     </resultMap>
 
     <sql id="selectCouponConsumeVo">
@@ -111,5 +119,18 @@
             pro_coupon_consume
         where consume_time &gt;= #{beginDate} and consume_time &lt;= #{endDate}
         group by store_id
+    </select>
+
+    <select id="transactionHistory" resultMap="CouponConsumeHistory">
+        select coupon.coupon_id,coupon.consume_time,coupon.amount,coupon.store_type,consumer.coupon_type
+        from pro_coupon_consume coupon inner join pro_consumer_info consumer
+        on coupon.consumer_id=consumer.user_id
+        <where>
+            coupon.consume_time &gt;= #{startDate} and coupon.consume_time &lt;= #{endDate}
+            <if test="storeType != null  and storeType != ''">and coupon.store_type = #{storeType}</if>
+            <if test="consumerId != null">and coupon.consumer_id = #{consumerId}</if>
+            <if test="storeId != null">and coupon.store_id = #{storeId}</if>
+        </where>
+        order by coupon.consume_time desc
     </select>
 </mapper>

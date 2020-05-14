@@ -118,6 +118,11 @@ public class SysUser extends BaseEntity {
      */
     private Long[] postIds;
 
+    /*
+     * 強制更改密碼
+     */
+    private String pwNeedReset;
+
 
 
     public SysUser() {
@@ -147,6 +152,23 @@ public class SysUser extends BaseEntity {
 
     private String code;
 
+    private String userType;
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public String getPwNeedReset() {
+        return pwNeedReset;
+    }
+
+    public void setPwNeedReset(String pwNeedReset) {
+        this.pwNeedReset = pwNeedReset;
+    }
 
     public String getUuid() {
         return uuid;

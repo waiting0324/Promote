@@ -102,6 +102,27 @@ public class StoreInfo extends BaseEntity {
 
     private String mobile;
 
+    private String username;
+
+    private String owner;
+
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getMobile() {
         return mobile;
     }

@@ -127,4 +127,17 @@ public interface ICouponService {
      * @return 結果
      */
     int updateConsumerStart(ConsumerInfo consumerInfo);
+
+    /**
+     * 抵用券消費記錄查詢(WEB介面用)
+     *
+     * @param id 使用者id
+     * @param storeType 抵用券類型
+     * @param startDate 查詢起日
+     * @param endDate 查詢迄日
+     * @param rows 每頁筆數
+     * @param page 要查詢的頁數
+     * @return 結果
+     */
+    Map<String,Object> transactionHistory(Long id,String role,String storeType,String startDate,String endDate,String rows,String page);
 }

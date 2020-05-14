@@ -126,4 +126,20 @@ public class SysConfigServiceImpl implements ISysConfigService
         }
         return UserConstants.UNIQUE;
     }
+
+    /**
+     * 根據key查找引數配置資訊
+     *
+     * @param configKey key
+     * @return 結果
+     */
+    @Override
+    public SysConfig getConfigBykey(String configKey) {
+        List<SysConfig> list = configMapper.getConfigBykey(configKey);
+        if(StringUtils.isNotEmpty(list)){
+            return list.get(0);
+        }
+        return null;
+    }
+
 }

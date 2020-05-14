@@ -98,4 +98,19 @@ public interface ProWhitelistMapper
      * @return 結果
      */
     public List<Map<String,Object>> getByTypeTaxNo(@Param("type") String type, @Param("taxNo") String taxNo);
+
+    /**
+     * 從旅宿白名單檔新增白名單
+     *
+     * @return
+     */
+    public int insertFromHotelWhitelist();
+
+    /**
+     * 從店家白名單檔新增白名單
+     *
+     * @return
+     */
+    public int insertFromStoreWhitelist();
+
 }

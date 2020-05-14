@@ -164,3 +164,6 @@ ibm:
     # 逾時
     receive-timeout: 20000
 
+sms:
+  username: test001
+  password: a1234567
