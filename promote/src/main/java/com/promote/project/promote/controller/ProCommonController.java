@@ -73,7 +73,7 @@ public class ProCommonController extends BaseController {
      * 發送驗證碼
      */
     @PostMapping("/common/sendOtp")
-    public AjaxResult captcha(@RequestBody Map<String, String> request) throws MessagingException {
+    public AjaxResult sendOtp(@RequestBody Map<String, String> request) throws MessagingException {
 
         // 帳號
         String username = request.get("username");
@@ -87,7 +87,7 @@ public class ProCommonController extends BaseController {
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(type) || StringUtils.isEmpty(method)) {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
-        String msg = commonService.sendCaptcha(username, type, method, mobile);
+        String msg = commonService.sendOtp(username, type, method, mobile);
 
 
         return AjaxResult.success(msg);
