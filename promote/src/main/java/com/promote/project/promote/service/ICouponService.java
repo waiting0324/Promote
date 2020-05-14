@@ -95,9 +95,8 @@ public interface ICouponService {
      * 反掃(商家掃消費者)
      *
      * @param id      組抵用券序號
-     * @param sysUser 使用者資料(店家)
      */
-    void reverseScan(String id, SysUser sysUser);
+    Long reverseScan(String id);
 
     /**
      * 查詢當前消費者的消費紀錄

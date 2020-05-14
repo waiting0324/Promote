@@ -471,19 +471,20 @@ public class CouponServiceImpl implements ICouponService {
      * 反掃(商家掃消費者)
      *
      * @param id      組抵用券序號
-     * @param sysUser 使用者資料(店家)
      */
     @Override
     @Transactional
-    public void reverseScan(String id, SysUser sysUser) {
+    public Long reverseScan(String id) {
+
         Coupon coupon = couponMapper.selectCouponById(id);
+
         if (StringUtils.isNull(coupon)) {
             throw new CustomException(MessageUtils.message("pro.err.coupon.not.exist"));
         }
         if ("1".equals(coupon.getIsUsed())) {
-            throw new CustomException(MessageUtils.message("pro.err.coupon.used"));
+            throw new CustomException(MessageUtils.message("pro.err.coupon.used"), 1001);
         }
-        StoreInfo storeInfo = sysUser.getStore();
+        StoreInfo storeInfo =  SecurityUtils.getLoginUser().getUser().getStore();
         if (StringUtils.isNull(storeInfo)) {
             throw new CustomException(MessageUtils.message("pro.err.store.not.find"));
         }
@@ -491,7 +492,7 @@ public class CouponServiceImpl implements ICouponService {
         String storeTypes = storeInfo.getType();
         //抵用券發放記錄檔-類別
         String storeType = coupon.getStoreType();
-        if (storeTypes.indexOf(storeType) == -1) {
+        if (!storeTypes.contains(storeType)) {
             throw new CustomException(MessageUtils.message("pro.err.coupon.not.match"));
         }
         //抵用券發放記錄檔設為已使用
@@ -509,11 +510,13 @@ public class CouponServiceImpl implements ICouponService {
         couponConsume.setStoreId(storeInfo.getUserId());
         couponConsume.setConsumeTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
         couponConsume.setStoreType(storeType);
-        couponConsume.setAmount(CouponConstants.COUPON_AMOUNT);
+        couponConsume.setAmount(coupon.getAmount());
         result = couponConsumeMapper.insertCouponConsume(couponConsume);
         if (result < 0) {
             throw new CustomException("新增消費記錄檔失敗，請聯絡管理員");
         }
+
+        return coupon.getAmount();
     }
 
     @Override

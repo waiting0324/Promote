@@ -176,18 +176,6 @@ public class CouponController extends BaseController {
     }
 
 
-    /**
-     * 反掃(商家掃消費者)
-     *
-     * @param coupon 抵用券發放記錄檔物件
-     * @return 結果
-     */
-    @PostMapping("/reverseScan")
-    public AjaxResult reverseScan(@RequestBody Coupon coupon) {
-        String id = coupon.getId();
-        couponService.reverseScan(id, SecurityUtils.getLoginUser().getUser());
-        return AjaxResult.success();
-    }
 
 
     /**
