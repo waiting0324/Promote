@@ -111,7 +111,9 @@ public class WhitelistController extends BaseController {
         List<Map<String, Object>> list = proWhitelistService.getByTypeTaxNo(type, identity);
         if(StringUtils.isNotNull(list) && list.size() > 0){
             AjaxResult ajax = AjaxResult.success();
-            ajax.put("whiteListInfo",list);
+            Map<String, Object> resultMap = new HashMap<String, Object>();
+            resultMap.put("whiteListInfo", list);
+            ajax.put("result",resultMap);
             return ajax;
         }
         return AjaxResult.success("查無資料");
