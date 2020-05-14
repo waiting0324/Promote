@@ -65,7 +65,7 @@ public class ConsumerServiceImpl implements IConsumerService {
 
         // 旅宿業者代註冊，將身分證當成帳號
         if (isProxy) {
-            user.setUsername(user.getIdentity());
+            user.setUsername(user.getConsumer().getIdentity());
         }
 
         // 檢核帳號是否重複

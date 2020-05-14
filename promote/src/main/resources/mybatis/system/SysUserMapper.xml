@@ -55,7 +55,7 @@
         <result property="couponType"    column="coupon_type"    />
         <result property="couponPrintType"    column="coupon_print_type"    />
         <result property="printCode"    column="print_code"    />
-        <result property="hostelId"    column="hostel_id"    />
+        <result property="hotelId"    column="hostel_id"    />
         <result property="issueDate"    column="issue_date"    />
         <result property="receiveDate"    column="receive_date"    />
         <result property="updateTime"    column="update_time"    />
