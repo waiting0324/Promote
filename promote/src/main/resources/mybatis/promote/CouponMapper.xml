@@ -17,6 +17,12 @@
         <result property="createTime"    column="create_time"    />
     </resultMap>
 
+    <resultMap type="java.util.Map" id="getPrintCouponResult">
+        <result property="couponId"    column="couponId"  />
+        <result property="amount"    column="amount"  />
+        <result property="storeType"    column="storeType"  />
+    </resultMap>
+
     <sql id="selectCouponVo">
         select id, fund_type, user_id, is_used, issue_date, status, store_type, amount, notice_time, create_time from pro_coupon
     </sql>
@@ -116,6 +122,16 @@
     <select id="overviewCoupons" parameterType="Long" resultMap="CouponResult">
         <include refid="selectCouponVo"/>
         where user_id = #{userId}
+    </select>
+
+    <select id="getPrintCoupon"  resultMap="getPrintCouponResult">
+        SELECT A.amount, A.store_Type, D.coupon_id
+        FROM PRO_COUPON A
+        INNER JOIN pro_consumer_info B ON A.USER_ID = B.USER_ID
+        INNER JOIN SYS_USER C ON A.USER_ID = C.USER_ID
+        INNER JOIN pro_coupon_consume D ON B.user_id = D.consumer_id
+        WHERE C.IDENTITY like #{indentity}
+            AND B.print_code = #{printCode}
     </select>
 
 </mapper>
