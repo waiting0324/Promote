@@ -38,6 +38,6 @@ public interface ICommonService {
      * @param method    發送方式 (1:Email,2:手機)
      * @param mobile    手機號碼
      */
-    String sendCaptcha(String username, String type, String method, String mobile) throws MessagingException;
+    String sendOtp(String username, String type, String method, String mobile) throws MessagingException;
 
 }

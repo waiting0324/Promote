@@ -166,7 +166,7 @@ public class CommonServiceImpl implements ICommonService {
 
     @Override
     @Transactional
-    public String sendCaptcha(String username, String type, String method, String mobile) {
+    public String sendOtp(String username, String type, String method, String mobile) {
 
         // 返回給前端的資訊
         String result = "";
@@ -202,8 +202,13 @@ public class CommonServiceImpl implements ICommonService {
         }
         // 忘記密碼，使用OTP方式驗證
         else if (Constants.VERI_TYPE_FORGET_PWD.equals(type) && Constants.VERI_METHOD_SMS.equals(method)) {
-            // TODO 處理OTP
-            AsyncManager.me().execute(AsyncFactory.sendSms(mobile, msg));
+
+            // 發送簡訊
+            AsyncManager.me().execute(AsyncFactory.sendSms(user.getMobile(), msg));
+
+            // 驗證碼存入Redis
+            String verifyKey = Constants.VERI_CODE_KEY + username;
+            redisCache.setCacheObject(verifyKey, verifyCode, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
         }
         // 旅宿業者發送抵用券 OTP 方式驗證
         else if (Constants.VERI_TYPE_SEND_COUPON.equals(type) && Constants.VERI_METHOD_SMS.equals(method)) {
@@ -214,14 +219,14 @@ public class CommonServiceImpl implements ICommonService {
                     || ConsumerConstants.STAT_PRINT.equals(consumerInfo.getConsumerStat())) {
                 throw new CustomException("此消費者已領過抵用券");
             }
-
-            // TODO 處理OTP
+            // 發送簡訊
             AsyncManager.me().execute(AsyncFactory.sendSms(mobile, msg));
 
             // 驗證碼存入Redis
             String verifyKey = Constants.VERI_COUPON_SEND_CODE_KEY + username;
             redisCache.setCacheObject(verifyKey, verifyCode, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
 
+            user.setMobile(mobile);
             // 更新此消費者狀態
             /*consumerInfo.setConsumerStat(ConsumerConstants.STAT_CONFIRM);
             consumerInfoMapper.updateConsumerInfo(consumerInfo);*/
@@ -233,7 +238,6 @@ public class CommonServiceImpl implements ICommonService {
             hidePersonalInfo(user);
             result = "驗證碼已發送到" + user.getEmail() + "，驗證碼:" + verifyCode + "(在SMTP能使用後需移除此資訊)";
         } else if (Constants.VERI_METHOD_SMS.equals(method)) {
-            user.setMobile(mobile);
             hidePersonalInfo(user);
             result = "驗證碼已發送到" + user.getMobile() + "，驗證碼:" + verifyCode + "(在簡訊API能使用後需移除此資訊)";
         }
