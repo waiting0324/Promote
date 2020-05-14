@@ -85,7 +85,7 @@ public class ProStoreServiceImpl implements IProStoreService {
         insertUser.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
         insertUser.setIdentity(user.getStore().getIdentity());
         insertUser.setMobile(user.getStore().getMobile());
-        // TODO EMAIL ??
+        insertUser.setEmail(user.getEmail());
 
         // 插入User表
         userMapper.insertUser(insertUser);
