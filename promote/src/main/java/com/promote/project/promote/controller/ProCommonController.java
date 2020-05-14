@@ -257,17 +257,17 @@ public class ProCommonController extends BaseController {
      * @param sysUser 使用者資料
      * @return 結果
      */
-    @PostMapping("/forgetPwd")
-    public AjaxResult forgetPwd(@RequestBody SysUser sysUser) {
+    @PostMapping("/common/forgetPwd")
+    public AjaxResult forgetPwd(@RequestBody Map<String, String> request) {
 
-        String username = (String) sysUser.getUsername();
-        Map<String, Object> params = sysUser.getParams();
+        String username = request.get("username");
         //新密碼
-        String newPwd = (String) params.get("newPwd");
+        String newPwd = request.get("newPwd");
         //確認新密碼
-        String checkNewPwd = (String) params.get("checkNewPwd");
+        String checkNewPwd = request.get("checkNewPwd");
         //驗證碼
-        String code = (String) params.get("code");
+        String code = request.get("code");
+
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(newPwd) || StringUtils.isEmpty(checkNewPwd) || StringUtils.isEmpty(code)) {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
