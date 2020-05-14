@@ -547,7 +547,7 @@ public class CouponServiceImpl implements ICouponService {
         // 已消費總金額
         int consumed = 0;
         Map<String, Object> couponOverview = consumerInfoMapper.getConsumerInfoById(consumerId);
-        if(StringUtils.isNotNull(couponOverview)){
+        if(StringUtils.isEmpty(couponOverview)){
             throw new CustomException("尚未申請抵用券");
         }
         Date applyTime = (Date)couponOverview.get("applyTime");

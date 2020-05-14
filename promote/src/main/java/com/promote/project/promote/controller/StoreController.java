@@ -1,9 +1,11 @@
 package com.promote.project.promote.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.promote.common.constant.Constants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.utils.MessageUtils;
+import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.framework.redis.RedisCache;
 import com.promote.framework.security.service.TokenService;
@@ -11,6 +13,8 @@ import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.monitor.service.ISysOperLogService;
 import com.promote.project.promote.domain.ProWhitelist;
+import com.promote.project.promote.domain.StoreHisMail;
+import com.promote.project.promote.service.ICouponService;
 import com.promote.project.promote.service.IProStoreService;
 import com.promote.project.promote.service.IProWhitelistService;
 import com.promote.project.system.domain.SysUser;
@@ -18,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
