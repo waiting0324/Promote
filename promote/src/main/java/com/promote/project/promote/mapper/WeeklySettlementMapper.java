@@ -1,8 +1,9 @@
 package com.promote.project.promote.mapper;
 
 import com.promote.project.promote.domain.WeeklySettlement;
+import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * 週結檔Mapper介面
@@ -59,4 +60,12 @@ public interface WeeklySettlementMapper
      * @return 結果
      */
     public int deleteWeeklySettlementByIds(Long[] ids);
+
+    /**
+     * 週結交易查詢
+     *
+     * @param storeId 條件
+     * @return 結果
+     */
+    public List<Map<String, Object>> queryWeeklySettlementList(@Param("storeId") Long storeId);
 }

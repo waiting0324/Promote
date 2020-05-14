@@ -8,6 +8,11 @@ package com.promote.common.constant;
 public class RoleConstants {
 
     /**
+     * 客服
+     */
+    public static final Long SERVICE_ROLE_ID = 2L;
+
+    /**
      * 旅宿業者
      */
     public static final Long HOTEL_ROLE_ID = 3L;

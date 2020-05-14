@@ -65,4 +65,12 @@ public interface SysConfigMapper
      * @return 結果
      */
     public int deleteConfigByIds(Long[] configIds);
+
+    /**
+     * 根據key查找引數配置資訊
+     *
+     * @param configKey key
+     * @return 結果
+     */
+    public List<SysConfig> getConfigBykey(String configKey);
 }

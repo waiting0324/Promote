@@ -2,7 +2,7 @@ package com.promote.project.promote.mapper;
 
 import com.promote.project.promote.domain.WeeklySettlementDetail;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * 週結明細Mapper介面
@@ -59,4 +59,12 @@ public interface WeeklySettlementDetailMapper
      * @return 結果
      */
     public int deleteWeeklySettlementDetailByIds(String[] couponIds);
+
+    /**
+     * 週結明細查詢
+     *
+     * @param weeklySettlementDetail 週結明細
+     * @return 週結明細集合
+     */
+    public List<Map<String, Object>> queryWeeklySettlementDetailList(WeeklySettlementDetail weeklySettlementDetail);
 }

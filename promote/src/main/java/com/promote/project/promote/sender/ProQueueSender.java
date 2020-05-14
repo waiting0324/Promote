@@ -26,8 +26,8 @@ public class ProQueueSender {
      */
 //    @PostConstruct
     public void send(String className,Object entity) {
-        String json = JSON.toJSONString(entity,true);
-        json =  className + ";" + json;
+//        String json = JSON.toJSONString(entity,true);
+//        json =  className + ";" + json;
 //        try {
 //            Object obj = JSON.parseObject(json.substring(json.indexOf(";") + 1),Class.forName(json.substring(0,json.indexOf(";"))) );
 //            if(obj instanceof SysOperLog){
