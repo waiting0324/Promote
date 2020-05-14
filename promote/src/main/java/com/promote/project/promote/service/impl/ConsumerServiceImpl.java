@@ -89,6 +89,7 @@ public class ConsumerServiceImpl implements IConsumerService {
         }
         insertUser.setMobile(user.getConsumer().getMobile());
         insertUser.setIdentity(user.getConsumer().getIdentity());
+        insertUser.setEmail(user.getEmail());
 
         // 插入User表
         int result = userMapper.insertUser(insertUser);
