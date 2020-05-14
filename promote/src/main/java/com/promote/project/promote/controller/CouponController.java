@@ -20,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.promote.project.promote.service.IConsumerService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -273,5 +274,24 @@ public class CouponController extends BaseController {
             return ajax;
         }
         return AjaxResult.error("目前登入者無權進行抵用券消費記錄查詢");
+    }
+
+    /**
+     * 以證號末四碼及兌換碼查詢抵用券
+     *
+     * @return 結果
+     */
+    @PostMapping("/getPrintCoupon")
+    public AjaxResult getPrintCoupon(@RequestBody Map<String, Object> request) {
+        String indentity = "%"+request.get("indentity").toString();
+        String printCode = request.get("printCode").toString();
+
+        List<Map<String, Object>> getPrintCouponList =  couponService.getPrintCoupon(indentity, printCode);
+        System.out.println(getPrintCouponList);
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("couponInfo", getPrintCouponList);
+        AjaxResult ajax = AjaxResult.success();
+        ajax.put("result", resultMap);
+        return ajax;
     }
 }

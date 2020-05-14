@@ -4,6 +4,7 @@ import com.promote.project.promote.domain.Coupon;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 抵用券發放記錄檔Mapper介面
@@ -84,4 +85,12 @@ public interface CouponMapper
      * @return
      */
     List<Coupon> overviewCoupons(Long consumerId);
+
+    /**
+     * 以證號末四碼及兌換碼查詢抵用券
+     * @param indentity
+     * @param printCode
+     * @return
+     */
+    List<Map<String, Object>> getPrintCoupon(@Param("indentity") String indentity, @Param("printCode") String printCode);
 }

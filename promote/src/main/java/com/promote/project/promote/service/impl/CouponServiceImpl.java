@@ -18,6 +18,7 @@ import com.promote.project.promote.service.ICouponService;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.mapper.SysUserMapper;
 import com.promote.project.system.service.ISysConfigService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -686,5 +687,18 @@ public class CouponServiceImpl implements ICouponService {
             map.put("totalRecords",totalCount);
         }
         return map;
+    }
+
+    /**
+     * 以證號末四碼及兌換碼查詢抵用券
+     *
+     * @param indentity 身分證號或居留證號末四碼
+     * @param printCode 紙本兌換碼
+     * @return 結果
+     */
+    @Override
+    public List<Map<String, Object>> getPrintCoupon(@Param("indentity") String indentity, @Param("printCode") String printCode) {
+        List<Map<String, Object>> resultList = couponMapper.getPrintCoupon(indentity, printCode);
+        return resultList;
     }
 }
