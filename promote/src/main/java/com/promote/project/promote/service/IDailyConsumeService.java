@@ -1,11 +1,8 @@
 package com.promote.project.promote.service;
 
+import org.apache.ibatis.annotations.Param;
 
-import com.promote.project.promote.domain.DailyConsume;
-import com.promote.project.system.domain.SysUser;
-
-import javax.mail.MessagingException;
-import java.util.Date;
+import java.util.*;
 
 
 /**
@@ -24,5 +21,13 @@ public interface IDailyConsumeService {
      * @return 結果
      */
     public int insertDailyConsume(Date consumeTime, Long storeId, Long couponAmount);
+
+    /**
+     * 週結交易查詢
+     *
+     * @param params  Map條件
+     * @return 結果
+     */
+    public List<Map<String, Object>> queryDailyConsumeForDay(@Param("storeId") Long storeId, @Param("beginDay") String beginDay, @Param("endDay") String endDay);
 
 }

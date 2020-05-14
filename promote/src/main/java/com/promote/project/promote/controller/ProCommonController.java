@@ -381,15 +381,4 @@ public class ProCommonController extends BaseController {
         return AjaxResult.error("目前登入者無權進行基本資料查詢");
     }
 
-    @PostMapping("/updateProfile")
-    public AjaxResult updateProfile(Map<String, Object> request) {
-        SysUser user = SecurityUtils.getLoginUser().getUser();
-        //判斷角色
-        String role = user.getRoles().get(0).getRoleKey();
-        if("hostel".equals(role)){
-
-        }else if("store".equals(role)){
-
-        }
-    }
 }

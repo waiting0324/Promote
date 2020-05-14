@@ -7,12 +7,12 @@ import com.promote.project.promote.mapper.DailyConsumeMapper;
 import com.promote.project.promote.mapper.ProNewsMapper;
 import com.promote.project.promote.service.IDailyConsumeService;
 import com.promote.project.promote.service.IProNewsService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -41,5 +41,18 @@ public class DailyConsumeServiceImpl implements IDailyConsumeService {
         dailyConsume.setStoreId(storeId);
         dailyConsume.setCouponAmount(couponAmount);
         return dailyConsumeMapper.insertDailyConsume(dailyConsume);
+    }
+
+    /**
+     * 週結交易查詢
+     *
+     * @param params  Map條件
+     * @return 結果
+     */
+    @Override
+    public List<Map<String, Object>> queryDailyConsumeForDay(@Param("storeId") Long storeId, @Param("beginDay") String beginDay, @Param("endDay") String endDay) {
+
+        List<Map<String, Object>> resultsList = dailyConsumeMapper.queryDailyConsumeForDay(storeId, beginDay, endDay);
+        return resultsList;
     }
 }
