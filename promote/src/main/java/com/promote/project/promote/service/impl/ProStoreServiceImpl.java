@@ -11,8 +11,10 @@ import com.promote.framework.redis.RedisCache;
 import com.promote.framework.security.LoginUser;
 import com.promote.project.promote.domain.DailyConsume;
 import com.promote.project.promote.domain.ProWhitelist;
+import com.promote.project.promote.domain.StoreHisMail;
 import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.promote.mapper.DailyConsumeMapper;
+import com.promote.project.promote.mapper.ProStoreHisMailMapper;
 import com.promote.project.promote.mapper.ProWhitelistMapper;
 import com.promote.project.promote.mapper.StoreInfoMapper;
 import com.promote.project.promote.service.IProStoreService;
@@ -50,8 +52,10 @@ public class ProStoreServiceImpl implements IProStoreService {
     private RedisCache redisCache;
 
     @Autowired
-    DailyConsumeMapper dailyConsumeMapper;
+    private DailyConsumeMapper dailyConsumeMapper;
 
+    @Autowired
+    private ProStoreHisMailMapper proStoreHisMailMapper;
 
     /**
      * 店家註冊
@@ -337,6 +341,18 @@ public class ProStoreServiceImpl implements IProStoreService {
         if(result < 0){
             throw new CustomException("更新失敗");
         }
+    }
+
+    /**
+     * 申請歷史明細(APP專用)
+     *
+     * @param params 日期
+     * @return
+     */
+    @Override
+    public int mailTxHistory(StoreHisMail storeHisMail) {
+        int sum = proStoreHisMailMapper.insertProStoreHisMail(storeHisMail);
+        return sum;
     }
 
     /**

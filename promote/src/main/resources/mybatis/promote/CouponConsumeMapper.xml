@@ -55,7 +55,7 @@
             c.amount
         FROM
 	        pro_coupon_consume c
-	LEFT JOIN pro_store_info s ON c.store_id = s.user_id
+	LEFT JOIN _info s ON c.store_id = s.user_id
 	WHERE c.consumer_id = #{id}
 	ORDER BY c.consume_time
     </select>

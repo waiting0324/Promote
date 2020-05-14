@@ -1,6 +1,8 @@
 package com.promote.project.promote.service;
 
 import com.promote.framework.security.LoginUser;
+import com.promote.project.promote.domain.ConsumerInfo;
+import com.promote.project.promote.domain.StoreHisMail;
 import com.promote.project.promote.domain.StoreInfo;
 import com.promote.project.system.domain.SysUser;
 
@@ -73,4 +75,11 @@ public interface IProStoreService {
      * @return 結果
      */
     void updateStoreInfo(StoreInfo storeInfo);
+
+    /**
+     * 申請歷史明細(APP專用)
+     *
+     * @return 結果
+     */
+    int mailTxHistory(StoreHisMail storeHisMail);
 }
