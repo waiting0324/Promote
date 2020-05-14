@@ -15,6 +15,16 @@
         <result property="createTime"    column="create_time"    />
     </resultMap>
 
+
+    <resultMap type="java.util.LinkedHashMap" id="CouponInfoResult">
+        <result property="couponId"    column="id"    />
+        <result property="isUsed"    column="is_used"    />
+        <result property="consumeTime"    column="consume_time"    />
+        <result property="amount"    column="amount"    />
+        <result property="storeName"    column="name"    />
+        <result property="storeType"    column="store_type"    />
+    </resultMap>
+
     <resultMap type="java.util.Map" id="getPrintCouponResult">
         <result property="couponId"    column="couponId"  />
         <result property="amount"    column="amount"  />
@@ -114,6 +124,15 @@
         where user_id = #{userId}
     </select>
 
+
+    <select id="getCouponInfo" resultMap="CouponInfoResult">
+        select coupon.id,coupon.is_used,consume.consume_time,coupon.amount,store.name,coupon.store_type
+        from pro_coupon coupon left join pro_coupon_consume consume
+        on coupon.id = consume.coupon_id
+        left join pro_store_info store on consume.store_id=store.user_id
+        where coupon.user_id = #{userId} and coupon.store_type=#{storeType}
+        order by id
+    </select>
     <select id="getPrintCoupon"  resultMap="getPrintCouponResult">
         SELECT A.amount, A.store_Type, D.coupon_id
         FROM PRO_COUPON A

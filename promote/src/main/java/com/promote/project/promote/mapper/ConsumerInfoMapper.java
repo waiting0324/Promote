@@ -12,8 +12,7 @@ import org.apache.ibatis.annotations.Param;
  * @author 6550 劉威廷
  * @date 2020-04-27
  */
-public interface ConsumerInfoMapper
-{
+public interface ConsumerInfoMapper {
     /**
      * 查詢消費者基本資料
      *
@@ -63,16 +62,16 @@ public interface ConsumerInfoMapper
     public int deleteConsumerInfoByIds(Long[] userIds);
 
     /**
-     *客服查詢消費者
+     * 客服查詢消費者
      *
      * @param username 帳號
      * @param identity 身分證號或居留證號
      * @return 結果
      */
-    List<Map<String, Object>> getByUnameIdentity(@Param("username") String username,@Param("identity") String identity);
+    List<Map<String, Object>> getByUnameIdentity(@Param("username") String username, @Param("identity") String identity);
 
     /**
-     *旅宿業者查消費者
+     * 旅宿業者查消費者
      *
      * @param identity 身分證號或居留證號
      * @return 結果
@@ -80,10 +79,18 @@ public interface ConsumerInfoMapper
     List<Map<String, Object>> getByIdentity(@Param("identity") String identity);
 
     /**
-     *消費者查自己
+     * 消費者查自己
      *
      * @param username 帳號
      * @return 結果
      */
     List<Map<String, Object>> getByUsername(@Param("username") String username);
+
+    /**
+     * 根據userId查消費者
+     *
+     * @param userId
+     * @return
+     */
+    Map<String, Object> getConsumerInfoById(Long userId);
 }

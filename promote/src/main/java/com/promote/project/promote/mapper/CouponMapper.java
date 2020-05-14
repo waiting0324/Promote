@@ -86,6 +86,8 @@ public interface CouponMapper
      */
     List<Coupon> overviewCoupons(Long consumerId);
 
+
+    List<Map<String,Object>> getCouponInfo(@Param("userId") Long userId,@Param("storeType") String storeType);
     /**
      * 以證號末四碼及兌換碼查詢抵用券
      * @param indentity

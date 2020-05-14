@@ -28,6 +28,14 @@
         <result property="mobile"    column="mobile"    />
     </resultMap>
 
+    <resultMap type="java.util.LinkedHashMap" id="ConsumerInfoById">
+        <result property="applyHotel"    column="name"    />
+        <result property="applyTime"    column="Issue_date"    />
+        <result property="couponType"    column="coupon_type"    />
+        <result property="printCode"    column="print_code"    />
+        <result property="printTime"    column="receive_date"    />
+    </resultMap>
+
     <sql id="selectConsumerInfoVo">
         select user_id, name, birthday, consumer_stat, coupon_type, print_code, hotel_id, issue_date, receive_date, update_time, create_time from pro_consumer_info
     </sql>
@@ -134,5 +142,12 @@
         <where>
             <if test="username != null  and username != ''"> and user.username = #{username}</if>
         </where>
+    </select>
+
+    <select id="getConsumerInfoById" parameterType="Long" resultMap="ConsumerInfoById">
+        select hotel.name,consumer.Issue_date,consumer.coupon_type,consumer.print_code,consumer.receive_date
+        from pro_consumer_info consumer inner join pro_hotel_info hotel
+        on consumer.hotel_id = hotel.user_id
+        where consumer.user_id= #{userId}
     </select>
 </mapper>
