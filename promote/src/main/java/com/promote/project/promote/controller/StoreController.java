@@ -1,6 +1,5 @@
 package com.promote.project.promote.controller;
 
-import cn.hutool.core.util.StrUtil;
 import com.promote.common.constant.Constants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
@@ -12,7 +11,6 @@ import com.promote.framework.web.controller.BaseController;
 import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.monitor.service.ISysOperLogService;
 import com.promote.project.promote.domain.ProWhitelist;
-import com.promote.project.promote.service.ICouponService;
 import com.promote.project.promote.service.IProStoreService;
 import com.promote.project.promote.service.IProWhitelistService;
 import com.promote.project.system.domain.SysUser;
@@ -20,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
@@ -49,6 +46,9 @@ public class StoreController extends BaseController {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private IProStoreService proStoreService;
 
     /**
      * 店家白名單檢核
@@ -203,5 +203,34 @@ public class StoreController extends BaseController {
         AjaxResult ajax = new AjaxResult();
         ajax.putAll(storeService.getRecdMoneyRecord());
         return ajax;
+    }
+
+    /**
+     * 申請歷史明細(APP專用)
+     */
+    @PostMapping("/mailTxHistory")
+    public AjaxResult mailTxHistory(@RequestBody Map<String, Object> request) throws Exception {
+
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        Long userId = user.getUserId();
+        String userEmail = user.getEmail();
+        String storeType = request.get("storeType").toString();
+        String startDate = request.get("startDate").toString();
+        String endDate = request.get("endDate").toString();
+        StoreHisMail storeHisMail = new StoreHisMail();
+        storeHisMail.setStoreId(userId);
+        startDate = startDate.replace("/","-");
+        storeHisMail.setStartDate(startDate);
+        startDate = startDate.replace("/","-");
+        storeHisMail.setEndDate(startDate);
+        storeHisMail.setStatus("0");
+        storeHisMail.setStoreType(storeType);
+        storeHisMail.setMail(userEmail);
+
+        int sum = proStoreService.mailTxHistory(storeHisMail);
+        if(sum<0){
+            return AjaxResult.error();
+        }
+        return AjaxResult.success();
     }
 }
