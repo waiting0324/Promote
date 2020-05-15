@@ -455,9 +455,11 @@ public class CouponServiceImpl implements ICouponService {
      */
     @Override
     @Transactional
-    public void postiveScan(List<String> couponIds, Long storeId) {
+    public Integer postiveScan(List<String> couponIds, Long storeId) {
 
         Long userId = SecurityUtils.getLoginUser().getUser().getUserId();
+
+        Integer amount = 0;
 
         for (String couponId : couponIds) {
             Coupon coupon = couponMapper.selectCouponById(couponId);
@@ -468,7 +470,7 @@ public class CouponServiceImpl implements ICouponService {
                 throw new CustomException("該抵用券不屬於當前消費者");
             }
             if ("1".equals(coupon.getIsUsed())) {
-                throw new CustomException(MessageUtils.message("pro.err.coupon.used"));
+                throw new CustomException(MessageUtils.message("pro.err.coupon.used"), 1001);
             }
             //店家基本資料
             StoreInfo storeInfo = storeInfoMapper.selectStoreInfoById(storeId);
@@ -502,7 +504,11 @@ public class CouponServiceImpl implements ICouponService {
             if (result < 0) {
                 throw new CustomException("新增消費記錄檔失敗，請聯絡管理員");
             }
+
+            amount += coupon.getAmount().intValue();
         }
+
+        return amount;
     }
 
     /**
