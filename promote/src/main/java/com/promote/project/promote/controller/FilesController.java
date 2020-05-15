@@ -220,7 +220,7 @@ public class FilesController extends BaseController {
                 break;
         }
         String path = configService.selectConfigByKey(configKey);
-        path = "d:/tmp/0"; //測試用
+//        path = "/tmp/0"; //測試用
         File file = new File(path);
         if(!file.exists()){
             return AjaxResult.error("檔案資料夾不存在");
