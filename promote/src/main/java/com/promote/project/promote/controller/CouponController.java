@@ -232,7 +232,7 @@ public class CouponController extends BaseController {
      */
     @PostMapping("/resetPrint")
     public AjaxResult resetPrint(@RequestBody Map<String, Object> request) {
-        List<SysUser> sysYserList = sysUserService.selectConsumerByIdentity(request.get("indentity").toString());
+        List<SysUser> sysYserList = sysUserService.selectConsumerByIdentity(request.get("identity").toString());
 
         if (sysYserList.size() > 0) {
             String userId = sysYserList.get(0).getUserId().toString();
