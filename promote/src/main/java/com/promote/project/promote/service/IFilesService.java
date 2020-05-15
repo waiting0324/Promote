@@ -2,6 +2,7 @@ package com.promote.project.promote.service;
 
 import com.promote.project.promote.domain.HotelWhitelist;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -20,4 +21,13 @@ public interface IFilesService {
      * @return
      */
     List<Map<String,Object>> getFileList(String fileDate,String path);
+
+    /**
+     * 取得檔案
+     *
+     * @param path 路徑
+     * @param fileName 檔名
+     * @return
+     */
+    File getFile(String path,String fileName);
 }
