@@ -149,7 +149,13 @@ public class CouponController extends BaseController {
     @PostMapping("/preScan")
     public AjaxResult getConsumerCoupon(@RequestBody Map<String, Long> request) {
         Long storeId = request.get("userId");
-        return AjaxResult.success(couponService.getConsumerCoupon(storeId, SecurityUtils.getLoginUser().getUser()));
+
+        Map result = couponService.getConsumerCoupon(storeId, SecurityUtils.getLoginUser().getUser());
+
+        AjaxResult ajax = AjaxResult.success();
+        ajax.put("result", result);
+
+        return ajax;
     }
 
     /**
