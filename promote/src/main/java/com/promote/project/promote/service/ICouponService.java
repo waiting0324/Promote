@@ -151,4 +151,11 @@ public interface ICouponService {
      */
     public List<Map<String, Object>> getPrintCoupon(@Param("indentity") String indentity, @Param("printCode") String printCode);
 
+    /**
+     * 以證號末四碼及兌換碼查詢抵用券
+     *
+     * @param printCode  驗證碼
+     * @return
+     */
+    public int updatePrintCoupon(@Param("printCode") String printCode);
 }

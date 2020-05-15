@@ -721,4 +721,16 @@ public class CouponServiceImpl implements ICouponService {
         List<Map<String, Object>> resultList = couponMapper.getPrintCoupon(indentity, printCode);
         return resultList;
     }
+
+    /**
+     * 以證號末四碼及兌換碼查詢抵用券
+     *
+     * @param printCode 紙本兌換碼
+     * @return 結果
+     */
+    @Override
+    public int updatePrintCoupon(@Param("printCode") String printCode) {
+        int sum = couponMapper.updatePrintCoupon(printCode);
+        return sum;
+    }
 }

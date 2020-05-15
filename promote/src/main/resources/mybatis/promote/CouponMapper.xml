@@ -134,4 +134,8 @@
             AND B.print_code = #{printCode}
     </select>
 
+    <update id="updatePrintCoupon" parameterType="String">
+        UPDATE pro_consumer_info set KIOSK_PRINT_TYPE = '1', KIOSK_PRINT_TIME = sysdate
+        WHERE PRINT_CODE = #{printCode}
+    </update>
 </mapper>

@@ -312,4 +312,21 @@ public class CouponController extends BaseController {
         ajax.put("result", resultMap);
         return ajax;
     }
+
+    /**
+     * 以證號末四碼及兌換碼查詢抵用券
+     *
+     * @return 結果
+     */
+    @PostMapping("/updatePrintCoupon")
+    public AjaxResult updatePrintCoupon(@RequestBody Map<String, Object> request) {
+
+        String printCode = request.get("printCode").toString();
+        int sum = couponService.updatePrintCoupon(printCode);
+        if(sum < 0){
+            return AjaxResult.error();
+        }
+        //int sum = 0;
+        return AjaxResult.success();
+    }
 }
