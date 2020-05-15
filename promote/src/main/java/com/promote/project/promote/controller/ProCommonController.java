@@ -167,7 +167,7 @@ public class ProCommonController extends BaseController {
 
                 // 密碼規則檢核
                 if (!user.getPassword().matches(Constants.PASSWORD_REGEX)) {
-                    AjaxResult.error("密碼不符合8-20字元的英數字規則");
+                    return AjaxResult.error("密碼不符合8-16字元的英數字規則");
                 }
             }
 
@@ -275,11 +275,11 @@ public class ProCommonController extends BaseController {
             return AjaxResult.error(MessageUtils.message("pro.err.columns.not.enter"));
         }
         if (!newPwd.equals(checkNewPwd)) {
-            AjaxResult.error("兩次輸入的密碼不一致");
+            return AjaxResult.error("兩次輸入的密碼不一致");
         }
 
         if (!newPwd.matches(Constants.PASSWORD_REGEX)) {
-            AjaxResult.error("新密碼不符合6-20字元的英數字規則");
+            return AjaxResult.error("新密碼不符合6-20字元的英數字規則");
         }
 
         // 確認驗證碼並更新密碼
@@ -300,6 +300,11 @@ public class ProCommonController extends BaseController {
 
         if (!newPwd.equals(checkNewPwd)) {
             return AjaxResult.error("兩次輸入的密碼不一致");
+        }
+
+        // 密碼規則檢核
+        if (!newPwd.matches(Constants.PASSWORD_REGEX)) {
+            return AjaxResult.error("密碼不符合8-16字元的英數字規則");
         }
 
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());

@@ -76,7 +76,7 @@ public class ConsumerController extends BaseController {
 
             // 密碼規則檢核
             if (!user.getPassword().matches(Constants.PASSWORD_REGEX)) {
-                AjaxResult.error("密碼不符合8-20字元的英數字規則");
+                return AjaxResult.error("密碼不符合8-20字元的英數字規則");
             }
         }
 

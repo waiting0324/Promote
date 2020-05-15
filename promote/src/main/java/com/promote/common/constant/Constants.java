@@ -117,7 +117,7 @@ public class Constants
     /**
      * 密碼的正則表達式
      */
-    public static final String PASSWORD_REGEX = "[0-9A-Za-z]{8,20}";
+    public static final String PASSWORD_REGEX = "(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[a-zA-Z0-9]{8,16}";
 
     /**
      * 驗證類型 忘記密碼
