@@ -142,7 +142,6 @@ public class FilesController extends BaseController {
                 break;
         }
         String path = configService.selectConfigByKey(configKey);
-//        path = "/temp/0/";
         File file = filesService.getFile(path, fileName);
         if(file == null){
             AjaxResult.error("無此檔案");
@@ -221,7 +220,7 @@ public class FilesController extends BaseController {
                 break;
         }
         String path = configService.selectConfigByKey(configKey);
-//        path = "d:/tmp/0"; //測試用
+        path = "d:/tmp/0"; //測試用
         File file = new File(path);
         if(!file.exists()){
             return AjaxResult.error("檔案資料夾不存在");
