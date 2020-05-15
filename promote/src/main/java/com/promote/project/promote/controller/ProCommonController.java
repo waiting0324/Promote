@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -353,7 +354,9 @@ public class ProCommonController extends BaseController {
         SysUser user = SecurityUtils.getLoginUser().getUser();
         //判斷角色
         String role = user.getRoles().get(0).getRoleKey();
-//        role = "customerService";
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+//        role = "hostel";
+//        userType = "H";
         if("customerService".equals(role)){
             //客服
             if(StringUtils.isEmpty(userType)){
@@ -368,7 +371,9 @@ public class ProCommonController extends BaseController {
                 if(StringUtils.isNull(list) || list.size() == 0){
                     return AjaxResult.success("查無資料");
                 }
-                ajax.put("store",list);
+                resultMap.put("store", list.size() > 1 ? list : list.get(0));
+//                ajax.put("store",list);
+                ajax.put("result", resultMap);
                 return ajax;
             }else if("C".equalsIgnoreCase(userType)){
                 //查消費者
@@ -376,7 +381,9 @@ public class ProCommonController extends BaseController {
                 if(StringUtils.isNull(list) || list.size() == 0){
                     return AjaxResult.success("查無資料");
                 }
-                ajax.put("consumer",list);
+                resultMap.put("consumer", list.size() > 1 ? list : list.get(0));
+//                ajax.put("consumer",list);
+                ajax.put("result", resultMap);
                 return ajax;
             }else if("H".equalsIgnoreCase(userType)){
                 //查旅宿業者
@@ -384,7 +391,9 @@ public class ProCommonController extends BaseController {
                 if(StringUtils.isNull(map)){
                     return AjaxResult.success("查無資料");
                 }
-                ajax.put("hotel",map);
+                resultMap.put("hotel", map);
+//                ajax.put("hotel",map);
+                ajax.put("result", resultMap);
                 return ajax;
             }
         }
@@ -398,17 +407,23 @@ public class ProCommonController extends BaseController {
             if(StringUtils.isNull(list) || list.size() == 0){
                 return AjaxResult.success("查無資料");
             }
-            ajax.put("consumer",list);
+            resultMap.put("consumer",list);
+//            ajax.put("consumer",list);
+            ajax.put("result", resultMap);
             return ajax;
         }
         if("store".equals(role)){
             //店家
-            ajax.put("store",storeService.getByUsername(user.getUsername()));
+            resultMap.put("store",storeService.getByUsername(user.getUsername()));
+//            ajax.put("store",storeService.getByUsername(user.getUsername()));
+            ajax.put("result", resultMap);
             return ajax;
         }
         if("consumer".equals(role)){
             //消費者
-            ajax.put("consumer",consumerService.getByUsername(user.getUsername()));
+            resultMap.put("consumer", consumerService.getByUsername(user.getUsername()));
+//            ajax.put("consumer",consumerService.getByUsername(user.getUsername()));
+            ajax.put("result", resultMap);
             return ajax;
         }
         return AjaxResult.error("目前登入者無權進行基本資料查詢");
