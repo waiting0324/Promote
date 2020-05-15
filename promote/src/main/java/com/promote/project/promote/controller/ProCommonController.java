@@ -407,7 +407,7 @@ public class ProCommonController extends BaseController {
             if(StringUtils.isNull(list) || list.size() == 0){
                 return AjaxResult.success("查無資料");
             }
-            resultMap.put("consumer",list);
+            resultMap.put("consumer",list.size() > 1 ? list : list.get(0));
 //            ajax.put("consumer",list);
             ajax.put("result", resultMap);
             return ajax;

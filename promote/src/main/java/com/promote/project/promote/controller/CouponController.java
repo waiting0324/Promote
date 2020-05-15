@@ -308,7 +308,8 @@ public class CouponController extends BaseController {
             }
         }
         if (StringUtils.isNotEmpty(map)) {
-            ajax.putAll(map);
+            ajax.put("result", map);
+//            ajax.putAll(map);
             return ajax;
         }
         return AjaxResult.error("目前登入者無權進行抵用券消費記錄查詢");
