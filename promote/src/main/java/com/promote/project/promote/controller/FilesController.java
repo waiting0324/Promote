@@ -185,17 +185,16 @@ public class FilesController extends BaseController {
     /**
      * 檔案上傳(實名認證、付款檔、白名單差異檔)
      *
-     * @param fileName 檔名
      * @param fileType 檔案類型
-     * @param fileContent 檔案
+     * @param file 檔案
      * @return 結果
      */
     @PostMapping("/uploadFile")
-    public AjaxResult uploadFile(@RequestPart("fileName")String fileName,@RequestPart("fileType")String fileType,@RequestPart("fileContent")MultipartFile fileContent) {
-        if(StringUtils.isEmpty(fileName) || StringUtils.isEmpty(fileType)){
-            return AjaxResult.error("需輸入檔名及檔案類型");
+    public AjaxResult uploadFile(@RequestPart("fileType")String fileType,@RequestPart("file")MultipartFile file) {
+        if(StringUtils.isEmpty(fileType)){
+            return AjaxResult.error("需輸入檔案類型");
         }
-        if(fileContent == null){
+        if(file == null){
             return AjaxResult.error("沒有上傳檔案");
         }
         String configKey = null;
@@ -221,16 +220,16 @@ public class FilesController extends BaseController {
         }
         String path = configService.selectConfigByKey(configKey);
 //        path = "/tmp/0"; //測試用
-        File file = new File(path);
-        if(!file.exists()){
-            return AjaxResult.error("檔案資料夾不存在");
+        File dirs = new File(path);
+        if(!dirs.exists()){
+            dirs.mkdirs();
         }
         InputStream inputStream = null;
         OutputStream outputStream = null;
         try {
             byte[] buffers = new byte[1024];
-            inputStream = fileContent.getInputStream();
-            outputStream = new FileOutputStream(new File(path + "/" + fileName));
+            inputStream = file.getInputStream();
+            outputStream = new FileOutputStream(new File(path + "/" + file.getOriginalFilename()));
             int length = 0;
             while ((length = inputStream.read(buffers)) > 0){
                 outputStream.write(buffers, 0, length);

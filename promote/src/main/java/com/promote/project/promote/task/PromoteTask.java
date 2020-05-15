@@ -515,6 +515,10 @@ public class PromoteTask {
                     failLog.setErrorMsg("執行白名單" + (needInsertProWhitelist ? "新增" : "更新") + "失敗: " + (type == 1 ? "旅宿業者代號= " : "店家代碼= ") + id);
                     failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
                     operLogServic.insertOperlog(failLog);
+                    String now = DateUtils.dateTime();
+                    String proWhitelistErrDir = configService.selectConfigByKey("pro.whitelistErr.dir");
+                    String outputFile = proWhitelistErrDir + "/pro_whitelistErr" + now + ".csv";
+                    printErrCsv(proWhitelistErrDir,outputFile,rowlist,titlelist);
                 }
             }
             //處理旅宿or店家白名單
@@ -569,28 +573,11 @@ public class PromoteTask {
                 failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
                 operLogServic.insertOperlog(failLog);
                 String now = DateUtils.dateTime();
-                String outputPath = type == 1 ? "d:\\hotel_whitelistErr" + now + ".csv" : "d:\\store_whitelistErr" + now + ".csv";
-                printErrCsv(outputPath,rowlist,titlelist);
-//                File file = new File(type == 1 ? "d:\\hotel_whitelistErr" + now + ".csv" : "d:\\store_whitelistErr" + now + ".csv");
-//                CSVPrinter csvPrinter = null;
-//                if (!file.exists()) {
-//                    file.createNewFile();
-//                    csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
-//                    //打印標題
-//                    for (String title : titlelist) {
-//                        csvPrinter.print(title);
-//                    }
-//                    csvPrinter.println();
-//                }
-//                if (csvPrinter == null) {
-//                    csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
-//                }
-//                for (String item : rowlist) {
-//                    csvPrinter.print(item);
-//                }
-//                csvPrinter.println();
-//                csvPrinter.flush();
-//                csvPrinter.close();
+                String hotelWhitelistErrDir = configService.selectConfigByKey("hotel.whitelistErr.dir");
+                String storeWhitelistErrDir = configService.selectConfigByKey("store.whitelistErr.dir");
+                String errDir = type == 1 ? hotelWhitelistErrDir : storeWhitelistErrDir;
+                String outputFile = type == 1 ? errDir + "/hotel_whitelistErr" + now + ".csv" : errDir + "/store_whitelistErr" + now + ".csv";
+                printErrCsv(errDir,outputFile,rowlist,titlelist);
             }
         } catch (Exception e) {
             //Do Nothing
@@ -600,14 +587,21 @@ public class PromoteTask {
     /**
      * 匯出錯誤檔案到csv
      *
-     * @param outputPath 匯出路徑
+     * @param outputDir 匯出路徑
+     * @param outputFile 匯出檔案
      * @param rowlist 每一行數據
      * @param titlelist 標題
      */
-    private void printErrCsv(String outputPath,List<String> rowlist, List<String> titlelist){
+    private void printErrCsv(String outputDir,String outputFile,List<String> rowlist, List<String> titlelist){
         CSVPrinter csvPrinter = null;
         try{
-            File file = new File(outputPath);
+            File destination = new File(outputDir);
+            //建目錄
+            if(!destination.exists()){
+                destination.mkdirs();
+            }
+            File file = new File(outputFile);
+            //建檔案
             if (!file.exists()) {
                 file.createNewFile();
                 csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
@@ -624,7 +618,6 @@ public class PromoteTask {
                 csvPrinter.print(item);
             }
             csvPrinter.println();
-//            csvPrinter.flush();
         }catch(Exception e){
             e.printStackTrace();
         }finally {
