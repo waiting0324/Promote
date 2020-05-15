@@ -1,5 +1,8 @@
 package com.promote.framework.config;
 
+import com.promote.framework.security.filter.JwtAuthenticationTokenFilter;
+import com.promote.framework.security.handle.AuthenticationEntryPointImpl;
+import com.promote.framework.security.handle.LogoutSuccessHandlerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -12,9 +15,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import com.promote.framework.security.filter.JwtAuthenticationTokenFilter;
-import com.promote.framework.security.handle.AuthenticationEntryPointImpl;
-import com.promote.framework.security.handle.LogoutSuccessHandlerImpl;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * spring security配置
@@ -106,11 +112,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/druid/**").anonymous()
                 // 除上面外的所有請求全部需要鑑權認證
                 .anyRequest().authenticated()
-                .and()
-                .headers().frameOptions().disable();
+                .and().cors()
+                .and().headers().frameOptions().disable();
         httpSecurity.logout().logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler);
         // 新增JWT filter
         httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+    }
+
+
+    /**
+     * 跨域配置
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        // 允许跨域访问的 URL
+        List<String> allowedOriginsUrl = new ArrayList<>();
+        allowedOriginsUrl.add("*");
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        // 设置允许跨域访问的 URL
+        config.setAllowedOrigins(allowedOriginsUrl);
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
 

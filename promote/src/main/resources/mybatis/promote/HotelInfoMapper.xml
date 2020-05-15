@@ -28,7 +28,7 @@
     </resultMap>
 
     <sql id="selectHotelInfoVo">
-        select user_id, name, address, latitude, longitude, is_support_coupon, agree_time, is_agree_terms, update_time, create_time from pro_hotel_info
+        select user_id, name, address, latitude, longitude, is_support_coupon, agree_time, is_agree_terms, update_time, create_time from precmgr.pro_hotel_info
     </sql>
 
     <select id="selectHotelInfoList" parameterType="HotelInfo" resultMap="HotelInfoResult">

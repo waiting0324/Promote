@@ -235,7 +235,9 @@ public class ProCommonController extends BaseController {
 
         // 角色
         Long roleId = loginUser.getUser().getRoles().get(0).getRoleId();
-        if (RoleConstants.HOTEL_ROLE_ID.equals(roleId)) {
+        if (RoleConstants.SERVICE_ROLE_ID.equals(roleId)) {
+            ajax.put("role", "CS");
+        } else if (RoleConstants.HOTEL_ROLE_ID.equals(roleId)) {
             ajax.put("role", "H");
         } else if (RoleConstants.STORE_ROLE_ID.equals(roleId)) {
             ajax.put("role", "S");
