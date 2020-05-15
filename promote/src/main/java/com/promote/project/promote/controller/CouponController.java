@@ -239,7 +239,7 @@ public class CouponController extends BaseController {
      */
     @PostMapping("/resetPrint")
     public AjaxResult resetPrint(@RequestBody Map<String, Object> request) {
-        List<SysUser> sysYserList = sysUserService.selectConsumerByIdentity(request.get("indentity").toString());
+        List<SysUser> sysYserList = sysUserService.selectConsumerByIdentity(request.get("identity").toString());
 
         if (sysYserList.size() > 0) {
             String userId = sysYserList.get(0).getUserId().toString();
@@ -308,7 +308,8 @@ public class CouponController extends BaseController {
             }
         }
         if (StringUtils.isNotEmpty(map)) {
-            ajax.putAll(map);
+            ajax.put("result", map);
+//            ajax.putAll(map);
             return ajax;
         }
         return AjaxResult.error("目前登入者無權進行抵用券消費記錄查詢");

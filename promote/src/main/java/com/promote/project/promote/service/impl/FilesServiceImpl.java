@@ -73,4 +73,30 @@ public class FilesServiceImpl implements IFilesService {
         }
         return list;
     }
+
+    /**
+     * 取得檔案
+     *
+     * @param path 路徑
+     * @param fileName 檔名
+     * @return
+     */
+    @Override
+    public File getFile(String path, String fileName) {
+        File result = null;
+        File folder = new File(path);
+        if(folder.exists()){
+            File[] files = folder.listFiles();
+            for(File file :files){
+                if(fileName.equals(file.getName())){
+                    result = file;
+                    break;
+                }
+            }
+        }else{
+            throw new CustomException("檔案資料夾不存在");
+        }
+        return result;
+    }
+
 }
