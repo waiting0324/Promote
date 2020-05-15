@@ -165,7 +165,7 @@ public class PromoteTask {
     /**
      * 處理白名單匯入及差異檔(csv版)
      *
-     * @param path     白名單路徑
+     * @param path    白名單路徑
      * @param isHotel 是否為旅宿業者
      */
     public void dealWhitelistFile(String path, Boolean isHotel) {
@@ -391,9 +391,9 @@ public class PromoteTask {
     /**
      * 處理每一行數據
      *
-     * @param pair 白名單Field與白名單Excel映射關係
-     * @param rowlist 每一行數據
-     * @param titlelist 第一行(標題)數據
+     * @param pair             白名單Field與白名單Excel映射關係
+     * @param rowlist          每一行數據
+     * @param titlelist        第一行(標題)數據
      * @param isFirstWhitelist 是否為第一份白名單(旅宿or店家)
      */
     private void handlerRow(Map<String, Integer> pair, List<String> rowlist, List<String> titlelist, boolean isFirstWhitelist) {
@@ -568,33 +568,75 @@ public class PromoteTask {
                 failLog.setErrorMsg(errMsg);
                 failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
                 operLogServic.insertOperlog(failLog);
-                File file = new File(type == 1 ? "d:\\hotel_whitelistErr.csv" : "d:\\store_whitelistErr.csv");
-                CSVPrinter csvPrinter = null;
-                if (!file.exists()) {
-                    file.createNewFile();
-                    csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
-                    //打印標題
-                    for (String title : titlelist) {
-                        csvPrinter.print(title);
-                    }
-                    csvPrinter.println();
-                }
-                if (csvPrinter == null) {
-                    csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
-                }
-                for (String item : rowlist) {
-                    csvPrinter.print(item);
-                }
-                csvPrinter.println();
-                csvPrinter.flush();
-                csvPrinter.close();
+                String now = DateUtils.dateTime();
+                String outputPath = type == 1 ? "d:\\hotel_whitelistErr" + now + ".csv" : "d:\\store_whitelistErr" + now + ".csv";
+                printErrCsv(outputPath,rowlist,titlelist);
+//                File file = new File(type == 1 ? "d:\\hotel_whitelistErr" + now + ".csv" : "d:\\store_whitelistErr" + now + ".csv");
+//                CSVPrinter csvPrinter = null;
+//                if (!file.exists()) {
+//                    file.createNewFile();
+//                    csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
+//                    //打印標題
+//                    for (String title : titlelist) {
+//                        csvPrinter.print(title);
+//                    }
+//                    csvPrinter.println();
+//                }
+//                if (csvPrinter == null) {
+//                    csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
+//                }
+//                for (String item : rowlist) {
+//                    csvPrinter.print(item);
+//                }
+//                csvPrinter.println();
+//                csvPrinter.flush();
+//                csvPrinter.close();
             }
         } catch (Exception e) {
             //Do Nothing
         }
-
     }
 
+    /**
+     * 匯出錯誤檔案到csv
+     *
+     * @param outputPath 匯出路徑
+     * @param rowlist 每一行數據
+     * @param titlelist 標題
+     */
+    private void printErrCsv(String outputPath,List<String> rowlist, List<String> titlelist){
+        CSVPrinter csvPrinter = null;
+        try{
+            File file = new File(outputPath);
+            if (!file.exists()) {
+                file.createNewFile();
+                csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
+                //打印標題
+                for (String title : titlelist) {
+                    csvPrinter.print(title);
+                }
+                csvPrinter.println();
+            }
+            if (csvPrinter == null) {
+                csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
+            }
+            for (String item : rowlist) {
+                csvPrinter.print(item);
+            }
+            csvPrinter.println();
+//            csvPrinter.flush();
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                if(csvPrinter != null){
+                    csvPrinter.close(true);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     /**
      * 處理每一行數據

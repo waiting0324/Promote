@@ -95,9 +95,8 @@ public interface ICouponService {
      * 反掃(商家掃消費者)
      *
      * @param id      組抵用券序號
-     * @param sysUser 使用者資料(店家)
      */
-    void reverseScan(String id, SysUser sysUser);
+    Long reverseScan(String id);
 
     /**
      * 查詢當前消費者的消費紀錄
@@ -107,11 +106,11 @@ public interface ICouponService {
     List<CouponConsume> consumption();
 
     /**
-     * 抵用券總攬
+     * 抵用券發放紀錄查詢
      *
-     * @return
+     * @return 結果
      */
-    AjaxResult overviewCoupons();
+    Map<String, Object> overviewCoupons(Long consumerId);
 
     /**
      * 取得時間範圍內的消費記錄檔
@@ -151,11 +150,4 @@ public interface ICouponService {
      */
     public List<Map<String, Object>> getPrintCoupon(@Param("indentity") String indentity, @Param("printCode") String printCode);
 
-    /**
-     * 以證號末四碼及兌換碼查詢抵用券
-     *
-     * @param printCode  驗證碼
-     * @return
-     */
-    public int updatePrintCoupon(@Param("printCode") String printCode);
 }

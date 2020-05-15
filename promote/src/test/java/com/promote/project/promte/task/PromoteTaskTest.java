@@ -24,6 +24,6 @@ public class PromoteTaskTest {
     public void testFtp() throws Exception {
 //        promoteTask.ftpFetchFile();
 //        promoteTask.dealDiffData("d:/hostel.xlsx",true);
-        promoteTask.dealWhitelistFile("d:/hotellist.csv",true);
+        promoteTask.dealWhitelistFile("d:/storelist.csv",false);
     }
 }

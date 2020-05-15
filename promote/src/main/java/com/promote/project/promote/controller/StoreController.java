@@ -1,5 +1,6 @@
 package com.promote.project.promote.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.promote.common.constant.Constants;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
@@ -13,7 +14,7 @@ import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.monitor.service.ISysOperLogService;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.domain.StoreHisMail;
-import com.promote.project.promote.domain.StoreInfo;
+import com.promote.project.promote.service.ICouponService;
 import com.promote.project.promote.service.IProStoreService;
 import com.promote.project.promote.service.IProWhitelistService;
 import com.promote.project.system.domain.SysUser;
@@ -21,8 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * 店家 控制層
@@ -35,6 +36,9 @@ public class StoreController extends BaseController {
 
     @Autowired
     private IProWhitelistService whitelistService;
+
+    @Autowired
+    private ICouponService couponService;
 
     @Autowired
     private ISysOperLogService operLogService;
@@ -182,6 +186,19 @@ public class StoreController extends BaseController {
         tokenService.resetLoginUser(storeService.updateStoreInfo(user));
         return AjaxResult.success();
     }
+
+    /**
+     * 反掃(商家掃消費者)
+     *
+     * @return 結果
+     */
+    @PostMapping("/barcodeScan")
+    public AjaxResult reverseScan(@RequestBody Map<String, String> request) {
+        String couponId = request.get("barcode");
+        Long amount = couponService.reverseScan(couponId);
+        return new AjaxResult(1000, StrUtil.format("{} {}元 抵用成功", LocalDateTime.now(), amount));
+    }
+
 
     /**
      * 當前商家收款紀錄總覽
