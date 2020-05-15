@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 /**
@@ -196,7 +197,8 @@ public class StoreController extends BaseController {
     public AjaxResult reverseScan(@RequestBody Map<String, String> request) {
         String couponId = request.get("barcode");
         Long amount = couponService.reverseScan(couponId);
-        return new AjaxResult(1000, StrUtil.format("{} {}元 抵用成功", LocalDateTime.now(), amount));
+        return new AjaxResult(1000, StrUtil.format("{} {}元 抵用成功",
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ss")), amount));
     }
 
 

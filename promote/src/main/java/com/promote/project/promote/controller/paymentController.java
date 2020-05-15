@@ -53,13 +53,21 @@ public class paymentController extends BaseController {
         Long userId = user.getUserId();
         List<Object> weeklyTxId = (List<Object>)request.get("weeklyTxId");
         for(int i = 0; i < weeklyTxId.size(); i++){
+            weeklySettlement = new WeeklySettlement();
             weeklySettlement.setStoreId(userId);
             weeklySettlement.setId(Long.valueOf(weeklyTxId.get(i).toString()));
+            weeklySettlement.setIsConfirm("1");
             weeklySettlementList.add(weeklySettlement);
-            weeklySettlementService.updateWeeklySettlement(weeklySettlementList);
         }
-
-        return AjaxResult.success();
+        int sum = weeklySettlementService.updateWeeklySettlement(weeklySettlementList);
+        int code = 0;
+        String msg = "";
+        AjaxResult ajax = new AjaxResult();
+        if(sum < 0){
+            return AjaxResult.error("週結交易確認失敗");
+        }else{
+            return AjaxResult.success("週結交易確認成功");
+        }
     }
 
     /**

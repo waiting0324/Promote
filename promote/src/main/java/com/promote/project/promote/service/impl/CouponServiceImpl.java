@@ -2,10 +2,7 @@ package com.promote.project.promote.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
-import com.promote.common.constant.Constants;
-import com.promote.common.constant.ConsumerConstants;
-import com.promote.common.constant.CouponConstants;
-import com.promote.common.constant.StoreTypeConstants;
+import com.promote.common.constant.*;
 import com.promote.common.exception.CustomException;
 import com.promote.common.exception.user.CaptchaException;
 import com.promote.common.exception.user.CaptchaExpireException;
@@ -151,6 +148,10 @@ public class CouponServiceImpl implements ICouponService {
         if (StringUtils.isNull(dbConsumer)) {
             throw new CustomException("找不到此消費者");
         }
+        if (!RoleConstants.CONSUMER_ROLE_ID.equals(dbConsumer.getRoles().get(0).getRoleId())) {
+            throw new CustomException("此帳號角色並不是消費者");
+        }
+
         Long consumerId = dbConsumer.getUserId();
         String consumerStat = consumerInfoMapper.selectConsumerInfoById(consumerId).getConsumerStat();
         ConsumerInfo insertConsumerInfo = new ConsumerInfo();
