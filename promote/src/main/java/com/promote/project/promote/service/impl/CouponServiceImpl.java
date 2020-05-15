@@ -391,20 +391,58 @@ public class CouponServiceImpl implements ICouponService {
         //店家類型
         String[] storeTypes = storeInfo.getType().split(",");
         List<Coupon> consumerCouponList = couponMapper.getConsumerCoupon(sysUser.getUserId(), "0", storeTypes);
-        if (StringUtils.isNull(consumerCouponList) || consumerCouponList.size() == 0) {
+        /*if (StringUtils.isNull(consumerCouponList) || consumerCouponList.size() == 0) {
             throw new CustomException("無可使用的抵用券");
+        }*/
+
+
+
+        List<Map> couponTypeInfoList = new ArrayList();
+
+
+        for (int i = 0; i < 4; i++) {
+            Map<String, Object> couponTypeInfo = new HashMap<>();
+
+            if (i == 0) {
+                couponTypeInfo.put("type", "0");
+                couponTypeInfo.put("typeName", "夜市");
+            } else if (i == 1) {
+                couponTypeInfo.put("type", "1");
+                couponTypeInfo.put("typeName", "餐廳");
+            } else if (i == 2) {
+                couponTypeInfo.put("type", "2");
+                couponTypeInfo.put("typeName", "商圈");
+            } else if (i == 3) {
+                couponTypeInfo.put("type", "3");
+                couponTypeInfo.put("typeName", "藝文");
+            }
+
+            couponTypeInfo.put("couponInfo", new ArrayList<>());
+            couponTypeInfoList.add(couponTypeInfo);
         }
 
-
-        Map<String, List> result = new HashMap<>();
-        result.put("0", new ArrayList());
-        result.put("1", new ArrayList());
-        result.put("2", new ArrayList());
-        result.put("3", new ArrayList());
         for (Coupon coupon : consumerCouponList) {
-            String storeType = coupon.getStoreType();
-            result.get(storeType).add(coupon);
+            Integer storeType = Integer.parseInt(coupon.getStoreType());
+            List<Map> couponInfoList = (List) couponTypeInfoList.get(storeType).get("couponInfo");
+
+            Map<String, Object> couponInfo = new HashMap<>();
+            couponInfo.put("couponId", coupon.getId());
+            couponInfo.put("amount", coupon.getAmount());
+            couponInfoList.add(couponInfo);
         }
+
+
+        /*couponTypeInfo.put("0", new ArrayList());
+        couponTypeInfo.put("1", new ArrayList());
+        couponTypeInfo.put("2", new ArrayList());
+        couponTypeInfo.put("3", new ArrayList());*/
+        /*for (Coupon coupon : consumerCouponList) {
+            String storeType = coupon.getStoreType();
+            couponTypeInfo.get(storeType).add(coupon);
+        }*/
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("couponTypeInfo", couponTypeInfoList);
 
         return result;
     }
@@ -417,9 +455,11 @@ public class CouponServiceImpl implements ICouponService {
      */
     @Override
     @Transactional
-    public void postiveScan(List<String> couponIds, Long storeId) {
+    public Integer postiveScan(List<String> couponIds, Long storeId) {
 
         Long userId = SecurityUtils.getLoginUser().getUser().getUserId();
+
+        Integer amount = 0;
 
         for (String couponId : couponIds) {
             Coupon coupon = couponMapper.selectCouponById(couponId);
@@ -430,7 +470,7 @@ public class CouponServiceImpl implements ICouponService {
                 throw new CustomException("該抵用券不屬於當前消費者");
             }
             if ("1".equals(coupon.getIsUsed())) {
-                throw new CustomException(MessageUtils.message("pro.err.coupon.used"));
+                throw new CustomException(MessageUtils.message("pro.err.coupon.used"), 1001);
             }
             //店家基本資料
             StoreInfo storeInfo = storeInfoMapper.selectStoreInfoById(storeId);
@@ -464,7 +504,11 @@ public class CouponServiceImpl implements ICouponService {
             if (result < 0) {
                 throw new CustomException("新增消費記錄檔失敗，請聯絡管理員");
             }
+
+            amount += coupon.getAmount().intValue();
         }
+
+        return amount;
     }
 
     /**
@@ -731,6 +775,18 @@ public class CouponServiceImpl implements ICouponService {
     public List<Map<String, Object>> getPrintCoupon(@Param("indentity") String indentity, @Param("printCode") String printCode) {
         List<Map<String, Object>> resultList = couponMapper.getPrintCoupon(indentity, printCode);
         return resultList;
+    }
+
+    /**
+     * 以證號末四碼及兌換碼查詢抵用券
+     *
+     * @param printCode 紙本兌換碼
+     * @return 結果
+     */
+    @Override
+    public int updatePrintCoupon(@Param("printCode") String printCode) {
+        int sum = couponMapper.updatePrintCoupon(printCode);
+        return sum;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.promote.project.promote.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.common.utils.poi.ExcelUtil;
@@ -20,6 +21,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.promote.project.promote.service.IConsumerService;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,7 +152,13 @@ public class CouponController extends BaseController {
     @PostMapping("/preScan")
     public AjaxResult getConsumerCoupon(@RequestBody Map<String, Long> request) {
         Long storeId = request.get("userId");
-        return AjaxResult.success(couponService.getConsumerCoupon(storeId, SecurityUtils.getLoginUser().getUser()));
+
+        Map result = couponService.getConsumerCoupon(storeId, SecurityUtils.getLoginUser().getUser());
+
+        AjaxResult ajax = AjaxResult.success();
+        ajax.put("result", result);
+
+        return ajax;
     }
 
     /**
@@ -157,7 +166,7 @@ public class CouponController extends BaseController {
      *
      * @return 結果
      */
-//    @PreAuthorize("@ss.hasRole('consumer')")
+    @PreAuthorize("@ss.hasRole('consumer')")
     @PostMapping("/postiveScan")
     public AjaxResult postiveScan(@RequestBody Map<String, Object> request) {
 
@@ -165,15 +174,19 @@ public class CouponController extends BaseController {
         List<String> couponIds = (List<String>) request.get("couponIds");
 
         //商家的user_id
-        Long storeId = Long.parseLong((String) request.get("storeId"));
+        Integer storeId = (Integer) request.get("storeId");
+
         if (StringUtils.isNull(couponIds) || couponIds.size() == 0) {
             return AjaxResult.error("未輸入抵用券");
         }
         if (StringUtils.isNull(storeId)) {
             return AjaxResult.error("未掃描商家");
         }
-        couponService.postiveScan(couponIds, storeId);
-        return AjaxResult.success();
+
+        // 使用抵用券
+        Integer amount = couponService.postiveScan(couponIds, storeId.longValue());
+
+        return new AjaxResult(1000, StrUtil.format("{} {}元 抵用成功", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ss")), amount));
     }
 
 
@@ -318,5 +331,22 @@ public class CouponController extends BaseController {
         AjaxResult ajax = AjaxResult.success();
         ajax.put("result", resultMap);
         return ajax;
+    }
+
+    /**
+     * 以證號末四碼及兌換碼查詢抵用券
+     *
+     * @return 結果
+     */
+    @PostMapping("/updatePrintCoupon")
+    public AjaxResult updatePrintCoupon(@RequestBody Map<String, Object> request) {
+
+        String printCode = request.get("printCode").toString();
+        int sum = couponService.updatePrintCoupon(printCode);
+        if(sum < 0){
+            return AjaxResult.error();
+        }
+        //int sum = 0;
+        return AjaxResult.success();
     }
 }

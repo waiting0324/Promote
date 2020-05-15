@@ -1,11 +1,11 @@
 package com.promote.project.promote.service;
 
-import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.promote.domain.Coupon;
 import com.promote.project.promote.domain.CouponConsume;
 import com.promote.project.system.domain.SysUser;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Map;
@@ -89,7 +89,7 @@ public interface ICouponService {
      * @param couponIds 抵用券序號
      * @param type      商家類型
      */
-    void postiveScan(List<String> couponIds, Long type);
+    Integer postiveScan(List<String> couponIds, Long type);
 
     /**
      * 反掃(商家掃消費者)
@@ -150,5 +150,11 @@ public interface ICouponService {
      */
     public List<Map<String, Object>> getPrintCoupon(@Param("indentity") String indentity, @Param("printCode") String printCode);
 
-
+    /**
+     * 以證號末四碼及兌換碼查詢抵用券
+     *
+     * @param printCode 紙本兌換碼
+     * @return 結果
+     */
+    public int updatePrintCoupon(@Param("printCode") String printCode);
 }

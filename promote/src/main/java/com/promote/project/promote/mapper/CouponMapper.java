@@ -95,4 +95,6 @@ public interface CouponMapper
      * @return
      */
     List<Map<String, Object>> getPrintCoupon(@Param("indentity") String indentity, @Param("printCode") String printCode);
+
+    int updatePrintCoupon(@Param("printCode") String printCode);
 }

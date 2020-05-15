@@ -99,7 +99,7 @@ public class ProCommonController extends BaseController {
         AjaxResult ajax = AjaxResult.success();
 
         // 旅宿業者註冊
-        if ("hotel".equals(user.getRole())) {
+        if ("H".equals(user.getRole())) {
             //帳號
             String username = user.getUsername();
             //舊密碼
@@ -113,7 +113,7 @@ public class ProCommonController extends BaseController {
             hotelService.regist(username, oriPwd, newPwd);
         }
         // 商家
-        else if ("store".equals(user.getRole())) {
+        else if ("S".equals(user.getRole())) {
 
             // 必填欄位檢核
             if (StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(user.getPassword()) ||
@@ -153,7 +153,7 @@ public class ProCommonController extends BaseController {
             ajax.put("longitude", user.getStore().getLongitude());
         }
         // 消費者
-        else if ("consumer".equals(user.getRole())) {
+        else if ("C".equals(user.getRole())) {
 
             Boolean isProxy = user.getConsumer().getHotelId() != null;
             // 正常註冊(非代註冊)才需檢核欄位
