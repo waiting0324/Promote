@@ -1,6 +1,5 @@
 package com.promote.project.promote.service;
 
-import com.promote.framework.web.domain.AjaxResult;
 import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.promote.domain.Coupon;
 import com.promote.project.promote.domain.CouponConsume;
@@ -89,7 +88,7 @@ public interface ICouponService {
      * @param couponIds 抵用券序號
      * @param type      商家類型
      */
-    void postiveScan(List<String> couponIds, Long type);
+    Integer postiveScan(List<String> couponIds, Long type);
 
     /**
      * 反掃(商家掃消費者)
