@@ -360,11 +360,11 @@ public class ProCommonController extends BaseController {
         }
         SysUser user = SecurityUtils.getLoginUser().getUser();
         //判斷角色
-        String role = user.getRoles().get(0).getRoleKey();
+        Long roleId = user.getRoles().get(0).getRoleId();
         Map<String, Object> resultMap = new HashMap<String, Object>();
 //        role = "hostel";
 //        userType = "H";
-        if("customerService".equals(role)){
+        if(RoleConstants.SERVICE_ROLE_ID.equals(roleId)){
             //客服
             if(StringUtils.isEmpty(userType)){
                 return AjaxResult.error("資料類型需輸入");
@@ -404,7 +404,7 @@ public class ProCommonController extends BaseController {
                 return ajax;
             }
         }
-        if("hostel".equals(role)){
+        if(RoleConstants.HOTEL_ROLE_ID.equals(roleId)){
             //旅宿業者查消費者
             if(StringUtils.isEmpty(identity)){
                 return AjaxResult.error("身分證號/居留證號需輸入");
@@ -419,14 +419,14 @@ public class ProCommonController extends BaseController {
             ajax.put("result", resultMap);
             return ajax;
         }
-        if("store".equals(role)){
+        if(RoleConstants.STORE_ROLE_ID.equals(roleId)){
             //店家
             resultMap.put("store",storeService.getByUsername(user.getUsername()));
 //            ajax.put("store",storeService.getByUsername(user.getUsername()));
             ajax.put("result", resultMap);
             return ajax;
         }
-        if("consumer".equals(role)){
+        if(RoleConstants.CONSUMER_ROLE_ID.equals(roleId)){
             //消費者
             resultMap.put("consumer", consumerService.getByUsername(user.getUsername()));
 //            ajax.put("consumer",consumerService.getByUsername(user.getUsername()));
