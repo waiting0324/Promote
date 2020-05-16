@@ -195,7 +195,7 @@ public class FilesController extends BaseController {
             return AjaxResult.error("需輸入檔案類型");
         }
         if(file == null){
-            return AjaxResult.error("沒有上傳檔案");
+            return AjaxResult.error("沒有檔案上傳");
         }
         String configKey = null;
         switch (fileType){
@@ -219,9 +219,9 @@ public class FilesController extends BaseController {
                 break;
         }
         String path = configService.selectConfigByKey(configKey);
-//        path = "/tmp/0"; //測試用
         File dirs = new File(path);
         if(!dirs.exists()){
+            //創建目錄
             dirs.mkdirs();
         }
         InputStream inputStream = null;
