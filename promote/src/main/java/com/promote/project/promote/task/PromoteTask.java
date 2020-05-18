@@ -1250,13 +1250,13 @@ public class PromoteTask {
     public void returnCoupon() {
         List<Coupon> allCoupon = couponService.getCouponByIsUsed("0", "0");
         if (StringUtils.isNotEmpty(allCoupon)) {
-            //版回給中企的金額
+            //返回給中企的金額
             int sTyepAmt = 0;
-            //版回給中辦的金額
+            //返回給中辦的金額
             int tTyepAmt = 0;
-            //版回給商業司的金額
+            //返回給商業司的金額
             int bTyepAmt = 0;
-            //版回給文化部的金額
+            //返回給文化部的金額
             int cTyepAmt = 0;
             //已過期的coupon
             List<Coupon> expiredCoupons = new ArrayList<Coupon>();
