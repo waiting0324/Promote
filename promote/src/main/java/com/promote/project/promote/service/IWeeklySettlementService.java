@@ -38,4 +38,11 @@ public interface IWeeklySettlementService {
      */
     public List<Map<String, Object>> queryWeeklySettlementDetailList(WeeklySettlementDetail weeklySettlementDteail);
 
+    /**
+     * 新增周結明細檔
+     *
+     * @param weeklySettlementDetail
+     * @return
+     */
+    public int insertWeeklySettlementDetail(WeeklySettlementDetail weeklySettlementDetail);
 }

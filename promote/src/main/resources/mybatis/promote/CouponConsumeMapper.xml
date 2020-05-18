@@ -27,6 +27,16 @@
         <result property="storeType" column="store_type" />
     </resultMap>
 
+    <resultMap type="java.util.Map" id="CouponConsumeYesterday">
+        <result property="consumerId" column="consumer_id" />
+        <result property="couponId" column="coupon_id" />
+        <result property="fundType" column="fund_type" />
+        <result property="storeId" column="store_id" />
+        <result property="consumeTime" column="consume_time" />
+        <result property="storeType" column="store_type" />
+        <result property="amount" column="amount" />
+    </resultMap>
+
     <sql id="selectCouponConsumeVo">
         select coupon_id, consumer_id, fund_type, store_id, store_type, consume_time, amount from pro_coupon_consume
     </sql>
@@ -132,5 +142,11 @@
             <if test="storeId != null">and coupon.store_id = #{storeId}</if>
         </where>
         order by coupon.consume_time desc
+    </select>
+
+    <select id="queryYesterdayAllData" resultMap="CouponConsumeYesterday">
+        SELECT consumer_id, coupon_id, fund_type, store_id, consume_time, store_type, amount
+        FROM pro_coupon_consume
+        WHERE consume_time Between #{beginTime} and #{endTime}
     </select>
 </mapper>

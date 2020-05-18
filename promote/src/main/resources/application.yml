@@ -105,7 +105,7 @@ pagehelper:
 # 防止XSS攻擊
 xss: 
   # 過濾開關
-  enabled: true
+  enabled: false
   # 排除連結（多個用逗號分隔）
   excludes: /system/notice/*
   # 匹配連結

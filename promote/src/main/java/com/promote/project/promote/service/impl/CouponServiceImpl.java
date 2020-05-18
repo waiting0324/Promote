@@ -843,5 +843,17 @@ public class CouponServiceImpl implements ICouponService {
             }
         }
     }
+    /*
+     * 以證號末四碼及兌換碼查詢抵用券
+     *
+     * @param beginTime 前一天日期-起始時間
+     * @param endTime 前一天日期-結束時間
+     * @return 結果
+     */
+    @Override
+    public List<Map<String, Object>> queryYesterdayAllData(@Param("beginTime")String beginTime, @Param("endTime")String endTime) {
+        List<Map<String, Object>> resultsList = couponConsumeMapper.queryYesterdayAllData(beginTime, endTime);
+        return resultsList;
+    }
 
 }

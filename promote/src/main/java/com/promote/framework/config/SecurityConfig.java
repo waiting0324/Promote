@@ -83,6 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+                .cors().and()
                 // CRSF禁用，因為不使用session
                 .csrf().disable()
                 // 認證失敗處理類
@@ -94,7 +95,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 對於登入login 驗證碼captchaImage 允許匿名訪問
                 .antMatchers("/**/login", "/captchaImage", "/**/regist",
                         "/store/whitelist/**", "/common/sendOtp", "/common/forgetPwd",
-                        "/whitelist/getWhiteListInfo").anonymous()
+                        "/whitelist/getWhiteListInfo", "/test").anonymous()
                 .antMatchers(
                         HttpMethod.GET,
                         "/*.html",
@@ -112,13 +113,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/druid/**").anonymous()
                 // 除上面外的所有請求全部需要鑑權認證
                 .anyRequest().authenticated()
-                .and().cors()
                 .and().headers().frameOptions().disable();
         httpSecurity.logout().logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler);
         // 新增JWT filter
         httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
-
 
     /**
      * 跨域配置
@@ -138,7 +137,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
 
     /**
      * 強雜湊雜湊加密實現

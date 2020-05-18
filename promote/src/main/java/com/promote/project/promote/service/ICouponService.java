@@ -94,7 +94,7 @@ public interface ICouponService {
     /**
      * 反掃(商家掃消費者)
      *
-     * @param id      組抵用券序號
+     * @param id 組抵用券序號
      */
     Long reverseScan(String id);
 
@@ -119,7 +119,7 @@ public interface ICouponService {
      * @param endDate   結束時間
      * @return 結果
      */
-    List<Map<String,Object>> getTotalAmtByStoreId(String beginDate, String endDate);
+    List<Map<String, Object>> getTotalAmtByStoreId(String beginDate, String endDate);
 
     /**
      * 重置列印狀態
@@ -131,15 +131,15 @@ public interface ICouponService {
     /**
      * 抵用券消費記錄查詢(WEB介面用)
      *
-     * @param id 使用者id
+     * @param id        使用者id
      * @param storeType 抵用券類型
      * @param startDate 查詢起日
-     * @param endDate 查詢迄日
-     * @param rows 每頁筆數
-     * @param page 要查詢的頁數
+     * @param endDate   查詢迄日
+     * @param rows      每頁筆數
+     * @param page      要查詢的頁數
      * @return 結果
      */
-    Map<String,Object> transactionHistory(Long id,String role,String storeType,String startDate,String endDate,String rows,String page);
+    Map<String, Object> transactionHistory(Long id, String role, String storeType, String startDate, String endDate, String rows, String page);
 
     /**
      * 以證號末四碼及兌換碼查詢抵用券
@@ -164,15 +164,24 @@ public interface ICouponService {
      * @param isUsed 是否已使用 ( 0未使用 1已使用 )
      * @return
      */
-    List<Coupon> getCouponByIsUsed(String isUsed,String isReturn);
+    List<Coupon> getCouponByIsUsed(String isUsed, String isReturn);
 
     /**
-     *更新補助額度檔
+     * 更新補助額度檔
      *
      * @param sTyepAmt 中企回歸金額
      * @param tTyepAmt 中辦回歸金額
      * @param bTyepAmt 商業司回歸金額
      * @param cTyepAmt 文化部回歸金額
      */
-    void updateProFundAmount(List<Coupon> expiredCoupons,int sTyepAmt,int tTyepAmt,int bTyepAmt,int cTyepAmt);
+    void updateProFundAmount(List<Coupon> expiredCoupons, int sTyepAmt, int tTyepAmt, int bTyepAmt, int cTyepAmt);
+
+    /*
+     * 取(前一天)店家每日消費統計表
+     *
+     * @param beginTime 前一天日期-起始時間
+     * @param endTime 前一天日期-結束時間
+     * @return 結果
+     */
+    public List<Map<String, Object>> queryYesterdayAllData(@Param("beginTime") String beginTime, @Param("endTime") String endTime);
 }

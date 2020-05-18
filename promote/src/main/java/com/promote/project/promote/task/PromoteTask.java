@@ -13,6 +13,7 @@ import com.promote.project.promote.domain.Coupon;
 import com.promote.project.promote.domain.HotelWhitelist;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.domain.StoreWhitelist;
+import com.promote.project.promote.domain.*;
 import com.promote.project.promote.service.*;
 import com.promote.project.system.domain.SysConfig;
 import com.promote.project.system.service.ISysConfigService;
@@ -58,6 +59,9 @@ public class PromoteTask {
 
     @Autowired
     StoreWhitelistService storeWhitelistService;
+
+    @Autowired
+    IWeeklySettlementService weeklySettlementService;
 
     @Autowired
     private ISysConfigService configService;
@@ -1182,6 +1186,60 @@ public class PromoteTask {
                     operLogServic.insertOperlog(failLog);
                 }
             }
+        }
+    }
+
+    /**
+     * 將(前一天)店家每日消費統計表已收抵用券並移入消費紀錄並寫入週結明細
+     *
+     * @param
+     */
+    public void insertProWeeklySettlymentDetail() {
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        date = calendar.getTime();
+        String strDate = sdf.format(date);
+        String beginDate = strDate + " 00:00:00";
+        String endDate = strDate + " 23:59:59";
+        List<Map<String, Object>> resultsList = couponService.queryYesterdayAllData(beginDate, endDate);
+        try {
+            // 新增至美日消費統計檔
+            SimpleDateFormat insertSdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for(int i = 0; i < resultsList.size(); i++){
+                DailyConsume dailyConsume = new DailyConsume();
+                //補助機構
+                String fundType = resultsList.get(i).get("fundType").toString();
+                //店家代號
+                String storeId = resultsList.get(i).get("storeId").toString();
+                //消費時間
+                String consumeTime =  resultsList.get(i).get("consumeTime").toString();
+                //類別
+                String storeType = resultsList.get(i).get("storeType").toString();
+                //抵用券金額
+                String amount = resultsList.get(i).get("amount").toString();
+                dailyConsume.setConsumeTime(insertSdf.parse(consumeTime));
+                dailyConsume.setFundType(fundType);
+                dailyConsume.setStoreId(Long.valueOf(storeId));
+                dailyConsume.setStoreType(storeType);
+                dailyConsume.setCouponAmount(Long.valueOf(amount));
+                //新增至美日消費統計檔
+                int sum1 = dailyConsumeService.insertDailyConsume(dailyConsume);
+                //抵用券序號
+                String couponId = resultsList.get(i).get("couponId").toString();
+                WeeklySettlementDetail weeklySettlementDetail = new WeeklySettlementDetail();
+                weeklySettlementDetail.setCouponId(couponId);
+                weeklySettlementDetail.setStoreId(Long.valueOf(storeId));
+                weeklySettlementDetail.setConsumeTime(insertSdf.parse(consumeTime));
+                weeklySettlementDetail.setStoreType(storeType);
+                weeklySettlementDetail.setCreateTime(new Date());
+                //新增至週結明細表
+                int sum2 = weeklySettlementService.insertWeeklySettlementDetail(weeklySettlementDetail);
+            }
+        }catch (Exception e){
+
         }
     }
 
