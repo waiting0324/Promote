@@ -157,4 +157,13 @@ public interface ICouponService {
      * @return 結果
      */
     public int updatePrintCoupon(@Param("printCode") String printCode);
+
+    /**
+     * 取(前一天)店家每日消費統計表
+     *
+     * @param beginTime 前一天日期-起始時間
+     * @param endTime 前一天日期-結束時間
+     * @return 結果
+     */
+    public List<Map<String, Object>> queryYesterdayAllData(@Param("beginTime")String beginTime, @Param("endTime")String endTime);
 }

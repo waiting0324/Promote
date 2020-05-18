@@ -1,5 +1,6 @@
 package com.promote.project.promote.service;
 
+import com.promote.project.promote.domain.DailyConsume;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.*;
@@ -30,4 +31,11 @@ public interface IDailyConsumeService {
      */
     public List<Map<String, Object>> queryDailyConsumeForDay(@Param("storeId") Long storeId, @Param("beginDay") String beginDay, @Param("endDay") String endDay);
 
+    /**
+     * 新增每日消費統計檔
+     *
+     * @param DailyConsume
+     * @return 結果
+     */
+    public int insertDailyConsume(DailyConsume dailyConsume);
 }

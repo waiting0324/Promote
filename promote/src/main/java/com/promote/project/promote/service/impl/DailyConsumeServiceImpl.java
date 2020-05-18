@@ -55,4 +55,15 @@ public class DailyConsumeServiceImpl implements IDailyConsumeService {
         List<Map<String, Object>> resultsList = dailyConsumeMapper.queryDailyConsumeForDay(storeId, beginDay, endDay);
         return resultsList;
     }
+
+    /**
+     * 新增每日消費統計檔
+     *
+     * @param
+     * @return 結果
+     */
+    @Override
+    public int insertDailyConsume(DailyConsume dailyConsume) {
+        return dailyConsumeMapper.insertDailyConsume(dailyConsume);
+    }
 }
