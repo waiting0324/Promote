@@ -76,7 +76,7 @@ public class paymentController extends BaseController {
      * @return 結果
      */
     @PostMapping("/weeklyTx")
-    public AjaxResult weeklyTx(@RequestBody Map<String, Object> request) throws Exception{
+    public AjaxResult weeklyTx() throws Exception{
 
         SysUser user = SecurityUtils.getLoginUser().getUser();
         Long userId = 0l;
@@ -160,7 +160,6 @@ public class paymentController extends BaseController {
             String statusDesc = "";
             if("1".equals(isConfirm)){
                 newIsConfirm = "Y";
-                System.out.println(weeklySettlementList.get(i));
                 String paymentStatus = weeklySettlementList.get(i).get("paymentStatus").toString();
                 if("0".equals(paymentStatus)){
                     statusDesc = "銷帳處理中";
