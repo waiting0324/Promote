@@ -50,4 +50,10 @@ public class WeeklySettlementServiceImpl implements IWeeklySettlementService {
         List<Map<String, Object>> queryWeeklySettlementDetailList = weeklySettlementDetailMapper.queryWeeklySettlementDetailList(weeklySettlementDteail);
         return queryWeeklySettlementDetailList;
     }
+
+    @Override
+    public int insertWeeklySettlementDetail(WeeklySettlementDetail weeklySettlementDetail){
+        int sum = weeklySettlementDetailMapper.insertWeeklySettlementDetail(weeklySettlementDetail);
+        return 0;
+    }
 }

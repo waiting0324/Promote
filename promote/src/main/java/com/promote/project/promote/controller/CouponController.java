@@ -1,6 +1,7 @@
 package com.promote.project.promote.controller;
 
 import cn.hutool.core.util.StrUtil;
+import com.promote.common.constant.RoleConstants;
 import com.promote.common.utils.SecurityUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.common.utils.poi.ExcelUtil;
@@ -211,11 +212,11 @@ public class CouponController extends BaseController {
     @PostMapping("/getCouponOverview")
     public AjaxResult getCouponOverview(@RequestBody(required = false) Map<String, Object> request) {
         SysUser user = SecurityUtils.getLoginUser().getUser();
-        String role = user.getRoles().get(0).getRoleKey();
+        Long roleId = user.getRoles().get(0).getRoleId();
         Long consumerId = null;
-        if ("consumer".equals(role)) {
+        if (RoleConstants.CONSUMER_ROLE_ID.equals(roleId)) {
             consumerId = user.getUserId();
-        } else if ("customerService".equals(role)) {
+        } else if (RoleConstants.SERVICE_ROLE_ID.equals(roleId)) {
             String indentity = (String) request.get("indentity");
             String username = (String) request.get("username");
             if (StringUtils.isEmpty(indentity) && StringUtils.isEmpty(username)) {
@@ -280,14 +281,14 @@ public class CouponController extends BaseController {
         Long userId = user.getUserId();
         AjaxResult ajax = AjaxResult.success();
         //判斷角色
-        String role = user.getRoles().get(0).getRoleKey();
+        Long roleId = user.getRoles().get(0).getRoleId();
         Map<String, Object> map = null;
 //        role = "customerService"; //測試用
-        if ("store".equals(role)) {
+        if (RoleConstants.STORE_ROLE_ID.equals(roleId)) {
             map = couponService.transactionHistory(userId, "S", storeType, startDate, endDate, rows, page);
-        } else if ("consumer".equals(role)) {
+        } else if (RoleConstants.CONSUMER_ROLE_ID.equals(roleId)) {
             map = couponService.transactionHistory(userId, "C", storeType, startDate, endDate, rows, page);
-        } else if ("customerService".equals(role)) {
+        } else if (RoleConstants.SERVICE_ROLE_ID.equals(roleId)) {
             //客服
             String username = (String) request.get("username");
             String indentity = (String) request.get("indentity");
@@ -300,10 +301,10 @@ public class CouponController extends BaseController {
                 return AjaxResult.error("需輸入身分證號/居留證號或帳號");
             }
             SysUser sysUser = sysUserService.getByUnameIndentity(username, indentity);
-            role = sysUser.getRoles().get(0).getRoleKey();
-            if ("store".equals(role)) {
+            roleId = sysUser.getRoles().get(0).getRoleId();
+            if (RoleConstants.STORE_ROLE_ID.equals(roleId)) {
                 map = couponService.transactionHistory(sysUser.getUserId(), "S", storeType, startDate, endDate, rows, page);
-            } else if ("consumer".equals(role)) {
+            } else if (RoleConstants.CONSUMER_ROLE_ID.equals(roleId)) {
                 map = couponService.transactionHistory(sysUser.getUserId(), "C", storeType, startDate, endDate, rows, page);
             }
         }

@@ -76,7 +76,7 @@ public class paymentController extends BaseController {
      * @return 結果
      */
     @PostMapping("/weeklyTx")
-    public AjaxResult weeklyTx(@RequestBody Map<String, Object> request) throws Exception{
+    public AjaxResult weeklyTx() throws Exception{
 
         SysUser user = SecurityUtils.getLoginUser().getUser();
         Long userId = 0l;
@@ -155,13 +155,12 @@ public class paymentController extends BaseController {
             //statusDesc，前端顯示狀態，若isConfirm = 0，填入待確認。
             //statusDesc，前端顯示狀態，若isConfirm = 1，則判斷payment_status=0，銷帳處理中，payment_status=1，已入帳。
             //isConfirm 判斷Y/N
-            System.out.println(weeklySettlementList.get(i));
             String isConfirm = weeklySettlementList.get(i).get("isConfirm").toString();
             String newIsConfirm = "";
             String statusDesc = "";
             if("1".equals(isConfirm)){
                 newIsConfirm = "Y";
-                String paymentStatus = weeklySettlementList.get(i).get("payment_status").toString();
+                String paymentStatus = weeklySettlementList.get(i).get("paymentStatus").toString();
                 if("0".equals(paymentStatus)){
                     statusDesc = "銷帳處理中";
                 }else if("1".equals(paymentStatus)){
@@ -181,9 +180,9 @@ public class paymentController extends BaseController {
         AjaxResult ajax = AjaxResult.success();
         Map<String, Object> resultsMap = new HashMap<String, Object>();
         resultsMap.put("incomeTotal", incomeTotal);
-        resultsMap.put("DailyTransaction", queryDailyConsumeForDayList);
-        resultsMap.put("WeeklyTransaction", weeklySettlementList);
-        ajax.put("results",resultsMap);
+        resultsMap.put("dailyTransaction", queryDailyConsumeForDayList);
+        resultsMap.put("weeklyTransaction", weeklySettlementList);
+        ajax.put("result",resultsMap);
         //ajax.put("incomeTotal", incomeTotal);
         //ajax.put("DailyTransaction", queryDailyConsumeForDayList);
         //ajax.put("WeeklyTransaction", weeklySettlementList);

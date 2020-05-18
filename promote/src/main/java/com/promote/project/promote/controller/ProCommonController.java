@@ -360,11 +360,11 @@ public class ProCommonController extends BaseController {
         }
         SysUser user = SecurityUtils.getLoginUser().getUser();
         //判斷角色
-        String role = user.getRoles().get(0).getRoleKey();
+        Long roleId = user.getRoles().get(0).getRoleId();
         Map<String, Object> resultMap = new HashMap<String, Object>();
 //        role = "hostel";
 //        userType = "H";
-        if("customerService".equals(role)){
+        if(RoleConstants.SERVICE_ROLE_ID.equals(roleId)){
             //客服
             if(StringUtils.isEmpty(userType)){
                 return AjaxResult.error("資料類型需輸入");
@@ -404,7 +404,7 @@ public class ProCommonController extends BaseController {
                 return ajax;
             }
         }
-        if("hostel".equals(role)){
+        if(RoleConstants.HOTEL_ROLE_ID.equals(roleId)){
             //旅宿業者查消費者
             if(StringUtils.isEmpty(identity)){
                 return AjaxResult.error("身分證號/居留證號需輸入");
@@ -419,14 +419,14 @@ public class ProCommonController extends BaseController {
             ajax.put("result", resultMap);
             return ajax;
         }
-        if("store".equals(role)){
+        if(RoleConstants.STORE_ROLE_ID.equals(roleId)){
             //店家
             resultMap.put("store",storeService.getByUsername(user.getUsername()));
 //            ajax.put("store",storeService.getByUsername(user.getUsername()));
             ajax.put("result", resultMap);
             return ajax;
         }
-        if("consumer".equals(role)){
+        if(RoleConstants.CONSUMER_ROLE_ID.equals(roleId)){
             //消費者
             resultMap.put("consumer", consumerService.getByUsername(user.getUsername()));
 //            ajax.put("consumer",consumerService.getByUsername(user.getUsername()));
@@ -446,26 +446,26 @@ public class ProCommonController extends BaseController {
     public AjaxResult updateProfile(@RequestBody SysUser sysUser) {
         SysUser user = SecurityUtils.getLoginUser().getUser();
         //判斷角色
-        String role = user.getRoles().get(0).getRoleKey();
+        Long roleId = user.getRoles().get(0).getRoleId();
         //登入者id
         Long userId = user.getUserId();
         //登入者帳號
         String username = user.getUsername();
         //資料類型
         String userType = null;
-        if("customerService".equals(role)){
+        if(RoleConstants.SERVICE_ROLE_ID.equals(roleId)){
             //客服
             userType = sysUser.getUserType();
             if(StringUtils.isEmpty(userType)){
                 return AjaxResult.error("需輸入資料類型");
             }
         }
-        if("hostel".equals(role)){
+        if(RoleConstants.HOTEL_ROLE_ID.equals(roleId)){
             //SA奕凱:目前不處理旅宿
-        }else if("store".equals(role) || ("customerService".equals(role) && "S".equals(userType))){
+        }else if(RoleConstants.STORE_ROLE_ID.equals(roleId) || (RoleConstants.SERVICE_ROLE_ID.equals(roleId) && "S".equals(userType))){
             //店家
             StoreInfo storeInfo = sysUser.getStore();
-            if("customerService".equals(role)){
+            if(RoleConstants.SERVICE_ROLE_ID.equals(roleId)){
                 if(StringUtils.isNull(storeInfo.getUserId()) || StringUtils.isEmpty(storeInfo.getUsername())){
                     return AjaxResult.error("需輸入userId及帳號");
                 }
@@ -476,10 +476,10 @@ public class ProCommonController extends BaseController {
             storeInfo.setUsername(username);
             storeService.updateStoreInfo(storeInfo);
             return AjaxResult.success("更新成功");
-        }else if("consumer".equals(role) || ("customerService".equals(role) && "C".equals(userType))){
+        }else if(RoleConstants.CONSUMER_ROLE_ID.equals(roleId) || (RoleConstants.SERVICE_ROLE_ID.equals(roleId) && "C".equals(userType))){
             //消費者
             ConsumerInfo consumer = sysUser.getConsumer();
-            if("customerService".equals(role)){
+            if(RoleConstants.SERVICE_ROLE_ID.equals(roleId)){
                 if(StringUtils.isNull(consumer.getUserId()) || StringUtils.isEmpty(consumer.getUsername())){
                     return AjaxResult.error("需輸入userId及帳號");
                 }

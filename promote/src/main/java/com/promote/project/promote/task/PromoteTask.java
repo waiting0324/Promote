@@ -9,9 +9,7 @@ import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.project.monitor.domain.SysOperLog;
 import com.promote.project.monitor.service.ISysOperLogService;
-import com.promote.project.promote.domain.HotelWhitelist;
-import com.promote.project.promote.domain.ProWhitelist;
-import com.promote.project.promote.domain.StoreWhitelist;
+import com.promote.project.promote.domain.*;
 import com.promote.project.promote.service.*;
 import com.promote.project.system.domain.SysConfig;
 import com.promote.project.system.service.ISysConfigService;
@@ -27,6 +25,7 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -56,6 +55,9 @@ public class PromoteTask {
 
     @Autowired
     StoreWhitelistService storeWhitelistService;
+
+    @Autowired
+    IWeeklySettlementService weeklySettlementService;
 
     @Autowired
     private ISysConfigService configService;
@@ -515,6 +517,10 @@ public class PromoteTask {
                     failLog.setErrorMsg("執行白名單" + (needInsertProWhitelist ? "新增" : "更新") + "失敗: " + (type == 1 ? "旅宿業者代號= " : "店家代碼= ") + id);
                     failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
                     operLogServic.insertOperlog(failLog);
+                    String now = DateUtils.dateTime();
+                    String proWhitelistErrDir = configService.selectConfigByKey("pro.whitelistErr.dir");
+                    String outputFile = proWhitelistErrDir + "/pro_whitelistErr" + now + ".csv";
+                    printErrCsv(proWhitelistErrDir,outputFile,rowlist,titlelist);
                 }
             }
             //處理旅宿or店家白名單
@@ -569,28 +575,11 @@ public class PromoteTask {
                 failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
                 operLogServic.insertOperlog(failLog);
                 String now = DateUtils.dateTime();
-                String outputPath = type == 1 ? "d:\\hotel_whitelistErr" + now + ".csv" : "d:\\store_whitelistErr" + now + ".csv";
-                printErrCsv(outputPath,rowlist,titlelist);
-//                File file = new File(type == 1 ? "d:\\hotel_whitelistErr" + now + ".csv" : "d:\\store_whitelistErr" + now + ".csv");
-//                CSVPrinter csvPrinter = null;
-//                if (!file.exists()) {
-//                    file.createNewFile();
-//                    csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
-//                    //打印標題
-//                    for (String title : titlelist) {
-//                        csvPrinter.print(title);
-//                    }
-//                    csvPrinter.println();
-//                }
-//                if (csvPrinter == null) {
-//                    csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
-//                }
-//                for (String item : rowlist) {
-//                    csvPrinter.print(item);
-//                }
-//                csvPrinter.println();
-//                csvPrinter.flush();
-//                csvPrinter.close();
+                String hotelWhitelistErrDir = configService.selectConfigByKey("hotel.whitelistErr.dir");
+                String storeWhitelistErrDir = configService.selectConfigByKey("store.whitelistErr.dir");
+                String errDir = type == 1 ? hotelWhitelistErrDir : storeWhitelistErrDir;
+                String outputFile = type == 1 ? errDir + "/hotel_whitelistErr" + now + ".csv" : errDir + "/store_whitelistErr" + now + ".csv";
+                printErrCsv(errDir,outputFile,rowlist,titlelist);
             }
         } catch (Exception e) {
             //Do Nothing
@@ -600,14 +589,21 @@ public class PromoteTask {
     /**
      * 匯出錯誤檔案到csv
      *
-     * @param outputPath 匯出路徑
+     * @param outputDir 匯出路徑
+     * @param outputFile 匯出檔案
      * @param rowlist 每一行數據
      * @param titlelist 標題
      */
-    private void printErrCsv(String outputPath,List<String> rowlist, List<String> titlelist){
+    private void printErrCsv(String outputDir,String outputFile,List<String> rowlist, List<String> titlelist){
         CSVPrinter csvPrinter = null;
         try{
-            File file = new File(outputPath);
+            File destination = new File(outputDir);
+            //建目錄
+            if(!destination.exists()){
+                destination.mkdirs();
+            }
+            File file = new File(outputFile);
+            //建檔案
             if (!file.exists()) {
                 file.createNewFile();
                 csvPrinter = new CSVPrinter(new FileWriter(file, true), CSVFormat.DEFAULT.withDelimiter(',').withQuote('"').withRecordSeparator("\r\n").withIgnoreEmptyLines(true));
@@ -624,7 +620,6 @@ public class PromoteTask {
                 csvPrinter.print(item);
             }
             csvPrinter.println();
-//            csvPrinter.flush();
         }catch(Exception e){
             e.printStackTrace();
         }finally {
@@ -1180,6 +1175,60 @@ public class PromoteTask {
                     operLogServic.insertOperlog(failLog);
                 }
             }
+        }
+    }
+
+    /**
+     * 將(前一天)店家每日消費統計表已收抵用券並移入消費紀錄並寫入週結明細
+     *
+     * @param
+     */
+    public void insertProWeeklySettlymentDetail() {
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        date = calendar.getTime();
+        String strDate = sdf.format(date);
+        String beginDate = strDate + " 00:00:00";
+        String endDate = strDate + " 23:59:59";
+        List<Map<String, Object>> resultsList = couponService.queryYesterdayAllData(beginDate, endDate);
+        try {
+            // 新增至美日消費統計檔
+            SimpleDateFormat insertSdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for(int i = 0; i < resultsList.size(); i++){
+                DailyConsume dailyConsume = new DailyConsume();
+                //補助機構
+                String fundType = resultsList.get(i).get("fundType").toString();
+                //店家代號
+                String storeId = resultsList.get(i).get("storeId").toString();
+                //消費時間
+                String consumeTime =  resultsList.get(i).get("consumeTime").toString();
+                //類別
+                String storeType = resultsList.get(i).get("storeType").toString();
+                //抵用券金額
+                String amount = resultsList.get(i).get("amount").toString();
+                dailyConsume.setConsumeTime(insertSdf.parse(consumeTime));
+                dailyConsume.setFundType(fundType);
+                dailyConsume.setStoreId(Long.valueOf(storeId));
+                dailyConsume.setStoreType(storeType);
+                dailyConsume.setCouponAmount(Long.valueOf(amount));
+                //新增至美日消費統計檔
+                int sum1 = dailyConsumeService.insertDailyConsume(dailyConsume);
+                //抵用券序號
+                String couponId = resultsList.get(i).get("couponId").toString();
+                WeeklySettlementDetail weeklySettlementDetail = new WeeklySettlementDetail();
+                weeklySettlementDetail.setCouponId(couponId);
+                weeklySettlementDetail.setStoreId(Long.valueOf(storeId));
+                weeklySettlementDetail.setConsumeTime(insertSdf.parse(consumeTime));
+                weeklySettlementDetail.setStoreType(storeType);
+                weeklySettlementDetail.setCreateTime(new Date());
+                //新增至週結明細表
+                int sum2 = weeklySettlementService.insertWeeklySettlementDetail(weeklySettlementDetail);
+            }
+        }catch (Exception e){
+
         }
     }
 
