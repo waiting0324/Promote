@@ -33,7 +33,7 @@
     </resultMap>
 
     <sql id="selectCouponVo">
-        select id, fund_type, user_id, is_used, store_type, amount, notice_time, create_time,is_return from pro_coupon
+        select id, fund_type, user_id, is_used, store_type, amount, notice_time, create_time,is_return from PRECMGR.pro_coupon
     </sql>
 
     <select id="selectCouponList" parameterType="Coupon" resultMap="CouponResult">
