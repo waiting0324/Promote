@@ -397,7 +397,6 @@ public class CouponServiceImpl implements ICouponService {
         }*/
 
 
-
         List<Map> couponTypeInfoList = new ArrayList();
 
 
@@ -515,7 +514,7 @@ public class CouponServiceImpl implements ICouponService {
     /**
      * 反掃(商家掃消費者)
      *
-     * @param id      組抵用券序號
+     * @param id 組抵用券序號
      */
     @Override
     @Transactional
@@ -529,7 +528,7 @@ public class CouponServiceImpl implements ICouponService {
         if ("1".equals(coupon.getIsUsed())) {
             throw new CustomException(MessageUtils.message("pro.err.coupon.used"), 1001);
         }
-        StoreInfo storeInfo =  SecurityUtils.getLoginUser().getUser().getStore();
+        StoreInfo storeInfo = SecurityUtils.getLoginUser().getUser().getStore();
         if (StringUtils.isNull(storeInfo)) {
             throw new CustomException(MessageUtils.message("pro.err.store.not.find"));
         }
@@ -592,16 +591,16 @@ public class CouponServiceImpl implements ICouponService {
         // 已消費總金額
         int consumed = 0;
         Map<String, Object> couponOverview = consumerInfoMapper.getConsumerInfoById(consumerId);
-        if(StringUtils.isEmpty(couponOverview)){
+        if (StringUtils.isEmpty(couponOverview)) {
             throw new CustomException("尚未申請抵用券");
         }
-        Date applyTime = (Date)couponOverview.get("applyTime");
-        if(StringUtils.isNotNull(applyTime)){
-            couponOverview.put("applyTime",DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss",applyTime));
+        Date applyTime = (Date) couponOverview.get("applyTime");
+        if (StringUtils.isNotNull(applyTime)) {
+            couponOverview.put("applyTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", applyTime));
         }
-        Date printTime = (Date)couponOverview.get("printTime");
-        if(StringUtils.isNotNull(printTime)){
-            couponOverview.put("printTime",DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss",printTime));
+        Date printTime = (Date) couponOverview.get("printTime");
+        if (StringUtils.isNotNull(printTime)) {
+            couponOverview.put("printTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", printTime));
         }
 
         //取得該使用者的coupon(pro_coupon)
@@ -618,14 +617,14 @@ public class CouponServiceImpl implements ICouponService {
             map.put("typeName", typeName[i]);
             map.put("consumed", 0);
             map.put("balance", 0);
-            List<Map<String, Object>> couponInfo = couponMapper.getCouponInfo(consumerId,i + "");
-            for(Map<String, Object> detail :couponInfo){
-                Date consumeTime = (Date)detail.get("consumeTime");
-                if(StringUtils.isNotNull(consumeTime)){
-                    detail.put("consumeTime",DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss",consumeTime));
+            List<Map<String, Object>> couponInfo = couponMapper.getCouponInfo(consumerId, i + "");
+            for (Map<String, Object> detail : couponInfo) {
+                Date consumeTime = (Date) detail.get("consumeTime");
+                if (StringUtils.isNotNull(consumeTime)) {
+                    detail.put("consumeTime", DateUtils.parseDateToStr("yyyy/MM/dd HH:mm:ss", consumeTime));
                 }
             }
-            map.put("couponInfo",couponInfo);
+            map.put("couponInfo", couponInfo);
             couponTypeInfo.add(map);
         }
 
@@ -650,9 +649,9 @@ public class CouponServiceImpl implements ICouponService {
                 map.put("balance", (int) (Integer.parseInt(map.get("balance").toString()) + coupon.getAmount()));
             }
         }
-        couponOverview.put("consumed",consumed);
-        couponOverview.put("balance",balance);
-        couponOverview.put("couponTypeInfo",couponTypeInfo);
+        couponOverview.put("consumed", consumed);
+        couponOverview.put("balance", balance);
+        couponOverview.put("couponTypeInfo", couponTypeInfo);
         return couponOverview;
     }
 
@@ -788,6 +787,61 @@ public class CouponServiceImpl implements ICouponService {
     public int updatePrintCoupon(@Param("printCode") String printCode) {
         int sum = couponMapper.updatePrintCoupon(printCode);
         return sum;
+    }
+
+    /**
+     * 根據是否已使用 ( 0未使用 1已使用 )查找抵用券發放記錄檔
+     *
+     * @param isUsed 是否已使用 ( 0未使用 1已使用 )
+     * @return
+     */
+    @Override
+    public List<Coupon> getCouponByIsUsed(String isUsed, String isReturn) {
+        return couponMapper.getCouponByIsUsed(isUsed, isReturn);
+    }
+
+
+    /**
+     * 更新補助額度檔
+     *
+     * @param sTyepAmt 中企回歸金額
+     * @param tTyepAmt 中辦回歸金額
+     * @param bTyepAmt 商業司回歸金額
+     * @param cTyepAmt 文化部回歸金額
+     */
+    @Override
+    @Transactional
+    public void updateProFundAmount(List<Coupon> expiredCoupons, int sTyepAmt, int tTyepAmt, int bTyepAmt, int cTyepAmt) {
+        for (Coupon coupon : expiredCoupons) {
+            //更新抵用券發放記錄檔的is_return欄位
+            couponMapper.updateCoupon(coupon);
+        }
+        //取得所有的助額度檔
+        List<FundAmount> allFundAmount = fundAmountMapper.getAllFundAmount();
+        if (StringUtils.isNotEmpty(allFundAmount)) {
+            for (FundAmount fundAmount : allFundAmount) {
+                //取得補助機構
+                String fundType = fundAmount.getFundType();
+                //補助金餘額
+                Long balance = fundAmount.getBalance();
+                switch (fundType) {
+                    case "S":
+                        balance += sTyepAmt;
+                        break;
+                    case "T":
+                        balance += tTyepAmt;
+                        break;
+                    case "B":
+                        balance += bTyepAmt;
+                        break;
+                    case "C":
+                        balance += cTyepAmt;
+                        break;
+                }
+                fundAmount.setBalance(balance);
+                fundAmountMapper.updateFundAmount(fundAmount);
+            }
+        }
     }
 
 }

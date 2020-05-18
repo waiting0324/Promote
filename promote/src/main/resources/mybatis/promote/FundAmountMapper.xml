@@ -98,4 +98,8 @@
         </foreach>
     </delete>
 
+
+    <select id="getAllFundAmount" resultMap="FundAmountResult">
+        <include refid="selectFundAmountVo"/>
+    </select>
 </mapper>

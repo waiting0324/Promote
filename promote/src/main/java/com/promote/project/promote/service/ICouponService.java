@@ -157,4 +157,22 @@ public interface ICouponService {
      * @return 結果
      */
     public int updatePrintCoupon(@Param("printCode") String printCode);
+
+    /**
+     * 根據是否已使用 ( 0未使用 1已使用 )查找抵用券發放記錄檔
+     *
+     * @param isUsed 是否已使用 ( 0未使用 1已使用 )
+     * @return
+     */
+    List<Coupon> getCouponByIsUsed(String isUsed,String isReturn);
+
+    /**
+     *更新補助額度檔
+     *
+     * @param sTyepAmt 中企回歸金額
+     * @param tTyepAmt 中辦回歸金額
+     * @param bTyepAmt 商業司回歸金額
+     * @param cTyepAmt 文化部回歸金額
+     */
+    void updateProFundAmount(List<Coupon> expiredCoupons,int sTyepAmt,int tTyepAmt,int bTyepAmt,int cTyepAmt);
 }

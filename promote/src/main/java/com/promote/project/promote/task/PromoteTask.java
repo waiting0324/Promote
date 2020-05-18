@@ -9,6 +9,7 @@ import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.StringUtils;
 import com.promote.project.monitor.domain.SysOperLog;
 import com.promote.project.monitor.service.ISysOperLogService;
+import com.promote.project.promote.domain.Coupon;
 import com.promote.project.promote.domain.HotelWhitelist;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.domain.StoreWhitelist;
@@ -27,6 +28,7 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -516,9 +518,13 @@ public class PromoteTask {
                     failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
                     operLogServic.insertOperlog(failLog);
                     String now = DateUtils.dateTime();
-                    String proWhitelistErrDir = configService.selectConfigByKey("pro.whitelistErr.dir");
-                    String outputFile = proWhitelistErrDir + "/pro_whitelistErr" + now + ".csv";
-                    printErrCsv(proWhitelistErrDir,outputFile,rowlist,titlelist);
+                    String errDir = configService.selectConfigByKey("pro.whitelistErr.dir");
+//                    String proHotelWhitelistErrDir = configService.selectConfigByKey("pro.hotel.whitelistErr.dir");
+//                    String proStoreWhitelistErrDir = configService.selectConfigByKey("pro.store.whitelistErr.dir");
+//                    String errDir = type == 1 ? proHotelWhitelistErrDir : proStoreWhitelistErrDir;
+//                    String outputFile = type == 1 ? errDir + "/hotel_whitelistErr" + now + ".csv" : errDir + "/store_whitelistErr" + now + ".csv";
+                    String outputFile = type == 1 ? errDir + "/proHotelWhitelistErr" + now + ".csv" : errDir + "/proStoreWhitelistErr" + now + ".csv";
+                    printErrCsv(errDir, outputFile, rowlist, titlelist);
                 }
             }
             //處理旅宿or店家白名單
@@ -573,11 +579,13 @@ public class PromoteTask {
                 failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
                 operLogServic.insertOperlog(failLog);
                 String now = DateUtils.dateTime();
-                String hotelWhitelistErrDir = configService.selectConfigByKey("hotel.whitelistErr.dir");
-                String storeWhitelistErrDir = configService.selectConfigByKey("store.whitelistErr.dir");
-                String errDir = type == 1 ? hotelWhitelistErrDir : storeWhitelistErrDir;
-                String outputFile = type == 1 ? errDir + "/hotel_whitelistErr" + now + ".csv" : errDir + "/store_whitelistErr" + now + ".csv";
-                printErrCsv(errDir,outputFile,rowlist,titlelist);
+                String errDir = configService.selectConfigByKey("whitelistErr.dir");
+//                String hotelWhitelistErrDir = configService.selectConfigByKey("hotel.whitelistErr.dir");
+//                String storeWhitelistErrDir = configService.selectConfigByKey("store.whitelistErr.dir");
+//                String errDir = type == 1 ? hotelWhitelistErrDir : storeWhitelistErrDir;
+//                String outputFile = type == 1 ? errDir + "/hotel_whitelistErr" + now + ".csv" : errDir + "/store_whitelistErr" + now + ".csv";
+                String outputFile = type == 1 ? errDir + "/hotelWhitelistErr" + now + ".csv" : errDir + "/storeWhitelistErr" + now + ".csv";
+                printErrCsv(errDir, outputFile, rowlist, titlelist);
             }
         } catch (Exception e) {
             //Do Nothing
@@ -587,17 +595,17 @@ public class PromoteTask {
     /**
      * 匯出錯誤檔案到csv
      *
-     * @param outputDir 匯出路徑
+     * @param outputDir  匯出路徑
      * @param outputFile 匯出檔案
-     * @param rowlist 每一行數據
-     * @param titlelist 標題
+     * @param rowlist    每一行數據
+     * @param titlelist  標題
      */
-    private void printErrCsv(String outputDir,String outputFile,List<String> rowlist, List<String> titlelist){
+    private void printErrCsv(String outputDir, String outputFile, List<String> rowlist, List<String> titlelist) {
         CSVPrinter csvPrinter = null;
-        try{
+        try {
             File destination = new File(outputDir);
             //建目錄
-            if(!destination.exists()){
+            if (!destination.exists()) {
                 destination.mkdirs();
             }
             File file = new File(outputFile);
@@ -618,11 +626,12 @@ public class PromoteTask {
                 csvPrinter.print(item);
             }
             csvPrinter.println();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
+            //關閉串流
             try {
-                if(csvPrinter != null){
+                if (csvPrinter != null) {
                     csvPrinter.close(true);
                 }
             } catch (IOException e) {
@@ -1172,6 +1181,59 @@ public class PromoteTask {
                     failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
                     operLogServic.insertOperlog(failLog);
                 }
+            }
+        }
+    }
+
+
+    /**
+     * 總額度控管
+     */
+    public void returnCoupon() {
+        List<Coupon> allCoupon = couponService.getCouponByIsUsed("0", "0");
+        if (StringUtils.isNotEmpty(allCoupon)) {
+            //版回給中企的金額
+            int sTyepAmt = 0;
+            //版回給中辦的金額
+            int tTyepAmt = 0;
+            //版回給商業司的金額
+            int bTyepAmt = 0;
+            //版回給文化部的金額
+            int cTyepAmt = 0;
+            //已過期的coupon
+            List<Coupon> expiredCoupons = new ArrayList<Coupon>();
+            for (Coupon coupon : allCoupon) {
+                String fundType = coupon.getFundType();
+                int span = "C".equals(fundType) ? 60 : 30;
+                Calendar expiredTime = Calendar.getInstance();
+                String createTime = DateUtils.parseDateToStr("yyyy-MM-dd HH:mm:ss", coupon.getCreateTime());
+                expiredTime.setTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", createTime));
+                expiredTime.add(Calendar.DATE, span);
+                Calendar now = Calendar.getInstance();
+                now.setTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
+                if (now.compareTo(expiredTime) == 1) {
+                    //過期
+                    int amount = coupon.getAmount().intValue();
+                    switch (fundType) {
+                        case "S":
+                            sTyepAmt += amount;
+                            break;
+                        case "T":
+                            tTyepAmt += amount;
+                            break;
+                        case "B":
+                            bTyepAmt += amount;
+                            break;
+                        case "C":
+                            cTyepAmt += amount;
+                            break;
+                    }
+                    coupon.setIsReturn("1");
+                    expiredCoupons.add(coupon);
+                }
+            }
+            if (expiredCoupons.size() > 0) {
+                couponService.updateProFundAmount(expiredCoupons, sTyepAmt, tTyepAmt, bTyepAmt, cTyepAmt);
             }
         }
     }

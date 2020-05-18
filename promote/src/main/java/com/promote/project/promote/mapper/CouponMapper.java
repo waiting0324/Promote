@@ -97,4 +97,13 @@ public interface CouponMapper
     List<Map<String, Object>> getPrintCoupon(@Param("indentity") String indentity, @Param("printCode") String printCode);
 
     int updatePrintCoupon(@Param("printCode") String printCode);
+
+
+    /**
+     * 根據是否已使用 ( 0未使用 1已使用 )查找抵用券發放記錄檔
+     *
+     * @param isUsed 是否已使用 ( 0未使用 1已使用 )
+     * @return
+     */
+    List<Coupon> getCouponByIsUsed(@Param("isUsed") String isUsed,@Param("isReturn") String isReturn);
 }
