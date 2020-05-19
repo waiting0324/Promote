@@ -1,6 +1,7 @@
 package com.promote.project.promote.mapper;
 
 import com.promote.project.promote.domain.WeeklySettlementDetail;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.*;
 
@@ -67,4 +68,13 @@ public interface WeeklySettlementDetailMapper
      * @return 週結明細集合
      */
     public List<Map<String, Object>> queryWeeklySettlementDetailList(WeeklySettlementDetail weeklySettlementDetail);
+
+    /**
+     * 查詢前一周週結明細
+     *
+     * @param beginTime 起始時間
+     * @param endTime 起始時間
+     * @return 週結明細集合
+     */
+    public List<Map<String, Object>> queryLastWeekSettlementDetailList(@Param("beginTime") String beginTime, @Param("endTime") String endTime);
 }

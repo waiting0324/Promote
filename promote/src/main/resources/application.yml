@@ -60,8 +60,10 @@ spring:
   redis:
     # 地址
     host: 10.89.63.22
+#    host: 127.0.0.1
     # 埠，預設為6379
     port: 30001
+#    port: 6379
     # 密碼
     password: 
     # 連線超時時間
@@ -134,7 +136,8 @@ email:
   # 發信人Email密碼
   pwd:
 
-ftp:
+# 振興券批次
+promotebatch:
   # FTP 遠端地址
   host: 203.66.68.1
   # FTP 端口
@@ -149,21 +152,37 @@ ftp:
   localTempDir: D:\FTP\temp\
   # 本地儲存已處理檔案
   localStoreDir: D:\FTP\store\
+  # 文化部抵用券到期天數
+  cTypeExpiredDays: 60
+  # 一般抵用券到期天數
+  defaultExpiredDays: 30
+  # 抵用券到期前幾天通知
+  beforeExpiredDays: 7
+
 
 # IMB MQ配置
 ibm:
   mq:
     # IBM MQ server地址
-    host: 172.31.70.148
+    host: 10.89.64.23
     # 端口
     port: 1415
     # 隊列管理器名稱
-    queue-manager: QM_NGSC_BG
+    queue-manager: QM_PREC_BG
     # 通道名稱
     channel: svrconn
     # 逾時
     receive-timeout: 20000
+    # 消費記錄檔物件
+    proCouponConsumeQueueName: PRO_COUPON_CONSUME_Q
+    # 補助額度檔物件
+    proFundAmountQueueName: PRO_FUND_AMOUNT_Q
+    # 系統訪問記錄表
+    sysLoginInforQueueName: SYS_LOGININFOR_Q
+    # 操作日誌記錄表
+    sysOperLogQueueName: SYS_OPER_LOG_Q
 
 sms:
   username: test001
   password: a1234567
+

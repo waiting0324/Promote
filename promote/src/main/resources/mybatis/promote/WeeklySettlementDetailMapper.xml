@@ -21,6 +21,16 @@
         <result property="couponType"    column="coupon_type"    />
     </resultMap>
 
+    <resultMap type="java.util.Map" id="queryLastWeekWeeklySettlementDetail">
+        <result property="couponId"    column="coupon_id"    />
+        <result property="storeId"    column="store_id"    />
+        <result property="consumeTime"    column="consume_time"    />
+        <result property="storeType"    column="store_type"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="mainId"    column="main_id"    />
+        <result property="amount"    column="amount"    />
+    </resultMap>
+
     <sql id="selectWeeklySettlementDetailVo">
         select coupon_id, user_id, store_id, consume_time, store_type, create_time, main_id from pro_weekly_settlement_detail
     </sql>
@@ -98,5 +108,12 @@
             <if test="storeId != null "> and A.store_id = #{storeId}</if>
             <if test="mainId != null "> and A.main_id = #{mainId}</if>
         </where>
+    </select>
+
+    <select id="queryLastWeekSettlementDetailList" resultMap="queryLastWeekWeeklySettlementDetail">
+        SELECT A.COUPON_ID, A.STORE_ID, A.CONSUME_TIME, A.STORE_TYPE, A.MAIN_ID, A.CREATE_TIME, B.AMOUNT
+        FROM PRO_WEEKLY_SETTLEMENT_DETAIL A
+        INNER JOIN PRO_COUPON_CONSUME B ON A.COUPON_ID = B.COUPON_ID
+        WHERE A.CONSUME_TIME BETWEEN #{beginTime} AND #{endTime}
     </select>
 </mapper>

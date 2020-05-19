@@ -13,6 +13,7 @@
         <result property="amount"    column="amount"    />
         <result property="noticeTime"    column="notice_time"    />
         <result property="createTime"    column="create_time"    />
+        <result property="isReturn"    column="is_return"    />
     </resultMap>
 
 
@@ -32,7 +33,7 @@
     </resultMap>
 
     <sql id="selectCouponVo">
-        select id, fund_type, user_id, is_used, store_type, amount, notice_time, create_time from pro_coupon
+        select id, fund_type, user_id, is_used, store_type, amount, notice_time, create_time,is_return from PRECMGR.pro_coupon
     </sql>
 
     <select id="selectCouponList" parameterType="Coupon" resultMap="CouponResult">
@@ -95,6 +96,7 @@
             <if test="amount != null ">amount = #{amount},</if>
             <if test="noticeTime != null ">notice_time = #{noticeTime},</if>
             <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="isReturn != null and isReturn != ''">is_return = #{isReturn},</if>
         </trim>
         where id = #{id}
     </update>
@@ -147,4 +149,14 @@
         UPDATE pro_consumer_info set KIOSK_PRINT_TYPE = '1', KIOSK_PRINT_TIME = sysdate
         WHERE PRINT_CODE = #{printCode}
     </update>
+
+    <select id="getCouponByIsUsed" resultMap="CouponResult">
+        <include refid="selectCouponVo"/>
+        where is_used = #{isUsed} and is_return = #{isReturn}
+    </select>
+
+    <select id="getNeedRemindCoupon" resultMap="CouponResult">
+        <include refid="selectCouponVo"/>
+        where is_used = #{isUsed} and is_return = #{isReturn} and (notice_time = null or notice_time='')
+    </select>
 </mapper>

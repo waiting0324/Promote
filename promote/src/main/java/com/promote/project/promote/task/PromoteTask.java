@@ -7,8 +7,13 @@ import cn.hutool.poi.excel.sax.Excel07SaxReader;
 import cn.hutool.poi.excel.sax.handler.RowHandler;
 import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.StringUtils;
+import com.promote.framework.web.domain.server.Sys;
 import com.promote.project.monitor.domain.SysOperLog;
 import com.promote.project.monitor.service.ISysOperLogService;
+import com.promote.project.promote.domain.Coupon;
+import com.promote.project.promote.domain.HotelWhitelist;
+import com.promote.project.promote.domain.ProWhitelist;
+import com.promote.project.promote.domain.StoreWhitelist;
 import com.promote.project.promote.domain.*;
 import com.promote.project.promote.service.*;
 import com.promote.project.system.domain.SysConfig;
@@ -29,13 +34,13 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * 排程任務
+ * 排程任務(批次)
  *
  * @author 6592 曾培晃
  * @date 2020-04-21
  */
 @Component("promoteTask")
-@ConfigurationProperties(prefix = "ftp")
+@ConfigurationProperties(prefix = "promotebatch")
 public class PromoteTask {
 
     @Autowired
@@ -76,7 +81,15 @@ public class PromoteTask {
     private String localTempDir;
 
     private String localStoreDir;
-    // 與FTP相關配置 結束
+
+    //總額度控管相關配置 開始
+    private int cTypeExpiredDays;
+
+    private int defaultExpiredDays;
+
+    //未消費提醒推播訊息預存相關配置 開始
+    private int beforeExpiredDays;
+
 
     //白名單成功筆數
     private Integer proWhitelistSuccessCnt = 0;
@@ -89,6 +102,86 @@ public class PromoteTask {
 
 //    private int count = 0; //測試用
 
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRemoteDir() {
+        return remoteDir;
+    }
+
+    public void setRemoteDir(String remoteDir) {
+        this.remoteDir = remoteDir;
+    }
+
+    public String getLocalTempDir() {
+        return localTempDir;
+    }
+
+    public void setLocalTempDir(String localTempDir) {
+        this.localTempDir = localTempDir;
+    }
+
+    public String getLocalStoreDir() {
+        return localStoreDir;
+    }
+
+    public void setLocalStoreDir(String localStoreDir) {
+        this.localStoreDir = localStoreDir;
+    }
+
+    public int getcTypeExpiredDays() {
+        return cTypeExpiredDays;
+    }
+
+    public void setcTypeExpiredDays(int cTypeExpiredDays) {
+        this.cTypeExpiredDays = cTypeExpiredDays;
+    }
+
+    public int getDefaultExpiredDays() {
+        return defaultExpiredDays;
+    }
+
+    public void setDefaultExpiredDays(int defaultExpiredDays) {
+        this.defaultExpiredDays = defaultExpiredDays;
+    }
+
+    public int getBeforeExpiredDays() {
+        return beforeExpiredDays;
+    }
+
+    public void setBeforeExpiredDays(int beforeExpiredDays) {
+        this.beforeExpiredDays = beforeExpiredDays;
+    }
 
     /**
      * 從FTP上下載差異檔
@@ -518,9 +611,13 @@ public class PromoteTask {
                     failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
                     operLogServic.insertOperlog(failLog);
                     String now = DateUtils.dateTime();
-                    String proWhitelistErrDir = configService.selectConfigByKey("pro.whitelistErr.dir");
-                    String outputFile = proWhitelistErrDir + "/pro_whitelistErr" + now + ".csv";
-                    printErrCsv(proWhitelistErrDir,outputFile,rowlist,titlelist);
+                    String errDir = configService.selectConfigByKey("pro.whitelistErr.dir");
+//                    String proHotelWhitelistErrDir = configService.selectConfigByKey("pro.hotel.whitelistErr.dir");
+//                    String proStoreWhitelistErrDir = configService.selectConfigByKey("pro.store.whitelistErr.dir");
+//                    String errDir = type == 1 ? proHotelWhitelistErrDir : proStoreWhitelistErrDir;
+//                    String outputFile = type == 1 ? errDir + "/hotel_whitelistErr" + now + ".csv" : errDir + "/store_whitelistErr" + now + ".csv";
+                    String outputFile = type == 1 ? errDir + "/proHotelWhitelistErr" + now + ".csv" : errDir + "/proStoreWhitelistErr" + now + ".csv";
+                    printErrCsv(errDir, outputFile, rowlist, titlelist);
                 }
             }
             //處理旅宿or店家白名單
@@ -575,11 +672,13 @@ public class PromoteTask {
                 failLog.setOperTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
                 operLogServic.insertOperlog(failLog);
                 String now = DateUtils.dateTime();
-                String hotelWhitelistErrDir = configService.selectConfigByKey("hotel.whitelistErr.dir");
-                String storeWhitelistErrDir = configService.selectConfigByKey("store.whitelistErr.dir");
-                String errDir = type == 1 ? hotelWhitelistErrDir : storeWhitelistErrDir;
-                String outputFile = type == 1 ? errDir + "/hotel_whitelistErr" + now + ".csv" : errDir + "/store_whitelistErr" + now + ".csv";
-                printErrCsv(errDir,outputFile,rowlist,titlelist);
+                String errDir = configService.selectConfigByKey("whitelistErr.dir");
+//                String hotelWhitelistErrDir = configService.selectConfigByKey("hotel.whitelistErr.dir");
+//                String storeWhitelistErrDir = configService.selectConfigByKey("store.whitelistErr.dir");
+//                String errDir = type == 1 ? hotelWhitelistErrDir : storeWhitelistErrDir;
+//                String outputFile = type == 1 ? errDir + "/hotel_whitelistErr" + now + ".csv" : errDir + "/store_whitelistErr" + now + ".csv";
+                String outputFile = type == 1 ? errDir + "/hotelWhitelistErr" + now + ".csv" : errDir + "/storeWhitelistErr" + now + ".csv";
+                printErrCsv(errDir, outputFile, rowlist, titlelist);
             }
         } catch (Exception e) {
             //Do Nothing
@@ -589,17 +688,17 @@ public class PromoteTask {
     /**
      * 匯出錯誤檔案到csv
      *
-     * @param outputDir 匯出路徑
+     * @param outputDir  匯出路徑
      * @param outputFile 匯出檔案
-     * @param rowlist 每一行數據
-     * @param titlelist 標題
+     * @param rowlist    每一行數據
+     * @param titlelist  標題
      */
-    private void printErrCsv(String outputDir,String outputFile,List<String> rowlist, List<String> titlelist){
+    private void printErrCsv(String outputDir, String outputFile, List<String> rowlist, List<String> titlelist) {
         CSVPrinter csvPrinter = null;
-        try{
+        try {
             File destination = new File(outputDir);
             //建目錄
-            if(!destination.exists()){
+            if (!destination.exists()) {
                 destination.mkdirs();
             }
             File file = new File(outputFile);
@@ -620,11 +719,12 @@ public class PromoteTask {
                 csvPrinter.print(item);
             }
             csvPrinter.println();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
+            //關閉串流
             try {
-                if(csvPrinter != null){
+                if (csvPrinter != null) {
                     csvPrinter.close(true);
                 }
             } catch (IOException e) {
@@ -1184,7 +1284,7 @@ public class PromoteTask {
      * @param
      */
     public void insertProWeeklySettlymentDetail() {
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -1196,15 +1296,15 @@ public class PromoteTask {
         List<Map<String, Object>> resultsList = couponService.queryYesterdayAllData(beginDate, endDate);
         try {
             // 新增至美日消費統計檔
-            SimpleDateFormat insertSdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            for(int i = 0; i < resultsList.size(); i++){
+            SimpleDateFormat insertSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for (int i = 0; i < resultsList.size(); i++) {
                 DailyConsume dailyConsume = new DailyConsume();
                 //補助機構
                 String fundType = resultsList.get(i).get("fundType").toString();
                 //店家代號
                 String storeId = resultsList.get(i).get("storeId").toString();
                 //消費時間
-                String consumeTime =  resultsList.get(i).get("consumeTime").toString();
+                String consumeTime = resultsList.get(i).get("consumeTime").toString();
                 //類別
                 String storeType = resultsList.get(i).get("storeType").toString();
                 //抵用券金額
@@ -1227,65 +1327,147 @@ public class PromoteTask {
                 //新增至週結明細表
                 int sum2 = weeklySettlementService.insertWeeklySettlementDetail(weeklySettlementDetail);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
+
+        }
+    }
+
+    /**
+     * 將(前一週)週結明細寫入周結主檔
+     *
+     * @param
+     */
+    public void insertProWeeklySettlyment() {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        //取年一天日期
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        date = calendar.getTime();
+        String endTime = sdf.format(date);
+        //取前7天日期
+        calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, -7);
+        date = calendar.getTime();
+        String beginTime = sdf.format(date);
+
+        try {
+            Map<String, Object> map = new HashMap<String, Object>();
+            List<Map<String, Object>> querylist = weeklySettlementService.queryLastWeekSettlementDetailList(beginTime + " 00:00:00", endTime + " 23:59:59");
+            for (int i = 0; i < querylist.size(); i++) {
+                String storeId = querylist.get(i).get("storeId").toString();
+                if (map.get(storeId) == null) {
+                    String amount = querylist.get(i).get("amount").toString();
+                    map.put(storeId, amount);
+                } else {
+                    String oldAmount = map.get(storeId).toString();
+                    long sum = Long.valueOf(oldAmount);
+                    String newAmount = querylist.get(i).get("amount").toString();
+                    sum += Long.valueOf(newAmount);
+                    map.put(storeId, sum);
+                }
+            }
+
+            for (String storeId : map.keySet()) {
+                WeeklySettlement weeklySettlement = new WeeklySettlement();
+                weeklySettlement.setStoreId(Long.valueOf(storeId));
+                weeklySettlement.setWeekStart(sdf.parse(beginTime));
+                weeklySettlement.setWeekEnd(sdf.parse(endTime));
+                String amount = map.get(storeId).toString();
+                weeklySettlement.setAmount(Long.valueOf(amount));
+                weeklySettlement.setIsConfirm("0");
+                weeklySettlement.setIsBatch("0");
+                weeklySettlement.setBatchStatus("0");
+                weeklySettlement.setPaymentStatus("0");
+                int sum = weeklySettlementService.insertWeeklySettlement(weeklySettlement);
+            }
+        } catch (Exception e) {
 
         }
     }
 
 
-    public String getHost() {
-        return host;
+    /**
+     * 總額度控管
+     */
+    public void returnCoupon() {
+        List<Coupon> allCoupon = couponService.getCouponByIsUsed("0", "0");
+        if (StringUtils.isNotEmpty(allCoupon)) {
+            //返回給中企的金額
+            int sTyepAmt = 0;
+            //返回給中辦的金額
+            int tTyepAmt = 0;
+            //返回給商業司的金額
+            int bTyepAmt = 0;
+            //返回給文化部的金額
+            int cTyepAmt = 0;
+            //已過期的coupon
+            List<Coupon> expiredCoupons = new ArrayList<Coupon>();
+            for (Coupon coupon : allCoupon) {
+                String fundType = coupon.getFundType();
+                int span = "C".equals(fundType) ? 60 : 30;
+                Calendar expiredTime = Calendar.getInstance();
+                String createTime = DateUtils.parseDateToStr("yyyy-MM-dd HH:mm:ss", coupon.getCreateTime());
+                expiredTime.setTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", createTime));
+                expiredTime.add(Calendar.DATE, span);
+                Calendar now = Calendar.getInstance();
+                now.setTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
+                if (now.compareTo(expiredTime) == 1) {
+                    //過期
+                    int amount = coupon.getAmount().intValue();
+                    switch (fundType) {
+                        case "S":
+                            sTyepAmt += amount;
+                            break;
+                        case "T":
+                            tTyepAmt += amount;
+                            break;
+                        case "B":
+                            bTyepAmt += amount;
+                            break;
+                        case "C":
+                            cTyepAmt += amount;
+                            break;
+                    }
+                    coupon.setIsReturn("1");
+                    expiredCoupons.add(coupon);
+                }
+            }
+            if (expiredCoupons.size() > 0) {
+                couponService.updateProFundAmount(expiredCoupons, sTyepAmt, tTyepAmt, bTyepAmt, cTyepAmt);
+            }
+        }
     }
 
-    public void setHost(String host) {
-        this.host = host;
+    /**
+     * 未消費提醒推播訊息預存
+     */
+    public void remindExpiredCoupon() {
+        List<Coupon> allCoupon = couponService.getNeedRemindCoupon("0", "0");
+        if (StringUtils.isNotEmpty(allCoupon)) {
+            List<Coupon> needRemindCoupons = new ArrayList<Coupon>();
+            for (Coupon coupon : allCoupon) {
+                String fundType = coupon.getFundType();
+                int span = "C".equals(fundType) ? cTypeExpiredDays - beforeExpiredDays : defaultExpiredDays - beforeExpiredDays;
+                Calendar expiredTime = Calendar.getInstance();
+                String createTime = DateUtils.parseDateToStr("yyyy-MM-dd HH:mm:ss", coupon.getCreateTime());
+                expiredTime.setTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", createTime));
+                expiredTime.add(Calendar.DATE, span);
+                Calendar now = Calendar.getInstance();
+                now.setTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
+                if (now.compareTo(expiredTime) != -1) {
+                    //需通知的coupon
+                    needRemindCoupons.add(coupon);
+                }
+            }
+            if(needRemindCoupons.size() > 0){
+                //發送到mq
+            }
+        }
     }
 
-    public int getPort() {
-        return port;
-    }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRemoteDir() {
-        return remoteDir;
-    }
-
-    public void setRemoteDir(String remoteDir) {
-        this.remoteDir = remoteDir;
-    }
-
-    public String getLocalTempDir() {
-        return localTempDir;
-    }
-
-    public void setLocalTempDir(String localTempDir) {
-        this.localTempDir = localTempDir;
-    }
-
-    public String getLocalStoreDir() {
-        return localStoreDir;
-    }
-
-    public void setLocalStoreDir(String localStoreDir) {
-        this.localStoreDir = localStoreDir;
-    }
 }

@@ -45,4 +45,21 @@ public interface IWeeklySettlementService {
      * @return
      */
     public int insertWeeklySettlementDetail(WeeklySettlementDetail weeklySettlementDetail);
+
+    /**
+     * 週結明細查詢
+     *
+     * @param beginTime 第一天
+     * @param endTime 最後一天
+     * @return 白名單檔
+     */
+    public List<Map<String, Object>> queryLastWeekSettlementDetailList(@Param("beginTime") String beginTime, @Param("endTime") String endTime);
+
+    /**
+     * 新增周結主檔
+     *
+     * @param weeklySettlement
+     * @return
+     */
+    public int insertWeeklySettlement(WeeklySettlement weeklySettlement);
 }

@@ -152,7 +152,7 @@
 
     <select id="getConsumerInfoById" parameterType="Long" resultMap="ConsumerInfoById">
         select hotel.name,consumer.Issue_date,consumer.coupon_type,consumer.print_code,consumer.receive_date
-        from pro_consumer_info consumer inner join pro_hotel_info hotel
+        from PRECMGR.pro_consumer_info consumer inner join PRECMGR.pro_hotel_info hotel
         on consumer.hotel_id = hotel.user_id
         where consumer.user_id= #{userId}
     </select>
