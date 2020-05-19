@@ -7,6 +7,7 @@ import com.promote.project.monitor.domain.SysLogininfor;
 import com.promote.project.monitor.domain.SysOperLog;
 import com.promote.project.promote.domain.CouponConsume;
 import com.promote.project.promote.domain.FundAmount;
+import com.promote.project.promote.domain.RemindCoupon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsOperations;
@@ -57,6 +58,9 @@ public class ProQueueSender {
             } else if (entity instanceof SysOperLog) {
                 SysOperLog sysOperLog = (SysOperLog) entity;
                 jmsOperations.convertAndSend(sysOperLogQueueName, sysOperLog);
+            } else if(entity instanceof RemindCoupon){
+                RemindCoupon remindCoupon = (RemindCoupon) entity;
+//                jmsOperations.convertAndSend(TOFIX, remindCoupon);
             }
         }
     }
