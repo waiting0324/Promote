@@ -56,6 +56,10 @@ public class Coupon extends BaseEntity
     @Excel(name = "提醒到期已推送時間", width = 30, dateFormat = "yyyy-MM-dd")
     private Date noticeTime;
 
+
+    private String isReturn;
+
+
     public void setId(String id)
     {
         this.id = id;
@@ -136,6 +140,14 @@ public class Coupon extends BaseEntity
     public Date getNoticeTime()
     {
         return noticeTime;
+    }
+
+    public String getIsReturn() {
+        return isReturn;
+    }
+
+    public void setIsReturn(String isReturn) {
+        this.isReturn = isReturn;
     }
 
     @Override

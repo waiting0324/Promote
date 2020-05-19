@@ -59,4 +59,12 @@ public interface FundAmountMapper
      * @return 結果
      */
     public int deleteFundAmountByIds(Long[] ids);
+
+
+    /**
+     * 查詢補助額度檔列表
+     *
+     * @return 補助額度檔集合
+     */
+    public List<FundAmount> getAllFundAmount();
 }

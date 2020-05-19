@@ -167,7 +167,7 @@ public class ProCommonController extends BaseController {
 
                 // 密碼規則檢核
                 if (!user.getPassword().matches(Constants.PASSWORD_REGEX)) {
-                    return AjaxResult.error("密碼不符合8-16字元的英數字規則");
+                    return AjaxResult.error("密碼需包含大小寫英數字8~16碼");
                 }
             }
 
@@ -492,5 +492,10 @@ public class ProCommonController extends BaseController {
             return AjaxResult.success("更新成功");
         }
         return AjaxResult.error("目前登入者無權進行基本資料修改");
+    }
+
+    @PostMapping("/test")
+    public AjaxResult test() {
+        return AjaxResult.success();
     }
 }

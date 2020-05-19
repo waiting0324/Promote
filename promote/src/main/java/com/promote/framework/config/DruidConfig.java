@@ -15,6 +15,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 
 import javax.servlet.*;
 import javax.sql.DataSource;
@@ -37,10 +38,10 @@ public class DruidConfig
     @ConfigurationProperties("spring.datasource.druid.master")
     public DataSource masterDataSource(DruidProperties druidProperties)
     {
-        /*JndiDataSourceLookup lookup = new JndiDataSourceLookup();
-        lookup.setResourceRef(true);
-        DataSource dataSource = lookup.getDataSource(jndiName);
-        return dataSource;*/
+//        JndiDataSourceLookup lookup = new JndiDataSourceLookup();
+//        lookup.setResourceRef(true);
+//        DataSource dataSource = lookup.getDataSource(jndiName);
+//        return dataSource;
         DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
         return druidProperties.dataSource(dataSource);
     }
