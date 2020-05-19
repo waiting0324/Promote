@@ -3,6 +3,7 @@ package com.promote.project.promote.mapper;
 import com.promote.project.promote.domain.Coupon;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -106,4 +107,13 @@ public interface CouponMapper
      * @return
      */
     List<Coupon> getCouponByIsUsed(@Param("isUsed") String isUsed,@Param("isReturn") String isReturn);
+
+    /**
+     *取得需要發送推播的抵用券發放記錄檔
+     *
+     * @param isUsed 是否已使用 ( 0未使用 1已使用 )
+     * @param isReturn 是否已回歸總額度
+     * @return
+     */
+    List<Coupon> getNeedRemindCoupon(@Param("isUsed") String isUsed, @Param("isReturn") String isReturn);
 }

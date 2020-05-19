@@ -7,6 +7,7 @@ import com.promote.project.system.domain.SysUser;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -184,4 +185,13 @@ public interface ICouponService {
      * @return 結果
      */
     public List<Map<String, Object>> queryYesterdayAllData(@Param("beginTime") String beginTime, @Param("endTime") String endTime);
+
+    /**
+     *取得需要發送推播的抵用券發放記錄檔
+     *
+     * @param isUsed 是否已使用 ( 0未使用 1已使用 )
+     * @param isReturn 是否已回歸總額度
+     * @return
+     */
+    List<Coupon> getNeedRemindCoupon(String isUsed, String isReturn);
 }

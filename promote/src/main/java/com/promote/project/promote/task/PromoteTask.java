@@ -91,7 +91,6 @@ public class PromoteTask {
     private int beforeExpiredDays;
 
 
-
     //白名單成功筆數
     private Integer proWhitelistSuccessCnt = 0;
     //白名單失敗筆數
@@ -160,6 +159,29 @@ public class PromoteTask {
         this.localStoreDir = localStoreDir;
     }
 
+    public int getcTypeExpiredDays() {
+        return cTypeExpiredDays;
+    }
+
+    public void setcTypeExpiredDays(int cTypeExpiredDays) {
+        this.cTypeExpiredDays = cTypeExpiredDays;
+    }
+
+    public int getDefaultExpiredDays() {
+        return defaultExpiredDays;
+    }
+
+    public void setDefaultExpiredDays(int defaultExpiredDays) {
+        this.defaultExpiredDays = defaultExpiredDays;
+    }
+
+    public int getBeforeExpiredDays() {
+        return beforeExpiredDays;
+    }
+
+    public void setBeforeExpiredDays(int beforeExpiredDays) {
+        this.beforeExpiredDays = beforeExpiredDays;
+    }
 
     /**
      * 從FTP上下載差異檔
@@ -1317,7 +1339,7 @@ public class PromoteTask {
      */
     public void insertProWeeklySettlyment() {
 
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         //取年一天日期
         Calendar calendar = Calendar.getInstance();
@@ -1333,14 +1355,14 @@ public class PromoteTask {
         String beginTime = sdf.format(date);
 
         try {
-            Map<String,Object> map = new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<String, Object>();
             List<Map<String, Object>> querylist = weeklySettlementService.queryLastWeekSettlementDetailList(beginTime + " 00:00:00", endTime + " 23:59:59");
-            for(int i = 0; i < querylist.size(); i++){
+            for (int i = 0; i < querylist.size(); i++) {
                 String storeId = querylist.get(i).get("storeId").toString();
-                if(map.get(storeId) == null){
+                if (map.get(storeId) == null) {
                     String amount = querylist.get(i).get("amount").toString();
                     map.put(storeId, amount);
-                }else{
+                } else {
                     String oldAmount = map.get(storeId).toString();
                     long sum = Long.valueOf(oldAmount);
                     String newAmount = querylist.get(i).get("amount").toString();
@@ -1349,7 +1371,7 @@ public class PromoteTask {
                 }
             }
 
-            for(String storeId : map.keySet()){
+            for (String storeId : map.keySet()) {
                 WeeklySettlement weeklySettlement = new WeeklySettlement();
                 weeklySettlement.setStoreId(Long.valueOf(storeId));
                 weeklySettlement.setWeekStart(sdf.parse(beginTime));
@@ -1362,7 +1384,7 @@ public class PromoteTask {
                 weeklySettlement.setPaymentStatus("0");
                 int sum = weeklySettlementService.insertWeeklySettlement(weeklySettlement);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -1423,9 +1445,29 @@ public class PromoteTask {
     /**
      * 未消費提醒推播訊息預存
      */
-//    public remindExpiredCoupon() {
-//
-//    }
+    public void remindExpiredCoupon() {
+        List<Coupon> allCoupon = couponService.getNeedRemindCoupon("0", "0");
+        if (StringUtils.isNotEmpty(allCoupon)) {
+            List<Coupon> needRemindCoupons = new ArrayList<Coupon>();
+            for (Coupon coupon : allCoupon) {
+                String fundType = coupon.getFundType();
+                int span = "C".equals(fundType) ? cTypeExpiredDays - beforeExpiredDays : defaultExpiredDays - beforeExpiredDays;
+                Calendar expiredTime = Calendar.getInstance();
+                String createTime = DateUtils.parseDateToStr("yyyy-MM-dd HH:mm:ss", coupon.getCreateTime());
+                expiredTime.setTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", createTime));
+                expiredTime.add(Calendar.DATE, span);
+                Calendar now = Calendar.getInstance();
+                now.setTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
+                if (now.compareTo(expiredTime) != -1) {
+                    //需通知的coupon
+                    needRemindCoupons.add(coupon);
+                }
+            }
+            if(needRemindCoupons.size() > 0){
+                //發送到mq
+            }
+        }
+    }
 
 
 }

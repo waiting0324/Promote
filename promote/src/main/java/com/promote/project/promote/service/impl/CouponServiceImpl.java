@@ -856,4 +856,16 @@ public class CouponServiceImpl implements ICouponService {
         return resultsList;
     }
 
+    /**
+     *取得需要發送推播的抵用券發放記錄檔
+     *
+     * @param isUsed 是否已使用 ( 0未使用 1已使用 )
+     * @param isReturn 是否已回歸總額度
+     * @return
+     */
+    @Override
+    public List<Coupon> getNeedRemindCoupon(String isUsed, String isReturn) {
+        return couponMapper.getNeedRemindCoupon(isUsed,isReturn);
+    }
+
 }
