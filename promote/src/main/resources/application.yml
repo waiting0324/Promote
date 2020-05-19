@@ -60,8 +60,10 @@ spring:
   redis:
     # 地址
     host: 10.89.63.22
+#    host: 127.0.0.1
     # 埠，預設為6379
     port: 30001
+#    port: 6379
     # 密碼
     password: 
     # 連線超時時間
