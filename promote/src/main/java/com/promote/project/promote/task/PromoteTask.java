@@ -7,6 +7,7 @@ import cn.hutool.poi.excel.sax.Excel07SaxReader;
 import cn.hutool.poi.excel.sax.handler.RowHandler;
 import com.promote.common.utils.DateUtils;
 import com.promote.common.utils.StringUtils;
+import com.promote.framework.web.domain.server.Sys;
 import com.promote.project.monitor.domain.SysOperLog;
 import com.promote.project.monitor.service.ISysOperLogService;
 import com.promote.project.promote.domain.*;
@@ -1226,6 +1227,63 @@ public class PromoteTask {
                 weeklySettlementDetail.setCreateTime(new Date());
                 //新增至週結明細表
                 int sum2 = weeklySettlementService.insertWeeklySettlementDetail(weeklySettlementDetail);
+            }
+        }catch (Exception e){
+
+        }
+    }
+
+    /**
+     * 將(前一週)週結明細寫入周結主檔
+     *
+     * @param
+     */
+    public void insertProWeeklySettlyment() {
+
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        //取年一天日期
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        date = calendar.getTime();
+        String endTime = sdf.format(date);
+        //取前7天日期
+        calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, -7);
+        date = calendar.getTime();
+        String beginTime = sdf.format(date);
+
+        try {
+            Map<String,Object> map = new HashMap<String, Object>();
+            List<Map<String, Object>> querylist = weeklySettlementService.queryLastWeekSettlementDetailList(beginTime + " 00:00:00", endTime + " 23:59:59");
+            for(int i = 0; i < querylist.size(); i++){
+                String storeId = querylist.get(i).get("storeId").toString();
+                if(map.get(storeId) == null){
+                    String amount = querylist.get(i).get("amount").toString();
+                    map.put(storeId, amount);
+                }else{
+                    String oldAmount = map.get(storeId).toString();
+                    long sum = Long.valueOf(oldAmount);
+                    String newAmount = querylist.get(i).get("amount").toString();
+                    sum += Long.valueOf(newAmount);
+                    map.put(storeId, sum);
+                }
+            }
+
+            for(String storeId : map.keySet()){
+                WeeklySettlement weeklySettlement = new WeeklySettlement();
+                weeklySettlement.setStoreId(Long.valueOf(storeId));
+                weeklySettlement.setWeekStart(sdf.parse(beginTime));
+                weeklySettlement.setWeekEnd(sdf.parse(endTime));
+                String amount = map.get(storeId).toString();
+                weeklySettlement.setAmount(Long.valueOf(amount));
+                weeklySettlement.setIsConfirm("0");
+                weeklySettlement.setIsBatch("0");
+                weeklySettlement.setBatchStatus("0");
+                weeklySettlement.setPaymentStatus("0");
+                int sum = weeklySettlementService.insertWeeklySettlement(weeklySettlement);
             }
         }catch (Exception e){
 
