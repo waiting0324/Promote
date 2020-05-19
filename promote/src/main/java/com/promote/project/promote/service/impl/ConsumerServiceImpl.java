@@ -115,7 +115,7 @@ public class ConsumerServiceImpl implements IConsumerService {
         // 旅宿業者代註冊
         else {
             // 狀態設為 旅宿業者代註冊(無手機)
-            if (user.getMobile() == null) {
+            if (user.getConsumer().getMobile() == null) {
                 consumerInfo.setConsumerStat(ConsumerConstants.STAT_REGISTED_PROXY_NO_MOBILE);
                 // 默認紙本列印抵用券
                 consumerInfo.setCouponType(CouponConstants.TYPE_PAPAER);

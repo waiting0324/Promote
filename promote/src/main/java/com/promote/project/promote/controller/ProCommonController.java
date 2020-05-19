@@ -155,6 +155,10 @@ public class ProCommonController extends BaseController {
         // 消費者
         else if ("C".equals(user.getRole())) {
 
+            if (user.getConsumer() == null) {
+                return AjaxResult.error("資料格式不合法");
+            }
+
             Boolean isProxy = user.getConsumer().getHotelId() != null;
             // 正常註冊(非代註冊)才需檢核欄位
             if (!isProxy) {
@@ -199,9 +203,8 @@ public class ProCommonController extends BaseController {
         // 圖形驗證碼校驗
         // 不是從APP訪問則需要圖形驗證碼
         if (isFromWeb) {
-            Map<String, Object> params = user.getParams();
-            String uuid = (String) params.get("uuid");
-            String code = (String) params.get("code");
+            String uuid = user.getUuid();
+            String code = user.getCode();
             String verifyKey = Constants.CAPTCHA_CODE_KEY + (StringUtils.isNotEmpty(uuid) ? uuid : "");
             String captcha = redisCache.getCacheObject(verifyKey);
             if (StringUtils.isEmpty(code)) {
