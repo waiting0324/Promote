@@ -155,6 +155,10 @@ public class ProCommonController extends BaseController {
         // 消費者
         else if ("C".equals(user.getRole())) {
 
+            if (user.getConsumer() == null) {
+                return AjaxResult.error("資料格式不合法");
+            }
+
             Boolean isProxy = user.getConsumer().getHotelId() != null;
             // 正常註冊(非代註冊)才需檢核欄位
             if (!isProxy) {
