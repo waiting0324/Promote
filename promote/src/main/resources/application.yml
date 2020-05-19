@@ -136,7 +136,7 @@ email:
   # 發信人Email密碼
   pwd:
 
-ftp:
+promotebatch:
   # FTP 遠端地址
   host: 203.66.68.1
   # FTP 端口
@@ -151,6 +151,13 @@ ftp:
   localTempDir: D:\FTP\temp\
   # 本地儲存已處理檔案
   localStoreDir: D:\FTP\store\
+  # 文化部抵用券到期天數
+  cTypeExpiredDays: 60
+  # 一般抵用券到期天數
+  defaultExpiredDays: 30
+  # 抵用券到期前幾天通知
+  beforeExpiredDays: 7
+
 
 # IMB MQ配置
 ibm:

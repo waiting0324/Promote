@@ -33,13 +33,13 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * 排程任務
+ * 排程任務(批次)
  *
  * @author 6592 曾培晃
  * @date 2020-04-21
  */
 @Component("promoteTask")
-@ConfigurationProperties(prefix = "ftp")
+@ConfigurationProperties(prefix = "promotebatch")
 public class PromoteTask {
 
     @Autowired
@@ -80,7 +80,16 @@ public class PromoteTask {
     private String localTempDir;
 
     private String localStoreDir;
-    // 與FTP相關配置 結束
+
+    //總額度控管相關配置 開始
+    private int cTypeExpiredDays;
+
+    private int defaultExpiredDays;
+
+    //未消費提醒推播訊息預存相關配置 開始
+    private int beforeExpiredDays;
+
+
 
     //白名單成功筆數
     private Integer proWhitelistSuccessCnt = 0;
@@ -92,6 +101,63 @@ public class PromoteTask {
     private Integer whitelistFailCnt = 0;
 
 //    private int count = 0; //測試用
+
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRemoteDir() {
+        return remoteDir;
+    }
+
+    public void setRemoteDir(String remoteDir) {
+        this.remoteDir = remoteDir;
+    }
+
+    public String getLocalTempDir() {
+        return localTempDir;
+    }
+
+    public void setLocalTempDir(String localTempDir) {
+        this.localTempDir = localTempDir;
+    }
+
+    public String getLocalStoreDir() {
+        return localStoreDir;
+    }
+
+    public void setLocalStoreDir(String localStoreDir) {
+        this.localStoreDir = localStoreDir;
+    }
 
 
     /**
@@ -1195,7 +1261,7 @@ public class PromoteTask {
      * @param
      */
     public void insertProWeeklySettlymentDetail() {
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -1207,15 +1273,15 @@ public class PromoteTask {
         List<Map<String, Object>> resultsList = couponService.queryYesterdayAllData(beginDate, endDate);
         try {
             // 新增至美日消費統計檔
-            SimpleDateFormat insertSdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            for(int i = 0; i < resultsList.size(); i++){
+            SimpleDateFormat insertSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for (int i = 0; i < resultsList.size(); i++) {
                 DailyConsume dailyConsume = new DailyConsume();
                 //補助機構
                 String fundType = resultsList.get(i).get("fundType").toString();
                 //店家代號
                 String storeId = resultsList.get(i).get("storeId").toString();
                 //消費時間
-                String consumeTime =  resultsList.get(i).get("consumeTime").toString();
+                String consumeTime = resultsList.get(i).get("consumeTime").toString();
                 //類別
                 String storeType = resultsList.get(i).get("storeType").toString();
                 //抵用券金額
@@ -1238,7 +1304,7 @@ public class PromoteTask {
                 //新增至週結明細表
                 int sum2 = weeklySettlementService.insertWeeklySettlementDetail(weeklySettlementDetail);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -1296,60 +1362,12 @@ public class PromoteTask {
         }
     }
 
+    /**
+     * 未消費提醒推播訊息預存
+     */
+//    public remindExpiredCoupon() {
+//
+//    }
 
-    public String getHost() {
-        return host;
-    }
 
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRemoteDir() {
-        return remoteDir;
-    }
-
-    public void setRemoteDir(String remoteDir) {
-        this.remoteDir = remoteDir;
-    }
-
-    public String getLocalTempDir() {
-        return localTempDir;
-    }
-
-    public void setLocalTempDir(String localTempDir) {
-        this.localTempDir = localTempDir;
-    }
-
-    public String getLocalStoreDir() {
-        return localStoreDir;
-    }
-
-    public void setLocalStoreDir(String localStoreDir) {
-        this.localStoreDir = localStoreDir;
-    }
 }
