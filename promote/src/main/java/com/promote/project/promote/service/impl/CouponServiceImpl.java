@@ -592,7 +592,7 @@ public class CouponServiceImpl implements ICouponService {
         int consumed = 0;
         Map<String, Object> couponOverview = consumerInfoMapper.getConsumerInfoById(consumerId);
         if (StringUtils.isEmpty(couponOverview)) {
-            throw new CustomException("尚未申請抵用券");
+            return null;
         }
         Date applyTime = (Date) couponOverview.get("applyTime");
         if (StringUtils.isNotNull(applyTime)) {
@@ -605,9 +605,7 @@ public class CouponServiceImpl implements ICouponService {
 
         //取得該使用者的coupon(pro_coupon)
         List<Coupon> couponList = couponMapper.overviewCoupons(consumerId);
-//        if (couponList.isEmpty()) {
-//            throw new CustomException("您尚未擁有振興券");
-//        }
+
         // 初始化返回結果
         List<Map<String, Object>> couponTypeInfo = new ArrayList<>(); //couponTypeInfo
         String[] typeName = {"夜市類", "餐廳類", "商圈類", "藝文類"};
