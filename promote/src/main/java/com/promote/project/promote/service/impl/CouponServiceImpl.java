@@ -480,10 +480,10 @@ public class CouponServiceImpl implements ICouponService {
             //店家基本資料-商家類型
             String storeTypes = storeInfo.getType();
             //抵用券發放記錄檔-類別
-            String storeType = coupon.getStoreType();
-            if (storeTypes.indexOf(storeType) == -1) {
+            String storeType = storeTypes;
+            /*if (storeTypes.indexOf(storeType) == -1) {
                 throw new CustomException(MessageUtils.message("pro.err.coupon.not.match"));
-            }
+            }*/
             //抵用券發放記錄檔設為已使用
             coupon.setIsUsed("1");
             //更新抵用券發放記錄檔
@@ -553,7 +553,7 @@ public class CouponServiceImpl implements ICouponService {
         couponConsume.setFundType(coupon.getFundType());
         couponConsume.setStoreId(storeInfo.getUserId());
         couponConsume.setConsumeTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
-        couponConsume.setStoreType(storeType);
+        couponConsume.setStoreType(storeTypes);
         couponConsume.setAmount(coupon.getAmount());
         result = couponConsumeMapper.insertCouponConsume(couponConsume);
         if (result < 0) {
