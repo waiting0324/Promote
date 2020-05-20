@@ -26,6 +26,7 @@
         <result property="birthday"    column="birthday"    />
         <result property="email"    column="email"    />
         <result property="mobile"    column="mobile"    />
+        <result property="couponType"    column="coupon_type"    />
     </resultMap>
 
     <resultMap type="java.util.LinkedHashMap" id="ConsumerInfoById">
@@ -118,8 +119,8 @@
 
     <select id="getByUnameIdentity" resultMap="ConsumerInfoByUnameIdentity">
         select user.user_id,user.username,user.identity,consumer.name,
-            TO_CHAR(TIMESTAMP(consumer.birthday), 'YYYY/MM/DD HH:MI:SS') as birthday,
-            user.email,user.mobile
+            TO_CHAR(TIMESTAMP(consumer.birthday), 'YYYY/MM/DD') as birthday,
+            user.email,user.mobile, consumer.coupon_type
         from pro_consumer_info consumer inner join sys_user user
         on consumer.user_id = user.user_id
         <where>
@@ -130,8 +131,8 @@
 
     <select id="getByIdentity" parameterType="String" resultMap="ConsumerInfoByUnameIdentity">
         select user.user_id,user.username,user.identity,consumer.name,
-            TO_CHAR(TIMESTAMP(consumer.birthday), 'YYYY/MM/DD HH:MI:SS') as birthday,
-            user.email,user.mobile
+            TO_CHAR(TIMESTAMP(consumer.birthday), 'YYYY/MM/DD') as birthday,
+            user.email,user.mobile, consumer.coupon_type
         from pro_consumer_info consumer inner join sys_user user
         on consumer.user_id = user.user_id
         <where>
@@ -141,8 +142,8 @@
 
     <select id="getByUsername" parameterType="String" resultMap="ConsumerInfoByUnameIdentity">
         select user.user_id,user.username,user.identity,consumer.name,
-        TO_CHAR(TIMESTAMP(consumer.birthday), 'YYYY/MM/DD HH:MI:SS') as birthday,
-            user.email,user.mobile
+        TO_CHAR(TIMESTAMP(consumer.birthday), 'YYYY/MM/DD') as birthday,
+            user.email,user.mobile, consumer.coupon_type
         from pro_consumer_info consumer inner join sys_user user
         on consumer.user_id = user.user_id
         <where>

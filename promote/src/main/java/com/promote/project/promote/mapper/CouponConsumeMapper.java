@@ -83,11 +83,23 @@ public interface CouponConsumeMapper {
     List<Map<String, Object>> transactionHistory(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("storeType") String storeType, @Param("consumerId") Long consumerId, @Param("storeId") Long storeId, @Param("couponType") String couponType);
 
     /**
-     * 批次-取前一天抵用券消費記錄
+     * 取店家消費明細
      *
      * @param beginTime 前一天日期-起始時間
      * @param endTime   前一天日期-結束時間
+     * @param beginTime 起始時間
+     * @param endTime 結束時間
      * @return 結果
      */
     List<Map<String, Object>> queryYesterdayAllData(@Param("beginTime") String beginTime, @Param("endTime") String endTime);
+
+    /**
+     * 取店家消費明細
+     *
+     * @param storeId 店家代碼
+     * @param beginTime 起始時間
+     * @param endTime 結束時間
+     * @return 結果
+     */
+    List<Map<String, Object>> queryCouponConsumeForStore(@Param("storeId") String storeId, @Param("beginTime")String beginTime, @Param("endTime")String endTime);
 }

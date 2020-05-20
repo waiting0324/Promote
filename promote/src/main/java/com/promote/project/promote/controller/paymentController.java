@@ -76,14 +76,15 @@ public class paymentController extends BaseController {
      * @return 結果
      */
     @PostMapping("/weeklyTx")
-    public AjaxResult weeklyTx() throws Exception{
+    public AjaxResult weeklyTx(@RequestBody Map<String, Object> request) throws Exception{
 
         SysUser user = SecurityUtils.getLoginUser().getUser();
         Long userId = 0l;
         //判斷使用者是客服還是店家
         if(user.getRoles().get(0).getRoleId().equals(RoleConstants.SERVICE_ROLE_ID)){
+            String username = request.get("username").toString();
             //使用者是客服
-            SysUser queryUser = sysUserService.selectUserByUserName(user.getUsername());
+            SysUser queryUser = sysUserService.selectUserByUserName(username);
             userId = queryUser.getUserId();
         }else{
             //使用者是店家

@@ -7,7 +7,6 @@ import com.promote.project.system.domain.SysUser;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -177,7 +176,7 @@ public interface ICouponService {
      */
     void updateProFundAmount(List<Coupon> expiredCoupons, int sTyepAmt, int tTyepAmt, int bTyepAmt, int cTyepAmt);
 
-    /*
+    /**
      * 取(前一天)店家每日消費統計表
      *
      * @param beginTime 前一天日期-起始時間
@@ -194,4 +193,14 @@ public interface ICouponService {
      * @return
      */
     List<Coupon> getNeedRemindCoupon(String isUsed, String isReturn);
+
+    /**
+     * 取店家消費明細
+     *
+     * @param storeId 店家代碼
+     * @param beginTime 起始時間
+     * @param endTime 結束時間
+     * @return 結果
+     */
+    public List<Map<String, Object>> queryCouponConsumeForStore(@Param("storeId") String storeId, @Param("beginTime") String beginTime, @Param("endTime") String endTime);
 }
