@@ -239,7 +239,7 @@ public class ConsumerServiceImpl implements IConsumerService {
         }
         int result = userMapper.updateUser(sysUser);
         if(result < 0){
-            throw new CustomException("更新失敗",0301);
+            throw new CustomException("更新失敗",301);
         }
     }
 

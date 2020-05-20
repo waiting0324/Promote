@@ -475,18 +475,18 @@ public class ProCommonController extends BaseController {
             String newPwd = storeInfo.getNewPwd();
             String checkNewPwd = storeInfo.getCheckNewPwd();
             if(StringUtils.isNotEmpty(newPwd) && StringUtils.isEmpty(checkNewPwd)){
-                return AjaxResult.success("密碼不一致");
+                return AjaxResult.error("密碼不一致");
             }
             if(StringUtils.isNotEmpty(checkNewPwd) && StringUtils.isEmpty(newPwd)){
-                return AjaxResult.success("密碼不一致");
+                return AjaxResult.error("密碼不一致");
             }
             if(!newPwd.equals(checkNewPwd)){
-                return AjaxResult.success("密碼不一致");
+                return AjaxResult.error("密碼不一致");
             }
 
             storeInfo.setUserId(userId);
             storeService.updateStoreInfo(storeInfo);
-            return new AjaxResult(0300,"更新成功");
+            return new AjaxResult(300,"更新成功",null);
         }else if(RoleConstants.CONSUMER_ROLE_ID.equals(roleId) || (RoleConstants.SERVICE_ROLE_ID.equals(roleId) && "C".equals(userType))){
             //消費者及客服
             ConsumerInfo consumer = sysUser.getConsumer();
@@ -499,17 +499,17 @@ public class ProCommonController extends BaseController {
             String newPwd = consumer.getNewPwd();
             String checkNewPwd = consumer.getCheckNewPwd();
             if(StringUtils.isNotEmpty(newPwd) && StringUtils.isEmpty(checkNewPwd)){
-                return AjaxResult.success("密碼不一致");
+                return AjaxResult.error("密碼不一致");
             }
             if(StringUtils.isNotEmpty(checkNewPwd) && StringUtils.isEmpty(newPwd)){
-                return AjaxResult.success("密碼不一致");
+                return AjaxResult.error("密碼不一致");
             }
             if(!newPwd.equals(checkNewPwd)){
-                return AjaxResult.success("密碼不一致");
+                return AjaxResult.error("密碼不一致");
             }
             consumer.setUserId(userId);
             consumerService.updateConsumerInfo(consumer);
-            return new AjaxResult(0300,"更新成功");
+            return new AjaxResult(300,"更新成功",null);
         }
         return AjaxResult.error("目前登入者無權進行基本資料修改");
     }

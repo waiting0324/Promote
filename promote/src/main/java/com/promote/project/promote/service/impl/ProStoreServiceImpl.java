@@ -348,7 +348,7 @@ public class ProStoreServiceImpl implements IProStoreService {
         }
         int result = storeInfoMapper.updateStoreInfo(storeInfoTmp);
         if(result < 0){
-            throw new CustomException("更新失敗",0301);
+            throw new CustomException("更新失敗",301);
         }
         //更新SysUser
         SysUser sysUser = new SysUser();
@@ -363,7 +363,7 @@ public class ProStoreServiceImpl implements IProStoreService {
         }
         result = userMapper.updateUser(sysUser);
         if(result < 0){
-            throw new CustomException("更新失敗",0301);
+            throw new CustomException("更新失敗",301);
         }
     }
 
