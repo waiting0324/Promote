@@ -140,7 +140,7 @@ public interface ICouponService {
      * @param page      要查詢的頁數
      * @return 結果
      */
-    Map<String, Object> transactionHistory(Long id, String role, String storeType, String startDate, String endDate, String rows, String page);
+    Map<String, Object> transactionHistory(Long id, String role, String storeType, String startDate, String endDate, String rows, String page, String couponType);
 
     /**
      * 以證號末四碼及兌換碼查詢抵用券
@@ -187,9 +187,9 @@ public interface ICouponService {
     public List<Map<String, Object>> queryYesterdayAllData(@Param("beginTime") String beginTime, @Param("endTime") String endTime);
 
     /**
-     *取得需要發送推播的抵用券發放記錄檔
+     * 取得需要發送推播的抵用券發放記錄檔
      *
-     * @param isUsed 是否已使用 ( 0未使用 1已使用 )
+     * @param isUsed   是否已使用 ( 0未使用 1已使用 )
      * @param isReturn 是否已回歸總額度
      * @return
      */

@@ -191,8 +191,6 @@ public class CouponController extends BaseController {
     }
 
 
-
-
     /**
      * 消費紀錄列表
      *
@@ -266,12 +264,16 @@ public class CouponController extends BaseController {
      */
     @PostMapping("/transactionHistory")
     public AjaxResult transactionHistory(@RequestBody Map<String, Object> request) {
+        //紙本或電子
+        String couponType = (String) request.get("couponType");
         //抵用券類型
         String storeType = (String) request.get("storeType");
+        //查詢起日
         String startDate = (String) request.get("startDate");
+        //查詢迄日
         String endDate = (String) request.get("endDate");
-        if (StringUtils.isEmpty(storeType) || StringUtils.isEmpty(startDate) || StringUtils.isEmpty(endDate)) {
-            return AjaxResult.error("需輸入抵用券類型,查詢起日,查詢迄日");
+        if (StringUtils.isEmpty(couponType) || StringUtils.isEmpty(storeType) || StringUtils.isEmpty(startDate) || StringUtils.isEmpty(endDate)) {
+            return AjaxResult.error("需輸入紙本/電子,抵用券類型,查詢起日,查詢迄日");
         }
         String rows = (String) request.get("rows");
         rows = StringUtils.isEmpty(rows) ? "10" : rows;
@@ -285,10 +287,10 @@ public class CouponController extends BaseController {
         Map<String, Object> map = null;
         if (RoleConstants.STORE_ROLE_ID.equals(roleId)) {
             //店家
-            map = couponService.transactionHistory(userId, "S", storeType, startDate, endDate, rows, page);
+            map = couponService.transactionHistory(userId, "S", storeType, startDate, endDate, rows, page, couponType);
         } else if (RoleConstants.CONSUMER_ROLE_ID.equals(roleId)) {
             //消費者
-            map = couponService.transactionHistory(userId, "C", storeType, startDate, endDate, rows, page);
+            map = couponService.transactionHistory(userId, "C", storeType, startDate, endDate, rows, page, couponType);
         } else if (RoleConstants.SERVICE_ROLE_ID.equals(roleId)) {
             //客服
             String username = (String) request.get("username");
@@ -304,11 +306,11 @@ public class CouponController extends BaseController {
             SysUser sysUser = sysUserService.getByUnameIndentity(username, indentity);
             roleId = sysUser.getRoles().get(0).getRoleId();
             if (RoleConstants.STORE_ROLE_ID.equals(roleId)) {
-                map = couponService.transactionHistory(sysUser.getUserId(), "S", storeType, startDate, endDate, rows, page);
+                map = couponService.transactionHistory(sysUser.getUserId(), "S", storeType, startDate, endDate, rows, page, couponType);
             } else if (RoleConstants.CONSUMER_ROLE_ID.equals(roleId)) {
-                map = couponService.transactionHistory(sysUser.getUserId(), "C", storeType, startDate, endDate, rows, page);
+                map = couponService.transactionHistory(sysUser.getUserId(), "C", storeType, startDate, endDate, rows, page, couponType);
             }
-        }else{
+        } else {
             return AjaxResult.error("目前登入者無權進行抵用券消費記錄查詢");
         }
         if (StringUtils.isNotEmpty(map)) {
@@ -325,10 +327,10 @@ public class CouponController extends BaseController {
      */
     @PostMapping("/getPrintCoupon")
     public AjaxResult getPrintCoupon(@RequestBody Map<String, Object> request) {
-        String indentity = "%"+request.get("indentity").toString();
+        String indentity = "%" + request.get("indentity").toString();
         String printCode = request.get("printCode").toString();
 
-        List<Map<String, Object>> getPrintCouponList =  couponService.getPrintCoupon(indentity, printCode);
+        List<Map<String, Object>> getPrintCouponList = couponService.getPrintCoupon(indentity, printCode);
         System.out.println(getPrintCouponList);
         Map<String, Object> resultMap = new HashMap<String, Object>();
         resultMap.put("couponInfo", getPrintCouponList);
@@ -347,7 +349,7 @@ public class CouponController extends BaseController {
 
         String printCode = request.get("printCode").toString();
         int sum = couponService.updatePrintCoupon(printCode);
-        if(sum < 0){
+        if (sum < 0) {
             return AjaxResult.error();
         }
         //int sum = 0;

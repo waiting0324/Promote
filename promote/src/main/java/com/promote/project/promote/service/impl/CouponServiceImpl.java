@@ -723,7 +723,7 @@ public class CouponServiceImpl implements ICouponService {
      * @return 結果
      */
     @Override
-    public Map<String, Object> transactionHistory(Long id, String role, String storeType, String startDate, String endDate, String rows, String page) {
+    public Map<String, Object> transactionHistory(Long id, String role, String storeType, String startDate, String endDate, String rows, String page, String couponType) {
         List<Map<String, Object>> historyList = null;
         Map<String, Object> map = null;
         startDate = startDate.replaceAll("/", "-");
@@ -732,10 +732,10 @@ public class CouponServiceImpl implements ICouponService {
         endDate += " 23:59:59";
         if ("S".equals(role)) {
             //查店家
-            historyList = couponConsumeMapper.transactionHistory(startDate, endDate, "-1".equals(storeType) ? null : storeType, null, id);
+            historyList = couponConsumeMapper.transactionHistory(startDate, endDate, "-1".equals(storeType) ? null : storeType, null, id, "A".equals(couponType) ? null : couponType);
         } else {
             //查消費者
-            historyList = couponConsumeMapper.transactionHistory(startDate, endDate, "-1".equals(storeType) ? null : storeType, id, null);
+            historyList = couponConsumeMapper.transactionHistory(startDate, endDate, "-1".equals(storeType) ? null : storeType, id, null, "A".equals(couponType) ? null : couponType);
         }
         if (StringUtils.isNotNull(historyList) && historyList.size() > 0) {
             map = new LinkedHashMap<String, Object>();
@@ -843,6 +843,7 @@ public class CouponServiceImpl implements ICouponService {
             }
         }
     }
+
     /*
      * 以證號末四碼及兌換碼查詢抵用券
      *
@@ -851,21 +852,21 @@ public class CouponServiceImpl implements ICouponService {
      * @return 結果
      */
     @Override
-    public List<Map<String, Object>> queryYesterdayAllData(@Param("beginTime")String beginTime, @Param("endTime")String endTime) {
+    public List<Map<String, Object>> queryYesterdayAllData(@Param("beginTime") String beginTime, @Param("endTime") String endTime) {
         List<Map<String, Object>> resultsList = couponConsumeMapper.queryYesterdayAllData(beginTime, endTime);
         return resultsList;
     }
 
     /**
-     *取得需要發送推播的抵用券發放記錄檔
+     * 取得需要發送推播的抵用券發放記錄檔
      *
-     * @param isUsed 是否已使用 ( 0未使用 1已使用 )
+     * @param isUsed   是否已使用 ( 0未使用 1已使用 )
      * @param isReturn 是否已回歸總額度
      * @return
      */
     @Override
     public List<Coupon> getNeedRemindCoupon(String isUsed, String isReturn) {
-        return couponMapper.getNeedRemindCoupon(isUsed,isReturn);
+        return couponMapper.getNeedRemindCoupon(isUsed, isReturn);
     }
 
 }
