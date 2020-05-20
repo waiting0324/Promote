@@ -85,7 +85,6 @@ public class paymentController extends BaseController {
             String username = request.get("username").toString();
             //使用者是客服
             SysUser queryUser = sysUserService.selectUserByUserName(username);
-            System.out.println(queryUser);
             userId = queryUser.getUserId();
         }else{
             //使用者是店家
