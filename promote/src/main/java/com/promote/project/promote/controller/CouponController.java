@@ -223,9 +223,12 @@ public class CouponController extends BaseController {
             SysUser sysUser = sysUserService.getByUnameIndentity(username, indentity);
             consumerId = sysUser.getUserId();
         }
+        Map<String, Object> couponOverview = couponService.overviewCoupons(consumerId);
+        if(StringUtils.isNull(couponOverview)){
+            return new AjaxResult(2200,"尚未申請抵用券");
+        }
         AjaxResult ajax = AjaxResult.success();
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        Map<String, Object> couponOverview = couponService.overviewCoupons(consumerId);
         resultMap.put("couponOverview", couponOverview);
         ajax.put("result", resultMap);
         return ajax;
