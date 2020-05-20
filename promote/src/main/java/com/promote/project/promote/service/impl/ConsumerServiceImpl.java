@@ -124,7 +124,7 @@ public class ConsumerServiceImpl implements IConsumerService {
             else {
                 consumerInfo.setConsumerStat(ConsumerConstants.STAT_REGISTED_PROXY_MOBILE);
                 // 默認紙本列印抵用券
-                consumerInfo.setCouponType(CouponConstants.TYPE_ELEC);
+                //consumerInfo.setCouponType(CouponConstants.TYPE_ELEC);
             }
         }
 
