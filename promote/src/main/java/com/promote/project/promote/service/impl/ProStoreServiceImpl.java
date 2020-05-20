@@ -322,24 +322,48 @@ public class ProStoreServiceImpl implements IProStoreService {
         //更新StoreInfo
         StoreInfo storeInfoTmp =  new StoreInfo();
         storeInfoTmp.setUserId(storeInfo.getUserId());
-        storeInfoTmp.setName(storeInfo.getName());
-        storeInfoTmp.setOwner(storeInfo.getOwner());
-        storeInfoTmp.setBankAccountName(storeInfo.getBankAccountName());
-        storeInfoTmp.setBankAccount(storeInfo.getBankAccount());
-        storeInfoTmp.setBankAchCode(storeInfo.getBankAchCode());
-        storeInfoTmp.setAddress(storeInfo.getAddress());
+        String name = storeInfo.getName();
+        if(StringUtils.isNotEmpty(name)){
+            storeInfoTmp.setName(name);
+        }
+        String owner = storeInfo.getOwner();
+        if(StringUtils.isNotEmpty(owner)){
+            storeInfoTmp.setOwner(owner);
+        }
+        String bankAccountName = storeInfo.getBankAccountName();
+        if(StringUtils.isNotEmpty(bankAccountName)){
+            storeInfoTmp.setBankAccountName(bankAccountName);
+        }
+        String bankAccount = storeInfo.getBankAccount();
+        if(StringUtils.isNotEmpty(bankAccount)){
+            storeInfoTmp.setBankAccount(bankAccount);
+        }
+        String bankAchCode = storeInfo.getBankAchCode();
+        if(StringUtils.isNotEmpty(bankAchCode)){
+            storeInfoTmp.setBankAchCode(bankAchCode);
+        }
+        String address = storeInfo.getAddress();
+        if(StringUtils.isNotEmpty(address)){
+            storeInfoTmp.setAddress(address);
+        }
         int result = storeInfoMapper.updateStoreInfo(storeInfoTmp);
         if(result < 0){
-            throw new CustomException("更新失敗");
+            throw new CustomException("更新失敗",0301);
         }
         //更新SysUser
         SysUser sysUser = new SysUser();
         sysUser.setUserId(storeInfo.getUserId());
-        sysUser.setUsername(storeInfo.getUsername());
-        sysUser.setMobile(storeInfo.getMobile());
+        String mobile = storeInfo.getMobile();
+        if(StringUtils.isNotEmpty(mobile)){
+            sysUser.setMobile(mobile);
+        }
+        String newPwd = storeInfo.getNewPwd();
+        if(StringUtils.isNotEmpty(newPwd)){
+            sysUser.setPassword(SecurityUtils.encryptPassword(newPwd));
+        }
         result = userMapper.updateUser(sysUser);
         if(result < 0){
-            throw new CustomException("更新失敗");
+            throw new CustomException("更新失敗",0301);
         }
     }
 

@@ -106,6 +106,26 @@ public class StoreInfo extends BaseEntity {
 
     private String owner;
 
+    private String newPwd;
+
+    private String checkNewPwd;
+
+
+    public String getNewPwd() {
+        return newPwd;
+    }
+
+    public void setNewPwd(String newPwd) {
+        this.newPwd = newPwd;
+    }
+
+    public String getCheckNewPwd() {
+        return checkNewPwd;
+    }
+
+    public void setCheckNewPwd(String checkNewPwd) {
+        this.checkNewPwd = checkNewPwd;
+    }
 
     public String getOwner() {
         return owner;

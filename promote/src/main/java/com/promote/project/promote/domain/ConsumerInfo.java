@@ -76,6 +76,26 @@ public class    ConsumerInfo extends BaseEntity
 
     private String email;
 
+    private String newPwd;
+
+    private String checkNewPwd;
+
+    public String getNewPwd() {
+        return newPwd;
+    }
+
+    public void setNewPwd(String newPwd) {
+        this.newPwd = newPwd;
+    }
+
+    public String getCheckNewPwd() {
+        return checkNewPwd;
+    }
+
+    public void setCheckNewPwd(String checkNewPwd) {
+        this.checkNewPwd = checkNewPwd;
+    }
+
     public String getUsername() {
         return username;
     }
