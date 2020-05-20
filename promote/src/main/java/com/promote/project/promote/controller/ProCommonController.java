@@ -262,7 +262,7 @@ public class ProCommonController extends BaseController {
     /**
      * 忘記密碼，驗證並更新密碼
      *
-     * @param sysUser 使用者資料
+     * @param request 使用者資料
      * @return 結果
      */
     @PostMapping("/common/forgetPwd")
