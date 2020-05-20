@@ -14,13 +14,13 @@ import com.promote.framework.web.page.TableDataInfo;
 import com.promote.project.promote.domain.ConsumerInfo;
 import com.promote.project.promote.domain.Coupon;
 import com.promote.project.promote.domain.CouponConsume;
+import com.promote.project.promote.service.IConsumerService;
 import com.promote.project.promote.service.ICouponService;
 import com.promote.project.system.domain.SysUser;
 import com.promote.project.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import com.promote.project.promote.service.IConsumerService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
