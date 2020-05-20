@@ -176,7 +176,7 @@ public interface ICouponService {
      */
     void updateProFundAmount(List<Coupon> expiredCoupons, int sTyepAmt, int tTyepAmt, int bTyepAmt, int cTyepAmt);
 
-    /*
+    /**
      * 取(前一天)店家每日消費統計表
      *
      * @param beginTime 前一天日期-起始時間
@@ -184,4 +184,14 @@ public interface ICouponService {
      * @return 結果
      */
     public List<Map<String, Object>> queryYesterdayAllData(@Param("beginTime") String beginTime, @Param("endTime") String endTime);
+
+    /**
+     * 取店家消費明細
+     *
+     * @param storeId 店家代碼
+     * @param beginTime 起始時間
+     * @param endTime 結束時間
+     * @return 結果
+     */
+    public List<Map<String, Object>> queryCouponConsumeForStore(@Param("storeId") String storeId, @Param("beginTime") String beginTime, @Param("endTime") String endTime);
 }

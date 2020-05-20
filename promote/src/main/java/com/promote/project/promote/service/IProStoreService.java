@@ -82,4 +82,12 @@ public interface IProStoreService {
      * @return 結果
      */
     int mailTxHistory(StoreHisMail storeHisMail);
+
+    /**
+     * 查詢店家查詢明細郵件表(未處理)
+     *
+     * @param
+     * @return 結果
+     */
+    List<Map<String, Object>> queryProStoreHisMailToStatusForZeroList();
 }

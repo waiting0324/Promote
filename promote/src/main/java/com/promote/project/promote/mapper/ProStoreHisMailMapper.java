@@ -22,4 +22,12 @@ public interface ProStoreHisMailMapper {
      */
     public int insertProStoreHisMail(StoreHisMail storeHisMail);
 
+    /**
+     * 查詢店家查詢明細郵件表(未處理)
+     *
+     * @param
+     * @return
+     */
+    public List<Map<String, Object>> queryProStoreHisMailToStatusForZeroList();
+
 }

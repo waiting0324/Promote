@@ -16,6 +16,15 @@
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
+    <resultMap type="java.util.Map" id="ProStoreHisMailZeroResult">
+        <result property="storeId" column="store_id" />
+        <result property="startDate" column="start_date" />
+        <result property="endDate" column="end_date" />
+        <result property="status" column="status" />
+        <result property="storeType" column="store_type" />
+        <result property="mail" column="mail" />
+    </resultMap>
+
     <sql id="selectProStoreHisMailVo">
         select id, store_id, start_date, end_date, status, store_type, mail, create_time, update_time
         from pro_store_his_mail
@@ -48,5 +57,11 @@
             sysdate
         </trim>
     </insert>
+
+    <select id="queryProStoreHisMailToStatusForZeroList" resultMap="ProStoreHisMailZeroResult">
+        SELECT store_id, start_date, end_date, status, store_type, mail
+        FROM pro_store_his_mail
+        WHERE status = '0'
+    </select>
 
 </mapper>

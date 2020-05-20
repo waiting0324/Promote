@@ -101,4 +101,5 @@ public class EmailUtils {
         transport.sendMessage(message, message.getAllRecipients());
         transport.close();
     }
+
 }

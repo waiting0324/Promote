@@ -1,13 +1,18 @@
 package com.promote.project.promote.task;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.extra.mail.MailAccount;
+import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.extra.ssh.Sftp;
+import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.sax.Excel03SaxReader;
 import cn.hutool.poi.excel.sax.Excel07SaxReader;
 import cn.hutool.poi.excel.sax.handler.RowHandler;
 import com.promote.common.utils.DateUtils;
+import com.promote.common.utils.EmailUtils;
+import com.promote.common.utils.PdfUtil;
 import com.promote.common.utils.StringUtils;
-import com.promote.framework.web.domain.server.Sys;
 import com.promote.project.monitor.domain.SysOperLog;
 import com.promote.project.monitor.service.ISysOperLogService;
 import com.promote.project.promote.domain.Coupon;
@@ -22,6 +27,9 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -63,6 +71,9 @@ public class PromoteTask {
 
     @Autowired
     IWeeklySettlementService weeklySettlementService;
+
+    @Autowired
+    IProStoreService proStoreService;
 
     @Autowired
     private ISysConfigService configService;
@@ -1427,5 +1438,83 @@ public class PromoteTask {
 //
 //    }
 
+    /**
+     * 店家查詢明細郵件發送
+     *
+     * @param
+     */
+    public void queryCouponConsumeSendmail() {
 
+        try {
+            List<Map<String, Object>> resultsList = proStoreService.queryProStoreHisMailToStatusForZeroList();
+
+
+            for(int i = 0; i < resultsList.size(); i++){
+                String storeId = resultsList.get(i).get("storeId").toString();
+                String startDate = resultsList.get(i).get("startDate").toString() + " 00:00:00";
+                String endDate = resultsList.get(i).get("endDate").toString() + " 23:59:59";
+                List<Map<String, Object>> couponConsumeForStoreList = couponService.queryCouponConsumeForStore(storeId, startDate, endDate);
+                if(couponConsumeForStoreList.size() > 0){
+                    String mail = resultsList.get(i).get("mail").toString();
+                    String storeId1 = couponConsumeForStoreList.get(0).get("storeId").toString();
+                    dataToPDF(couponConsumeForStoreList, storeId1, startDate, endDate);
+
+                    /*MailAccount mailAccount = new MailAccount();
+                    mailAccount.setHost("smtp.yeah.net");
+                    mailAccount.setPort(25);
+                    mailAccount.setAuth(true);
+                    mailAccount.setFrom("hutool@yeah.net");
+                    mailAccount.setUser("hutool");
+                    mailAccount.setPass("q1w2e3");*/
+                    MailUtil.send(mail, "测试", "邮件来自Hutool测试", false, FileUtil.file("/tmp/"+storeId1+".pdf"));
+
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void dataToPDF(List<Map<String, Object>> couponConsumeForStoreList, String storeName, String beginDate, String endDate){
+        try {
+            PdfUtil pdfUtil = new PdfUtil();
+//			DecimalFormat df = new DecimalFormat("#,###");
+
+            // page1
+            // 表頭
+            pdfUtil.txtC(String.format("%s歷史交易明細表", ""));
+            pdfUtil.newLine();
+            // 保單資訊
+			//String[] effectivedate = DateUtil.getRocDate(vo.getEffectivedate()).split("/");
+
+			pdfUtil.tableLR(
+					String.format("店家名稱%s", storeName),"");
+            pdfUtil.tableLR(
+                    String.format("查詢區間%s", beginDate + "~" + endDate),"");
+            pdfUtil.newLine();
+            //pdfUtil.txtC("消費時間  " + "明細類別  " + "抵用劵類型  " + "金額  ");
+            for(int i = 0; i < couponConsumeForStoreList.size(); i++){
+                String consumeTime = couponConsumeForStoreList.get(i).get("consumeTime").toString();
+                String storeType = couponConsumeForStoreList.get(i).get("storeType").toString();
+                String couponType = couponConsumeForStoreList.get(i).get("couponType").toString();
+                String amount = couponConsumeForStoreList.get(i).get("amount").toString();
+                pdfUtil.tableLR(String.format("查詢區間:%s", consumeTime), String.format("明細類別:%s", storeType));
+                pdfUtil.tableLR(String.format("抵用劵類型:%s", couponType), String.format("金額:%s", amount));
+                pdfUtil.newLine();
+            }
+
+            byte[] pdfByte = pdfUtil.closeDoc().pageHF();
+            FileOutputStream fos = new FileOutputStream(new File("tmp/"+storeName+".pdf"));
+            IOUtils.write(pdfByte, fos);
+            IOUtils.closeQuietly(fos);
+            String str = new String("峯".getBytes("BIG5"), "UTF-8");
+            if(str.equals("?")){
+                System.out.println("峯" + "非BIG5字集");
+            }
+            System.out.println(StringEscapeUtils.escapeJava("鑫尹"));
+            System.out.println(new String("峯".getBytes("BIG5"), "UTF-16"));
+        } catch (Exception e) {
+//			e.printStackTrace();
+        }
+    }
 }

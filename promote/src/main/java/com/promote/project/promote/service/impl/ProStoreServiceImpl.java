@@ -346,13 +346,25 @@ public class ProStoreServiceImpl implements IProStoreService {
     /**
      * 申請歷史明細(APP專用)
      *
-     * @param params 日期
+     * @param storeHisMail
      * @return
      */
     @Override
     public int mailTxHistory(StoreHisMail storeHisMail) {
         int sum = proStoreHisMailMapper.insertProStoreHisMail(storeHisMail);
         return sum;
+    }
+
+    /**
+     * 查詢店家查詢明細郵件表(未處理)
+     *
+     * @param
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> queryProStoreHisMailToStatusForZeroList() {
+        List<Map<String, Object>> resultsList = proStoreHisMailMapper.queryProStoreHisMailToStatusForZeroList();
+        return resultsList;
     }
 
     /**

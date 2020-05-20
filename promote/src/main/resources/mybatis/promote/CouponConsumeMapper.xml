@@ -37,6 +37,16 @@
         <result property="amount" column="amount" />
     </resultMap>
 
+    <resultMap type="java.util.Map" id="CouponConsumeForStore">
+        <result property="consumerId" column="consumer_id" />
+        <result property="storeId" column="store_id" />
+        <result property="consumeTime" column="consume_time" />
+        <result property="storeType" column="store_type" />
+        <result property="amount" column="amount" />
+        <result property="couponType" column="coupon_type" />
+        <result property="name" column="name" />
+    </resultMap>
+
     <sql id="selectCouponConsumeVo">
         select coupon_id, consumer_id, fund_type, store_id, store_type, consume_time, amount from pro_coupon_consume
     </sql>
@@ -148,5 +158,14 @@
         SELECT consumer_id, coupon_id, fund_type, store_id, consume_time, store_type, amount
         FROM pro_coupon_consume
         WHERE consume_time Between #{beginTime} and #{endTime}
+    </select>
+
+    <select id="queryCouponConsumeForStore" resultMap="CouponConsumeForStore">
+        SELECT a.consumer_id, a.store_id, a.consume_time, a.store_type, a.amount, b.coupon_type, c.name
+        FROM pro_coupon_consume a
+        inner join pro_consumer_info b on a.consumer_id = b.user_id
+        left join pro_store_info c on a.store_id = c.user_id
+        WHERE store_id = #{storeId}
+            AND consume_time Between #{beginTime} and #{endTime}
     </select>
 </mapper>
