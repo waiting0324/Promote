@@ -15,6 +15,7 @@ import com.promote.project.promote.domain.HotelWhitelist;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.domain.StoreWhitelist;
 import com.promote.project.promote.domain.*;
+import com.promote.project.promote.sender.ProQueueSender;
 import com.promote.project.promote.service.*;
 import com.promote.project.system.domain.SysConfig;
 import com.promote.project.system.service.ISysConfigService;
@@ -67,6 +68,9 @@ public class PromoteTask {
     @Autowired
     private ISysConfigService configService;
 
+    @Autowired
+    private ProQueueSender proQueueSender;
+
     // 與FTP相關配置 開始
     private String host;
 
@@ -83,7 +87,7 @@ public class PromoteTask {
     private String localStoreDir;
 
     //總額度控管相關配置 開始
-    private int cTypeExpiredDays;
+    private int typeThreeExpiredDays;
 
     private int defaultExpiredDays;
 
@@ -159,12 +163,12 @@ public class PromoteTask {
         this.localStoreDir = localStoreDir;
     }
 
-    public int getcTypeExpiredDays() {
-        return cTypeExpiredDays;
+    public int getTypeThreeExpiredDays() {
+        return typeThreeExpiredDays;
     }
 
-    public void setcTypeExpiredDays(int cTypeExpiredDays) {
-        this.cTypeExpiredDays = cTypeExpiredDays;
+    public void setTypeThreeExpiredDays(int typeThreeExpiredDays) {
+        this.typeThreeExpiredDays = typeThreeExpiredDays;
     }
 
     public int getDefaultExpiredDays() {
@@ -1448,10 +1452,10 @@ public class PromoteTask {
     public void remindExpiredCoupon() {
         List<Coupon> allCoupon = couponService.getNeedRemindCoupon("0", "0");
         if (StringUtils.isNotEmpty(allCoupon)) {
-            List<Coupon> needRemindCoupons = new ArrayList<Coupon>();
+            Map<String,RemindCoupon> map =new HashMap<String,RemindCoupon>();
             for (Coupon coupon : allCoupon) {
-                String fundType = coupon.getFundType();
-                int span = "C".equals(fundType) ? cTypeExpiredDays - beforeExpiredDays : defaultExpiredDays - beforeExpiredDays;
+                String storeType = coupon.getStoreType();
+                int span = "3".equals(storeType) ? typeThreeExpiredDays - beforeExpiredDays : defaultExpiredDays - beforeExpiredDays;
                 Calendar expiredTime = Calendar.getInstance();
                 String createTime = DateUtils.parseDateToStr("yyyy-MM-dd HH:mm:ss", coupon.getCreateTime());
                 expiredTime.setTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", createTime));
@@ -1460,11 +1464,44 @@ public class PromoteTask {
                 now.setTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
                 if (now.compareTo(expiredTime) != -1) {
                     //需通知的coupon
-                    needRemindCoupons.add(coupon);
+                    Long userId = coupon.getUserId();
+                    RemindCoupon remindCoupon = map.get(userId.toString());
+                    if(StringUtils.isNull(remindCoupon)){
+                        //設定初值
+                        remindCoupon =  new RemindCoupon();
+                        remindCoupon.setUserId(userId);
+                        remindCoupon.setTypeZeroCoupon(new ArrayList<Coupon>());
+                        remindCoupon.setTypeOneCoupon(new ArrayList<Coupon>());
+                        remindCoupon.setTypeTwoCoupon(new ArrayList<Coupon>());
+                        remindCoupon.setTypeThreeCoupon(new ArrayList<Coupon>());
+                        map.put(userId.toString(),remindCoupon);
+                    }
+                    String type = coupon.getStoreType();
+                    switch (type){
+                        case "0":
+                            List<Coupon> typeZeroCouponList = remindCoupon.getTypeZeroCoupon();
+                            typeZeroCouponList.add(coupon);
+                            break;
+                        case "1":
+                            List<Coupon> typeOneCouponList = remindCoupon.getTypeOneCoupon();
+                            typeOneCouponList.add(coupon);
+                            break;
+                        case "2":
+                            List<Coupon> typeTwoCouponList = remindCoupon.getTypeTwoCoupon();
+                            typeTwoCouponList.add(coupon);
+                            break;
+                        case "3":
+                            List<Coupon> typeThreeCouponList = remindCoupon.getTypeThreeCoupon();
+                            typeThreeCouponList.add(coupon);
+                            break;
+                    }
+
                 }
             }
-            if(needRemindCoupons.size() > 0){
-                //發送到mq
+            for(Iterator<String> iterator = map.keySet().iterator();iterator.hasNext();){
+                RemindCoupon remindCoupon = map.get(iterator.next());
+                //送資料到MQ
+                proQueueSender.send(remindCoupon);
             }
         }
     }

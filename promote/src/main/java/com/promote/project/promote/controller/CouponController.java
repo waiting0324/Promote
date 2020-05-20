@@ -283,10 +283,11 @@ public class CouponController extends BaseController {
         //判斷角色
         Long roleId = user.getRoles().get(0).getRoleId();
         Map<String, Object> map = null;
-//        role = "customerService"; //測試用
         if (RoleConstants.STORE_ROLE_ID.equals(roleId)) {
+            //店家
             map = couponService.transactionHistory(userId, "S", storeType, startDate, endDate, rows, page);
         } else if (RoleConstants.CONSUMER_ROLE_ID.equals(roleId)) {
+            //消費者
             map = couponService.transactionHistory(userId, "C", storeType, startDate, endDate, rows, page);
         } else if (RoleConstants.SERVICE_ROLE_ID.equals(roleId)) {
             //客服
@@ -307,13 +308,14 @@ public class CouponController extends BaseController {
             } else if (RoleConstants.CONSUMER_ROLE_ID.equals(roleId)) {
                 map = couponService.transactionHistory(sysUser.getUserId(), "C", storeType, startDate, endDate, rows, page);
             }
+        }else{
+            return AjaxResult.error("目前登入者無權進行抵用券消費記錄查詢");
         }
         if (StringUtils.isNotEmpty(map)) {
             ajax.put("result", map);
-//            ajax.putAll(map);
             return ajax;
         }
-        return AjaxResult.error("目前登入者無權進行抵用券消費記錄查詢");
+        return AjaxResult.error("查無資料");
     }
 
     /**

@@ -157,6 +157,6 @@
 
     <select id="getNeedRemindCoupon" resultMap="CouponResult">
         <include refid="selectCouponVo"/>
-        where is_used = #{isUsed} and is_return = #{isReturn} and (notice_time = null or notice_time='')
+        where is_used = #{isUsed} and is_return = #{isReturn} and notice_time is null
     </select>
 </mapper>
