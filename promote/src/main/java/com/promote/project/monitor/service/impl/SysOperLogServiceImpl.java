@@ -34,7 +34,8 @@ public class SysOperLogServiceImpl implements ISysOperLogService {
      */
     @Override
     public void insertOperlog(SysOperLog operLog) {
-        proQueueSender.send("com.promote.project.monitor.domain.SysOperLog",operLog);
+        //不直接Insert DB,改走MQ
+        proQueueSender.send(operLog);
 //        operLogMapper.insertOperlog(operLog);
     }
 

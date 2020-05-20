@@ -115,7 +115,7 @@ public class ConsumerServiceImpl implements IConsumerService {
         // 旅宿業者代註冊
         else {
             // 狀態設為 旅宿業者代註冊(無手機)
-            if (user.getMobile() == null) {
+            if (user.getConsumer().getMobile() == null) {
                 consumerInfo.setConsumerStat(ConsumerConstants.STAT_REGISTED_PROXY_NO_MOBILE);
                 // 默認紙本列印抵用券
                 consumerInfo.setCouponType(CouponConstants.TYPE_PAPAER);
@@ -225,19 +225,22 @@ public class ConsumerServiceImpl implements IConsumerService {
     public void updateConsumerInfo(ConsumerInfo consumer) {
         SysUser sysUser = new SysUser();
         sysUser.setUserId(consumer.getUserId());
-        sysUser.setUsername(consumer.getUsername());
-        sysUser.setEmail(consumer.getEmail());
-        sysUser.setMobile(consumer.getMobile());
+        String email = consumer.getEmail();
+        if(StringUtils.isNotEmpty(email)){
+            sysUser.setEmail(email);
+        }
+        String mobile = consumer.getMobile();
+        if(StringUtils.isNotEmpty(mobile)){
+            sysUser.setMobile(mobile);
+        }
+        String newPwd = consumer.getNewPwd();
+        if(StringUtils.isNotEmpty(newPwd)){
+            sysUser.setPassword(SecurityUtils.encryptPassword(newPwd));
+        }
         int result = userMapper.updateUser(sysUser);
         if(result < 0){
-            throw new CustomException("更新失敗");
+            throw new CustomException("更新失敗",301);
         }
     }
 
-//    @Override
-//    public Map<String, Object> getCouponOverview(Long userId) {
-//        consumerInfoMapper
-//
-//        return null;
-//    }
 }

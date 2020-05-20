@@ -20,6 +20,7 @@ import com.promote.project.promote.domain.HotelWhitelist;
 import com.promote.project.promote.domain.ProWhitelist;
 import com.promote.project.promote.domain.StoreWhitelist;
 import com.promote.project.promote.domain.*;
+import com.promote.project.promote.sender.ProQueueSender;
 import com.promote.project.promote.service.*;
 import com.promote.project.system.domain.SysConfig;
 import com.promote.project.system.service.ISysConfigService;
@@ -78,6 +79,9 @@ public class PromoteTask {
     @Autowired
     private ISysConfigService configService;
 
+    @Autowired
+    private ProQueueSender proQueueSender;
+
     // 與FTP相關配置 開始
     private String host;
 
@@ -94,13 +98,12 @@ public class PromoteTask {
     private String localStoreDir;
 
     //總額度控管相關配置 開始
-    private int cTypeExpiredDays;
+    private int typeThreeExpiredDays;
 
     private int defaultExpiredDays;
 
     //未消費提醒推播訊息預存相關配置 開始
     private int beforeExpiredDays;
-
 
 
     //白名單成功筆數
@@ -171,6 +174,29 @@ public class PromoteTask {
         this.localStoreDir = localStoreDir;
     }
 
+    public int getTypeThreeExpiredDays() {
+        return typeThreeExpiredDays;
+    }
+
+    public void setTypeThreeExpiredDays(int typeThreeExpiredDays) {
+        this.typeThreeExpiredDays = typeThreeExpiredDays;
+    }
+
+    public int getDefaultExpiredDays() {
+        return defaultExpiredDays;
+    }
+
+    public void setDefaultExpiredDays(int defaultExpiredDays) {
+        this.defaultExpiredDays = defaultExpiredDays;
+    }
+
+    public int getBeforeExpiredDays() {
+        return beforeExpiredDays;
+    }
+
+    public void setBeforeExpiredDays(int beforeExpiredDays) {
+        this.beforeExpiredDays = beforeExpiredDays;
+    }
 
     /**
      * 從FTP上下載差異檔
@@ -1328,7 +1354,7 @@ public class PromoteTask {
      */
     public void insertProWeeklySettlyment() {
 
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         //取年一天日期
         Calendar calendar = Calendar.getInstance();
@@ -1344,14 +1370,14 @@ public class PromoteTask {
         String beginTime = sdf.format(date);
 
         try {
-            Map<String,Object> map = new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<String, Object>();
             List<Map<String, Object>> querylist = weeklySettlementService.queryLastWeekSettlementDetailList(beginTime + " 00:00:00", endTime + " 23:59:59");
-            for(int i = 0; i < querylist.size(); i++){
+            for (int i = 0; i < querylist.size(); i++) {
                 String storeId = querylist.get(i).get("storeId").toString();
-                if(map.get(storeId) == null){
+                if (map.get(storeId) == null) {
                     String amount = querylist.get(i).get("amount").toString();
                     map.put(storeId, amount);
-                }else{
+                } else {
                     String oldAmount = map.get(storeId).toString();
                     long sum = Long.valueOf(oldAmount);
                     String newAmount = querylist.get(i).get("amount").toString();
@@ -1360,7 +1386,7 @@ public class PromoteTask {
                 }
             }
 
-            for(String storeId : map.keySet()){
+            for (String storeId : map.keySet()) {
                 WeeklySettlement weeklySettlement = new WeeklySettlement();
                 weeklySettlement.setStoreId(Long.valueOf(storeId));
                 weeklySettlement.setWeekStart(sdf.parse(beginTime));
@@ -1373,7 +1399,7 @@ public class PromoteTask {
                 weeklySettlement.setPaymentStatus("0");
                 int sum = weeklySettlementService.insertWeeklySettlement(weeklySettlement);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -1434,9 +1460,62 @@ public class PromoteTask {
     /**
      * 未消費提醒推播訊息預存
      */
-//    public remindExpiredCoupon() {
-//
-//    }
+    public void remindExpiredCoupon() {
+        List<Coupon> allCoupon = couponService.getNeedRemindCoupon("0", "0");
+        if (StringUtils.isNotEmpty(allCoupon)) {
+            Map<String,RemindCoupon> map =new HashMap<String,RemindCoupon>();
+            for (Coupon coupon : allCoupon) {
+                String storeType = coupon.getStoreType();
+                int span = "3".equals(storeType) ? typeThreeExpiredDays - beforeExpiredDays : defaultExpiredDays - beforeExpiredDays;
+                Calendar expiredTime = Calendar.getInstance();
+                String createTime = DateUtils.parseDateToStr("yyyy-MM-dd HH:mm:ss", coupon.getCreateTime());
+                expiredTime.setTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", createTime));
+                expiredTime.add(Calendar.DATE, span);
+                Calendar now = Calendar.getInstance();
+                now.setTime(DateUtils.dateTime("yyyy-MM-dd HH:mm:ss", DateUtils.getTime()));
+                if (now.compareTo(expiredTime) != -1) {
+                    //需通知的coupon
+                    Long userId = coupon.getUserId();
+                    RemindCoupon remindCoupon = map.get(userId.toString());
+                    if(StringUtils.isNull(remindCoupon)){
+                        //設定初值
+                        remindCoupon =  new RemindCoupon();
+                        remindCoupon.setUserId(userId);
+                        remindCoupon.setTypeZeroCoupon(new ArrayList<Coupon>());
+                        remindCoupon.setTypeOneCoupon(new ArrayList<Coupon>());
+                        remindCoupon.setTypeTwoCoupon(new ArrayList<Coupon>());
+                        remindCoupon.setTypeThreeCoupon(new ArrayList<Coupon>());
+                        map.put(userId.toString(),remindCoupon);
+                    }
+                    String type = coupon.getStoreType();
+                    switch (type){
+                        case "0":
+                            List<Coupon> typeZeroCouponList = remindCoupon.getTypeZeroCoupon();
+                            typeZeroCouponList.add(coupon);
+                            break;
+                        case "1":
+                            List<Coupon> typeOneCouponList = remindCoupon.getTypeOneCoupon();
+                            typeOneCouponList.add(coupon);
+                            break;
+                        case "2":
+                            List<Coupon> typeTwoCouponList = remindCoupon.getTypeTwoCoupon();
+                            typeTwoCouponList.add(coupon);
+                            break;
+                        case "3":
+                            List<Coupon> typeThreeCouponList = remindCoupon.getTypeThreeCoupon();
+                            typeThreeCouponList.add(coupon);
+                            break;
+                    }
+
+                }
+            }
+            for(Iterator<String> iterator = map.keySet().iterator();iterator.hasNext();){
+                RemindCoupon remindCoupon = map.get(iterator.next());
+                //送資料到MQ
+                proQueueSender.send(remindCoupon);
+            }
+        }
+    }
 
     /**
      * 店家查詢明細郵件發送

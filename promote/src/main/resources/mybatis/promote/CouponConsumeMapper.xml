@@ -150,6 +150,7 @@
             <if test="storeType != null  and storeType != ''">and coupon.store_type = #{storeType}</if>
             <if test="consumerId != null">and coupon.consumer_id = #{consumerId}</if>
             <if test="storeId != null">and coupon.store_id = #{storeId}</if>
+            <if test="couponType != null  and couponType != ''">and consumer.coupon_type = #{couponType}</if>
         </where>
         order by coupon.consume_time desc
     </select>

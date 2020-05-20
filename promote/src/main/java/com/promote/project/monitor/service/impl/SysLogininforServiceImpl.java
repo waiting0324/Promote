@@ -1,6 +1,8 @@
 package com.promote.project.monitor.service.impl;
 
 import java.util.List;
+
+import com.promote.project.promote.sender.ProQueueSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.promote.project.monitor.domain.SysLogininfor;
@@ -19,6 +21,9 @@ public class SysLogininforServiceImpl implements ISysLogininforService
     @Autowired
     private SysLogininforMapper logininforMapper;
 
+    @Autowired
+    private ProQueueSender proQueueSender;
+
     /**
      * 新增系統登入日誌
      * 
@@ -27,7 +32,9 @@ public class SysLogininforServiceImpl implements ISysLogininforService
     @Override
     public void insertLogininfor(SysLogininfor logininfor)
     {
-        logininforMapper.insertLogininfor(logininfor);
+        //不直接Insert DB,改走MQ
+        proQueueSender.send(logininfor);
+//        logininforMapper.insertLogininfor(logininfor);
     }
 
     /**

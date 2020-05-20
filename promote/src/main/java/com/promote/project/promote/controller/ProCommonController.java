@@ -155,6 +155,10 @@ public class ProCommonController extends BaseController {
         // 消費者
         else if ("C".equals(user.getRole())) {
 
+            if (user.getConsumer() == null) {
+                return AjaxResult.error("資料格式不合法");
+            }
+
             Boolean isProxy = user.getConsumer().getHotelId() != null;
             // 正常註冊(非代註冊)才需檢核欄位
             if (!isProxy) {
@@ -199,9 +203,8 @@ public class ProCommonController extends BaseController {
         // 圖形驗證碼校驗
         // 不是從APP訪問則需要圖形驗證碼
         if (isFromWeb) {
-            Map<String, Object> params = user.getParams();
-            String uuid = (String) params.get("uuid");
-            String code = (String) params.get("code");
+            String uuid = user.getUuid();
+            String code = user.getCode();
             String verifyKey = Constants.CAPTCHA_CODE_KEY + (StringUtils.isNotEmpty(uuid) ? uuid : "");
             String captcha = redisCache.getCacheObject(verifyKey);
             if (StringUtils.isEmpty(code)) {
@@ -449,8 +452,6 @@ public class ProCommonController extends BaseController {
         Long roleId = user.getRoles().get(0).getRoleId();
         //登入者id
         Long userId = user.getUserId();
-        //登入者帳號
-        String username = user.getUsername();
         //資料類型
         String userType = null;
         if(RoleConstants.SERVICE_ROLE_ID.equals(roleId)){
@@ -466,36 +467,51 @@ public class ProCommonController extends BaseController {
             //店家
             StoreInfo storeInfo = sysUser.getStore();
             if(RoleConstants.SERVICE_ROLE_ID.equals(roleId)){
-                if(StringUtils.isNull(storeInfo.getUserId()) || StringUtils.isEmpty(storeInfo.getUsername())){
-                    return AjaxResult.error("需輸入userId及帳號");
+                if(StringUtils.isNull(storeInfo.getUserId())){
+                    return AjaxResult.error("需輸入userId");
                 }
                 userId = storeInfo.getUserId();
-                username = storeInfo.getUsername();
             }
+            String newPwd = storeInfo.getNewPwd();
+            String checkNewPwd = storeInfo.getCheckNewPwd();
+            if(StringUtils.isNotEmpty(newPwd) && StringUtils.isEmpty(checkNewPwd)){
+                return AjaxResult.error("密碼不一致");
+            }
+            if(StringUtils.isNotEmpty(checkNewPwd) && StringUtils.isEmpty(newPwd)){
+                return AjaxResult.error("密碼不一致");
+            }
+            if(!newPwd.equals(checkNewPwd)){
+                return AjaxResult.error("密碼不一致");
+            }
+
             storeInfo.setUserId(userId);
-            storeInfo.setUsername(username);
             storeService.updateStoreInfo(storeInfo);
-            return AjaxResult.success("更新成功");
+            return new AjaxResult(300,"更新成功",null);
         }else if(RoleConstants.CONSUMER_ROLE_ID.equals(roleId) || (RoleConstants.SERVICE_ROLE_ID.equals(roleId) && "C".equals(userType))){
-            //消費者
+            //消費者及客服
             ConsumerInfo consumer = sysUser.getConsumer();
             if(RoleConstants.SERVICE_ROLE_ID.equals(roleId)){
-                if(StringUtils.isNull(consumer.getUserId()) || StringUtils.isEmpty(consumer.getUsername())){
-                    return AjaxResult.error("需輸入userId及帳號");
+                if(StringUtils.isNull(consumer.getUserId())){
+                    return AjaxResult.error("需輸入userId");
                 }
                 userId = consumer.getUserId();
-                username = consumer.getUsername();
+            }
+            String newPwd = consumer.getNewPwd();
+            String checkNewPwd = consumer.getCheckNewPwd();
+            if(StringUtils.isNotEmpty(newPwd) && StringUtils.isEmpty(checkNewPwd)){
+                return AjaxResult.error("密碼不一致");
+            }
+            if(StringUtils.isNotEmpty(checkNewPwd) && StringUtils.isEmpty(newPwd)){
+                return AjaxResult.error("密碼不一致");
+            }
+            if(!newPwd.equals(checkNewPwd)){
+                return AjaxResult.error("密碼不一致");
             }
             consumer.setUserId(userId);
-            consumer.setUsername(username);
             consumerService.updateConsumerInfo(consumer);
-            return AjaxResult.success("更新成功");
+            return new AjaxResult(300,"更新成功",null);
         }
         return AjaxResult.error("目前登入者無權進行基本資料修改");
     }
 
-    @PostMapping("/test")
-    public AjaxResult test() {
-        return AjaxResult.success();
-    }
 }
